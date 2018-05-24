@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" type="text/css" href="https://cdn3.devexpress.com/jslib/18.1.3/css/dx.common.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdn3.devexpress.com/jslib/18.1.3/css/dx.light.css" />
+    <script type="text/javascript" src="https://cdn3.devexpress.com/jslib/18.1.3/js/dx.all.js"></script>
+    <style>
+        .calendar__day_weekend {
+            font-weight: bold;
+            font-style: italic;
+            color: red;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="myCalendar">test</div>
+    Current value:<div class="myCalendar__value">.</div>
+    <script>
+        'use strict';
+
+        let counter = 1;
+        let dxCalendar = new DevExpress.ui.dxCalendar(document.querySelector('.myCalendar'));
+        let date = new Date();
+        date.setDate(date.getDate() + 4);
+        dxCalendar.option({ 
+            min: new Date(),
+            //max: new Date(),
+            disabledDates: () => false,
+            value: date,
+            firstDayOfWeek: 0,
+            //disabled: true,
+            //zoomLevel: 'year',
+            onValueChanged: (e) => updateDisplayValue(e.value),
+            cellTemplate: getCellTemplate,
+            showTodayButton: true,
+        });
+
+        function getCellTemplate(cellData, cellIndex, cellEl) {
+            if(cellIndex === 5 || cellIndex === 6) {
+                return '<span class="calendar__day_weekend">' + cellData.text + '</span>';
+            }
+            else {
+                return cellData.text; //TODO: how to render other cells 'by default'???
+            }
+        }
+
+        function updateDisplayValue(val) {
+            document.querySelector('.myCalendar__value').innerText = 
+                (val.toJSON() + ' ' + dxCalendar.option('value').toJSON());
+        }
+        updateDisplayValue(dxCalendar.option('value'));
+    </script>
+</body>
+</html>
+
