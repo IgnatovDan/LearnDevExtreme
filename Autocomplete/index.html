@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" type="text/css" href="https://cdn3.devexpress.com/jslib/18.1.3/css/dx.common.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdn3.devexpress.com/jslib/18.1.3/css/dx.light.css" />
+    <script type="text/javascript" src="https://cdn3.devexpress.com/jslib/18.1.3/js/dx.all.js"></script>
+    <style>
+        .autocomplete__ValueChagedContainer {
+            position: absolute;
+            top: 200px
+        }
+    </style>
+</head>
+<body>
+    <div class="myWidget">test</div>
+    <div class="autocomplete__ValueChagedContainer">
+        new value: <div class="autocomplete__newValue">11</div>
+        previous value: <div class="autocomplete__prevValue">11</div>
+    </div>
+    <script>
+        'use strict';
+        let dxWidget = new DevExpress.ui.dxAutocomplete(document.querySelector('.myWidget'),
+            {
+                placeholder: 'adsfasdf',
+                dataSource: [
+                    {firstName: 'a', lastName: 'bb'},
+                    {firstName: 'c', lastName: 'cc'},
+                    {firstName: 'v', lastName: 'vv'},
+                    {firstName: 'b', lastName: 'bb'},
+                    {firstName: 'acv', lastName: 'aaccbb'}],
+                searchExpr: 'firstName',
+                valueExpr: 'lastName',
+                // onValueChanged: (e) => {
+                //     document.querySelector('.autocomplete__newValue').innerText = e.value;
+                //     document.querySelector('.autocomplete__prevValue').innerText = e.previousValue;
+                // }
+            });
+        dxWidget.option('onValueChanged', (e) => {
+            document.querySelector('.autocomplete__newValue').innerText = e.value;
+            document.querySelector('.autocomplete__prevValue').innerText = e.previousValue;
+        });
+        dxWidget.option('itemTemplate', (data, index, el) => {
+            let item = document.createElement('div');
+            item.innerText = 'first: ' + data.firstName + '; last: ' + data.lastName;
+            el.appendChild(item);
+        });
+    </script>
+</body>
+</html>
