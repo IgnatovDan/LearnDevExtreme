@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        .myForm {
+            display: table;
+            width: 100%;
+        }
+        .myForm__row {
+            display: table-row;
+        }
+        .myForm__item__label {
+            display: table-cell; 
+            white-space: nowrap;
+            width: 100px;
+        }
+        .myForm__item {
+            display: table-cell;
+        }
+        .myForm__item__input {
+            padding-top: 7px;
+            padding-right: 9px;
+            padding-bottom: 8px;
+            padding-left: 9px;
+
+            border-radius: 4px;
+            /*-webkit-appearance: none;
+            outline: 0;*/
+            
+            /*border: 0;*/
+            border: 1px solid #ddd;
+            box-sizing: border-box;
+            /*line-height: 1.3715;*/
+        }
+        .myForm__item__input__text {
+            width: 100%;
+        }
+    </style>
+</head>
+    <body>
+        
+        <div class="myFormContainer" style="width: 100%"></div>
+
+        <script>
+            'use strict';            
+
+            class MyFormItem {
+                constructor({ label = 'empty label', inputType = 'text' } = {}) {
+                    this.label = label;
+                    this.inputType = inputType;
+                }
+            };
+
+            class MyFormData {
+                constructor(items = []) {
+                    this.items = items;
+                }
+            }
+
+            class MyForm {
+                constructor({el, data = new MyFormData()} = {}) {
+                    this.data = data;
+                    if(!el) { throw new Error('el is null'); }
+                    this.el = el;
+                }
+                render() {
+                    const rootEl = this.rootEl;
+                    this.rootEl = document.createElement('div');
+                    this.rootEl.classList.add('myForm');
+                    
+                    if(this.data.items) {
+                        this.data.items.forEach((item) => {
+                            if(item instanceof MyFormItem) {
+                                const rowEl = document.createElement('div');
+                                rowEl.classList.add('myForm__row');
+
+                                const itemLabelEl = document.createElement('div');
+                                itemLabelEl.classList.add('myForm__item__label');
+                                itemLabelEl.innerText = item.label + ':';
+                                rowEl.appendChild(itemLabelEl);
+
+                                const itemInputEl = document.createElement('input');
+                                itemInputEl.type = item.inputType;
+                                itemInputEl.classList.add('myForm__item', 'myForm__item__input');
+                                if(itemInputEl.type === 'text') {
+                                    itemInputEl.classList.add('myForm__item__input__text');
+                                }
+                                rowEl.appendChild(itemInputEl);
+                                
+                                this.rootEl.appendChild(rowEl);
+                            }
+                        });
+                    }
+                    if(rootEl) {
+                        this.el.replaceChild(this.rootEl, rootEl);
+                    }
+                    else {
+                        this.el.appendChild(this.rootEl);
+                    }
+                }
+            }
+
+        </script>
+        
+        <script>
+            'use strict';            
+            const myFormData = new MyFormData([
+                new MyFormItem({label: 'First Name', inputType: 'text'}),
+                new MyFormItem({label: 'Last Name', inputType: 'text'}),
+                new MyFormItem({label: 'Birth Date', inputType: 'date'}),
+            ]);
+
+            const myFormEl = document.querySelector('.myFormContainer');
+            const myForm = new MyForm({el: myFormEl, data: myFormData});
+            myForm.render();
+        </script>
+    </body>
+</html>
