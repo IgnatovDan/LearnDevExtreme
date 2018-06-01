@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" type="text/css" href="https://cdn3.devexpress.com/jslib/18.1.3/css/dx.common.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdn3.devexpress.com/jslib/18.1.3/css/dx.light.css" />
+    <script type="text/javascript" src="https://cdn3.devexpress.com/jslib/18.1.3/js/dx.all.debug.js"></script>
+</head>
+<body>
+    <hr>
+    Radio group:
+    <div style="display:table">
+        <div style="display:table-cell" class="myWidget">test</div>
+        <div style="display:table-cell">
+            <span class="radioGroup__value__caption">new value:</span>
+            <span class="radioGroup__value"></span>
+        </div>
+    </div>
+    <script>
+        const items = [
+            {key: 'a', val: '1'},
+            {key: 'b', val: 'item 2'},
+            {key: 'c', val: 'some item 3'}
+        ];
+        let radioGroup = new DevExpress.ui.dxRadioGroup(document.querySelector('.myWidget'), { 
+            items,
+            value: items[1].key, 
+            displayExpr: 'val',
+            valueExpr: 'key',
+            onValueChanged: (e) => {
+                    document.querySelector('.radioGroup__value').innerText = JSON.stringify(e.value);
+                } 
+            });
+    </script>
+    <hr>
+    Range selector:
+    <div style="display:table">
+        <div style="display:table-cell; height: 100px" class="dxRangeSelector"></div>
+        <div style="display:table-cell">
+            <span>value:</span>
+            <span class="rangeSelector__value"></span>
+        </div>
+    </div>
+    <script>
+        function showRangeSelectorValue(value, previousValue) {
+            document.querySelector('.rangeSelector__value').innerText = JSON.stringify(value) + ' - prev value: ' + JSON.stringify(previousValue);
+        }
+        const rangeSelector = new DevExpress.viz.dxRangeSelector(document.querySelector('.dxRangeSelector'), { 
+            scale: {
+                startValue: 10,
+                endValue: 50,
+            },
+            value: [35, 43],
+            onValueChanged: (e) => {
+                showRangeSelectorValue(e.value, e.previousValue);
+            }
+        });
+        showRangeSelectorValue(rangeSelector.option('value'), null);
+    </script>
+    <hr>
+    <div style="display: table; width:100%">
+        <div style="display: table-cell">
+            <div style="height: 200px; overflow-y:auto; border: solid 1px green">
+                <span class="scrollView_content1"></span>
+            </div>
+        </div>
+        <div style="display: table-cell">
+            <div style="height: 200px; border: dashed 1px blueviolet" class="dxScrollView">
+                <span class="scrollView_content"></span>
+            </div>
+        </div>
+        <div style="display: table-cell">
+            <div style="border:dashed 1px turquoise">
+                <div style="display:inline">Scroll offset</div>
+                <div style="display:inline" class="scrollView_offset"></div>
+            </div>
+        </div>
+    </div>
+    <script>
+        'use strict';
+        var chars = "          ,,..abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789\r\r";
+        let longText = '';
+        for(let i = 0; i < 1000; i++) {
+            longText += chars[Math.floor(Math.random() * chars.length)];
+        }
+        document.querySelector('.scrollView_content').innerText = longText;
+        document.querySelector('.scrollView_content1').innerText = longText;
+
+        function updateScrollPositionEl(scrollOffset) {
+            document.querySelector('.scrollView_offset').innerText = JSON.stringify(scrollOffset);
+        }
+        const dxScrollView = new DevExpress.ui.dxScrollView(document.querySelector('.dxScrollView'), {
+            direction: 'vertical',
+            onScroll: (e) => {
+                updateScrollPositionEl(e.scrollOffset);
+            },
+        });
+    </script>
+    <hr>
+</body>
+</html>
