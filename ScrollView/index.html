@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" type="text/css" href="https://cdn3.devexpress.com/jslib/18.1.3/css/dx.common.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdn3.devexpress.com/jslib/18.1.3/css/dx.light.css" />
+    <script type="text/javascript" src="https://cdn3.devexpress.com/jslib/18.1.3/js/dx.all.debug.js"></script>
+</head>
+<body>
+    <hr>
+    <div style="margin: 20px">Native scroll view:</div>
+    <div style="height: 200px; overflow-y:auto; border: solid 1px green">
+        <span class="scrollView_content1"></span>
+    </div>
+    <div style="margin: 20px">dxScrollView:</div>
+    <div style="height: 200px; border: dashed 1px blueviolet">
+        <div class="dxScrollView">
+            <span class="scrollView_content"></span>
+        </div>
+    </div>
+    <div style="border:dashed 1px turquoise; margin-top: 20px">
+        <div style="display:inline">dxScrollView current offset</div>
+        <div style="display:inline" class="scrollView_offset"></div>
+        <div >dxScrollView.onScroll log:</div>
+        <div style="height: 200px; overflow-y:auto; border: solid 1px green" class="scrollView_log"></div>
+    </div>
+    <script>
+        'use strict';
+        var chars = "          ,,..abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789\r\r";
+        let longText = '';
+        for(let i = 0; i < 1000; i++) {
+            longText += chars[Math.floor(Math.random() * chars.length)];
+        }
+        document.querySelector('.scrollView_content').innerText = longText;
+        document.querySelector('.scrollView_content1').innerText = longText;
+
+        function updateScrollPositionEl(scrollOffset) {
+            document.querySelector('.scrollView_offset').innerText = JSON.stringify(scrollOffset);
+        }
+        const dxScrollView = new DevExpress.ui.dxScrollView(document.querySelector('.dxScrollView'), {
+            direction: 'vertical',
+            onScroll: (e) => {
+                updateScrollPositionEl(e.scrollOffset);
+                const logEl = document.querySelector('.scrollView_log');
+                logEl.innerText = JSON.stringify(e.scrollOffset) + '\r' + logEl.innerText;
+            },
+        });
+    </script>
+</body>
+</html>
