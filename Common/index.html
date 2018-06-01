@@ -60,45 +60,5 @@
         });
         showRangeSelectorValue(rangeSelector.option('value'), null);
     </script>
-    <hr>
-    <div style="display: table; width:100%">
-        <div style="display: table-cell">
-            <div style="height: 200px; overflow-y:auto; border: solid 1px green">
-                <span class="scrollView_content1"></span>
-            </div>
-        </div>
-        <div style="display: table-cell">
-            <div style="height: 200px; border: dashed 1px blueviolet" class="dxScrollView">
-                <span class="scrollView_content"></span>
-            </div>
-        </div>
-        <div style="display: table-cell">
-            <div style="border:dashed 1px turquoise">
-                <div style="display:inline">Scroll offset</div>
-                <div style="display:inline" class="scrollView_offset"></div>
-            </div>
-        </div>
-    </div>
-    <script>
-        'use strict';
-        var chars = "          ,,..abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789\r\r";
-        let longText = '';
-        for(let i = 0; i < 1000; i++) {
-            longText += chars[Math.floor(Math.random() * chars.length)];
-        }
-        document.querySelector('.scrollView_content').innerText = longText;
-        document.querySelector('.scrollView_content1').innerText = longText;
-
-        function updateScrollPositionEl(scrollOffset) {
-            document.querySelector('.scrollView_offset').innerText = JSON.stringify(scrollOffset);
-        }
-        const dxScrollView = new DevExpress.ui.dxScrollView(document.querySelector('.dxScrollView'), {
-            direction: 'vertical',
-            onScroll: (e) => {
-                updateScrollPositionEl(e.scrollOffset);
-            },
-        });
-    </script>
-    <hr>
 </body>
 </html>
