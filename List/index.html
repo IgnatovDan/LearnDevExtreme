@@ -9,6 +9,15 @@
     <link rel="stylesheet" type="text/css" href="https://cdn3.devexpress.com/jslib/18.1.3/css/dx.light.css" />
     <script type="text/javascript" src="https://cdn3.devexpress.com/jslib/18.1.3/js/dx.all.debug.js"></script>
     <style>
+        .entryContainer {
+            display: flex;
+        }
+        .entryContainer__markup {
+            flex: 80%
+        }
+        .entryContainer__log {
+            flex: 20%
+        }
         /*myList1*/
         .myList1__item_selected {
             background: blue;
@@ -27,12 +36,12 @@
         .myList2__item_selected {
             background: blue;
         }
-        .myList2__item:hover {
+        .myList2__item:hover:not(.myList2__item_selected){
             background: lightgreen;
         }
-        .myList2:focus {
+        /*TODO: .myList2:focus {
             background: blue;
-        }
+        }*/
         .myList2__item {
             cursor:default;
         }
@@ -40,10 +49,19 @@
 </head>
 <body>
     dxList:
-    <div class="myWidget">test</div>
+    <div class="entryContainer">
+        <span class="dxList_widget entryContainer__markup" >test</span>
+        <textarea class="dxList_log entryContainer__log" ></textarea>
+    </div>
     <script>
-        let dxWidget = new DevExpress.ui.dxList(document.querySelector('.myWidget'), {
-            dataSource: ['item 1', 'item 2', 'item 3', 'item 5', '6']
+        //TODO: it doesn't work !!!
+        let dxWidget = new DevExpress.ui.dxList(document.querySelector('.dxList_widget'), {
+            dataSource: ['item 1', 'item 2', 'item 3', 'item 5', '6'],
+            selectedItems: ['item 2'],
+            onSelectionChanged: (e) => {
+                const dxListLogEl = document.querySelector('.dxList_log');
+                dxListLogEl.textContent = JSON.stringify(e.addedItems) + '\r' + dxListLogEl.textContent;
+            },
         });
     </script>
     <hr>
@@ -79,32 +97,51 @@
     </script>
     <hr>
     MyList class, render array of strings as ul+li tags:
-    <div class="myList2"></div>
+    <div class="entryContainer">
+        <div class="myList2"></div>
+        <textarea class="myList2_log entryContainer__log" ></textarea>
+    </div>
     <script>
         'use strict';
         class MyList2 {
             constructor({containerEl, dataSource = []} = {}) {
+                MyList2.EVENTS_VALUECHANGED = 'valueChanged';
+
                 if(!containerEl) throw new Error('"containerEl" is null');
                 this.containerEl = containerEl;
                 this.dataSource = dataSource;
+                this._events = [];
+                this.value = undefined;
             }
             render() {
                 const prevListEl = this.listEl;
                 this.listEl = document.createElement('ul');
+                this.bindings = []; //extract to a separate class, this design seems to be incorrect
+
                 this.dataSource.forEach((dataSourceEntry) => {
                     const entryEl = document.createElement('li');
                     entryEl.classList.add('myList1__item');
+                    if(dataSourceEntry === this._value) {
+                        entryEl.classList.add('myList2__item_selected');
+                    }
                     entryEl.innerText = dataSourceEntry;
+                    this.bindings.push( { el: entryEl, value: dataSourceEntry } );
                     this.listEl.appendChild(entryEl);
                 });
 
                 this.listEl.addEventListener('click', (e) => {
-                    const selectedEl = e.currentTarget.querySelector('.myList2__item_selected');
-                    if(selectedEl) {
-                        selectedEl.classList.remove('myList2__item_selected');
-                    }
                     if(e.target.tagName == 'LI') {
-                        e.target.classList.add('myList2__item_selected');
+                        const currentBinding = this.bindings.find((binding) => binding.value === this._value );
+                        if(currentBinding && currentBinding.el) {
+                            if(currentBinding.el === e.target) {
+                                return;
+                            }
+                            currentBinding.el.classList.remove('myList2__item_selected');
+                        }
+                        const targetBinding = this.bindings.find((binding) => binding.el === e.target );                        
+                        if(targetBinding) {
+                            this.value = targetBinding.value;
+                        }
                     }
                 });
                 if(prevListEl) {
@@ -114,16 +151,33 @@
                     this.containerEl.appendChild(this.listEl);
                 }
             }
-            /*
-            TODO:
-            value {
-                get;
-                set;
+            get value() {
+                return this._value;
             }
-            onValueChanged - emitter?
-            addEventListener() {
-                events.addEventListener();
-            }*/
+            set value(val) {
+                this._value = val;
+                if(this.bindings) {
+                    const binding = this.bindings.find( (binding) => binding.value === this._value );
+                    if(binding && binding.el) {
+                        binding.el.classList.add('myList2__item_selected');
+                    }
+                }
+                this._dispatchEvent({type: MyList2.EVENTS_VALUECHANGED});
+            }
+            addEventListener(event, callback) {
+                /*TODO: - emitter? */
+                if(!this._events[event]) this._events[event] = [];
+                this._events[event].push(callback);
+            }
+            _dispatchEvent(event) { //like 'emit' in NodeJS but there is a single object instead of a bunch of arguments
+                if(this._events) {
+                    const eventListeners = this._events[event.type];
+                    if(eventListeners) {
+                        event.target = this;
+                        eventListeners.forEach(listener => listener(event));
+                    }
+                }
+            }
         }
 
         const myList2El = document.querySelector('.myList2');
@@ -131,6 +185,11 @@
             containerEl: document.querySelector('.myList2'),
             dataSource: ['item 1', 'item 2', 'item 3', 'item 5', '6']
         });
+        myList2.addEventListener(MyList2.EVENTS_VALUECHANGED, (e) => {
+            const myList2LogEl = document.querySelector('.myList2_log');
+            myList2LogEl.textContent = JSON.stringify(e.target.value) + '\r' + myList2LogEl.textContent;
+        });
+        myList2.value = 'item 2';
         myList2.render();
     </script>
 </body>
