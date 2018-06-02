@@ -54,7 +54,6 @@
         <textarea class="dxList_log entryContainer__log" ></textarea>
     </div>
     <script>
-        //TODO: it doesn't work !!!
         let dxWidget = new DevExpress.ui.dxList(document.querySelector('.dxList_widget'), {
             dataSource: ['item 1', 'item 2', 'item 3', 'item 5', '6'],
             selectedItems: ['item 2'],
@@ -62,6 +61,7 @@
                 const dxListLogEl = document.querySelector('.dxList_log');
                 dxListLogEl.textContent = JSON.stringify(e.addedItems) + '\r' + dxListLogEl.textContent;
             },
+            selectionMode: 'single'
         });
     </script>
     <hr>
