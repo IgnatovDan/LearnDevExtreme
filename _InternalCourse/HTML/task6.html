@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        .myScreen {
+            position: relative;
+            border: dashed 1px gray;
+            background-color: lightgray;
+            width: 200px;
+            height: 50px;
+        }
+        .myScreen__content {
+            position: absolute;
+            text-align: center;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+    </style>
+</head>
+<body>
+    <button class="button1">Click me v1 - manually assign methods to object</button>
+    <div class="myScreen"><div class="content1 myScreen__content"></div></div>
+    <script>
+        function MyClass() {
+            this.counter = 0;
+        }
+        function AddCounter() {
+            this.counter++;
+        }
+        function GetValue() {
+            return this.counter;
+        }
+        const counter1 = {};
+        counter1.initialize = MyClass;
+        counter1.increment = AddCounter;
+        counter1.getValue = GetValue;
+
+        counter1.initialize();
+        counter1.increment();
+        document.querySelector('.content1').innerText = counter1.getValue();
+
+        document.querySelector('.button1').addEventListener('click', () => {
+            counter1.increment();
+            document.querySelector('.content1').innerText = counter1.getValue();
+        });
+    </script>
+
+    <hr>
+    <button class="button2">Click me v2 - assign methods as mixin</button>
+    <div class="myScreen"><div class="content2 myScreen__content"></div></div>
+    <script>
+        const counterMixin = (function() {
+            function MyClass() {
+                this.counter = 0;
+            }
+            function AddCounter() {
+                this.counter++;
+            }
+            function GetValue() {
+                return this.counter;
+            }
+            return {
+                addMethods: function(target) {
+                    target.initialize = MyClass;
+                    target.increment = AddCounter;
+                    target.getValue = GetValue;
+                }
+            };
+        }
+        )();
+
+        const counter2 = {};
+        counterMixin.addMethods(counter2);
+        counter2.initialize();
+        counter2.increment();counter2.increment();
+
+        const contentEl2 = document.querySelector('.content2');
+        contentEl2.innerText = counter2.getValue();
+
+        document.querySelector('.button2').addEventListener('click', () => {
+            counter2.increment();
+            contentEl2.innerText = counter2.getValue();
+        });
+    </script>
+
+    <hr>
+    <button class="button3">Click me v3 - call via 'apply'/'call'</button>
+    <div class="myScreen"><div class="content3 myScreen__content"></div></div>
+    <script>
+        const counter3 = {};
+        MyClass.apply(counter3);
+        AddCounter.apply(counter3);AddCounter.apply(counter3);AddCounter.apply(counter3);
+
+        document.querySelector('.content3').innerText = GetValue.apply(counter3);
+
+        document.querySelector('.button3').addEventListener('click', () => {
+            AddCounter.apply(counter3);
+            document.querySelector('.content3').innerText = GetValue.apply(counter3);
+        });
+    </script>
+
+    <hr>
+    <button class="button4">Click me v4 - call via 'bind'</button>
+    <div class="myScreen"><div class="content4 myScreen__content"></div></div>
+    <script>
+        const counter4 = {};
+        counter4_initialize = MyClass.bind(counter4);
+        counter4_getValue = GetValue.bind(counter4);
+        counter4_increment = AddCounter.bind(counter4);
+
+        counter4_initialize();
+        counter4_increment();counter4_increment();counter4_increment();counter4_increment();
+
+        document.querySelector('.content4').innerText = counter4_getValue();
+
+        document.querySelector('.button4').addEventListener('click', () => {
+            counter4_increment();
+            document.querySelector('.content4').innerText = counter4_getValue();
+        });
+    </script>
+
+    <hr>
+    <button class="button5">Click me v5 - call via prototype</button>
+    <div class="myScreen"><div class="content5 myScreen__content"></div></div>
+    <script>
+        const counterPrototype = {};
+        counterPrototype.initialize = MyClass;
+        counterPrototype.increment = AddCounter;
+        counterPrototype.getValue = GetValue;
+
+        const counter5 = Object.create(counterPrototype);
+        counter5.initialize();
+        counter5.increment();counter5.increment();counter5.increment();counter5.increment();counter5.increment();
+        document.querySelector('.content5').innerText = counter5.getValue();
+
+        document.querySelector('.button5').addEventListener('click', () => {
+            counter5.increment();
+            document.querySelector('.content5').innerText = counter5.getValue();
+        });
+    </script>
+</body>
+</html>
