@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Page Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script
+        src="https://code.jquery.com/jquery-3.3.1.js"
+        integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60="
+        crossorigin="anonymous"></script>
+    <style>
+        .myPanel {
+            width: 200px;
+            height: 100px;
+            background-color: gray;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .myPanel_selected {
+            width: 250px;
+            height: 150px;
+            background-color: red;
+        }
+    </style>
+</head>
+<body>
+    <hr>
+    V1:
+    <div class="root1"></div>
+    <script>
+        (function () {
+            'use strict';
+            const root = $('.root1');
+            let myPanel;
+            const btn = $(document.createElement('button'))
+                .text('click me')
+                .click(() => {
+                    if(!myPanel) {
+                        const input = $(document.createElement('input'));
+                        myPanel = $(document.createElement('div'))
+                            .click(() => {
+                                myPanel.width(myPanel.width() + 10).height(myPanel.height() + 10).css('backgroundColor', 'red');
+                            });
+                        myPanel.append(input);
+                        root.append(myPanel);
+                    }
+                    else {
+                        myPanel.remove();
+                        myPanel = undefined;
+                    }
+                });
+            root.append(btn);
+        })();
+    </script>
+
+    <hr>
+    V2: e.target === myPanel
+    <div class="root2"></div>
+    <script>
+        (function () {
+            'use strict';
+            const root = $('.root2');
+            let myPanel;
+            const btn = $(document.createElement('button'))
+                .text('click me')
+                .click(() => {
+                    if(!myPanel) {
+                        const input = $(document.createElement('input'));
+                        myPanel = $(document.createElement('div'))
+                            .css({
+                                width: 200,
+                                height: 200,
+                                backgroundColor: 'gray',
+                                display: 'flex',
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                            })
+                            .click((e) => {
+                                if(e.target === myPanel.get(0)) {
+                                    myPanel.width(myPanel.width() + 10).height(myPanel.height() + 10).css('backgroundColor', 'red');
+                                }
+                            });
+                        myPanel.append(input);
+                        root.append(myPanel);
+                    }
+                    else {
+                        myPanel.remove();
+                        myPanel = undefined;
+                    }
+                });
+            root.append(btn);
+        })();
+    </script>
+
+    <hr>
+    V3: e.target === myPanel + toggleClass
+    <div class="root3"></div>
+    <script>
+        (function () {
+            'use strict';
+            const root = $('.root3');
+            let myPanel;
+            const btn = $(document.createElement('button'))
+                .text('click me')
+                .click(() => {
+                    if(!myPanel) {
+                        const input = $(document.createElement('input'));
+                        myPanel = $(document.createElement('div'))
+                            .addClass('myPanel')
+                            .click((e) => {
+                                if(e.target === myPanel.get(0)) {
+                                    myPanel.toggleClass('myPanel_selected');
+                                }
+                            });
+                        myPanel.append(input);
+                        root.append(myPanel);
+                    }
+                    else {
+                        myPanel.remove();
+                        myPanel = undefined;
+                    }
+                });
+            root.append(btn);
+        })();
+    </script>
+</body>
+</html>

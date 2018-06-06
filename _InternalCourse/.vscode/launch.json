@@ -8,7 +8,7 @@
             "type": "chrome",
             "request": "launch",
             "name": "Launch",
-            "url": "${workspaceFolder}/task11_jquery.html"
+            "url": "${workspaceFolder}/task12_jquery.html"
         }
     ]
 }
