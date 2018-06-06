@@ -7,8 +7,8 @@
         {
             "type": "chrome",
             "request": "launch",
-            "name": "Launch Chrome against localhost",
-            "url": "${workspaceFolder}/task10_jquery.html"
+            "name": "Launch",
+            "url": "${workspaceFolder}/task11_jquery.html"
         }
     ]
 }
