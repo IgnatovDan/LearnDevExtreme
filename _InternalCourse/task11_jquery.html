@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Page Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script
+        src="https://code.jquery.com/jquery-3.3.1.js"
+        integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60="
+        crossorigin="anonymous"></script>
+    <style>
+        /*V1*/
+        .targetEl_state1 {
+            height: 50px;
+            width: 50px;
+            background-color: gray;
+        }
+        .targetEl_state2 {
+            height: 150px;
+            width: 150px;
+            background-color: brown;
+            transition-property: 'background';
+            transition-duration: 2s;
+        }
+
+        /*V2*/        
+        .targetEl {
+            height: 50px;
+            width: 50px;
+            background-color: gray;
+        }
+        .targetEl_active {
+            height: 150px;
+            width: 150px;
+            background-color: brown;
+            transition-property: 'background';
+            transition-duration: 2s;
+        }
+    </style>
+</head>
+<body>
+    <hr>
+    V1: add/remove, model as datasource
+    <div class="rootV2"></div>
+    <script>
+        'use strict';
+        const stateClasses = new Map([[false, 'targetEl_state1'], [true, 'targetEl_state2']]);
+        let currentState = false;
+        const targetEl = $(document.createElement('div'))
+            .addClass(stateClasses.get(currentState));
+        const btnEl = $(document.createElement('button'))
+            .text('click me')
+            .click(() => {
+                targetEl.removeClass(stateClasses.get(currentState));
+                currentState = !currentState;
+                targetEl.addClass(stateClasses.get(currentState));
+            });
+
+        $('.rootV2').append(btnEl, targetEl);
+    </script>
+    
+    <hr>
+    V2: toggle, dom as datasource
+    <div class="rootV3"></div>
+    <script>
+        (function () {
+            'use strict';
+            const targetEl = $(document.createElement('div'))
+                .addClass('targetEl');
+            const btnEl = $(document.createElement('button'))
+                .text('click me')
+                .click(() => {
+                    targetEl.toggleClass('targetEl_active');
+                });
+
+            $('.rootV3').append(btnEl, targetEl);
+        })()
+    </script>
+</body>
+</html>
