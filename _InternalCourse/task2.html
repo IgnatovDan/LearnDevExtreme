@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        .myScreen {
+            border: dashed 1px gray;
+            background-color: darkgray;
+        }
+        .myScreen_small {
+            width: 300px;
+            height: 300px;
+        }
+        .myScreen_large {
+            width: 500px;
+            height: 500px;
+        }
+    </style>
+</head>
+<body>
+    <button class="button1">Click me</button>
+    <div class="myScreen1 myScreen myScreen_small">myDiv</div>
+    <script>
+        const CLASS_MYSCREEN_SMALL = 'myScreen_small';
+        const CLASS_MYSCREEN_LARGE = 'myScreen_large';
+        document.querySelector('.button1').addEventListener('click', () => {
+            const myScreen1 = document.querySelector('.myScreen1');
+            myScreen1.classList.toggle(CLASS_MYSCREEN_SMALL);
+            myScreen1.classList.toggle(CLASS_MYSCREEN_LARGE);
+        });
+    </script>
+</body>
+</html>

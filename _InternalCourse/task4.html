@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        .myScreen {
+            position: relative;
+            border: dashed 1px gray;
+            background-color: lightgray;
+            width: 200px;
+            height: 200px;
+        }
+        .myScreen__content {
+            position: absolute;
+            width: 100px;
+            text-align: center;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+    </style>
+</head>
+<body>
+    <button class="button1">Click me v1</button>
+    <div class="myScreen"><div class="content1 myScreen__content"></div></div>
+    <script>
+        (function() {
+            class MyCounter {
+                constructor() {
+                    this._value = 0;
+                }
+                get value() {
+                    return this._value;
+                }
+                increment() {
+                    this._value++;
+                }
+            }
+
+            const counter = new MyCounter();
+
+            const contentEl = document.querySelector('.content1');
+            contentEl.innerText = counter.value;
+
+            document.querySelector('.button1').addEventListener('click', () => {
+                counter.increment();
+                contentEl.innerText = counter.value;
+            });
+        })();
+    </script>
+
+    <hr>
+    <button class="button2">Click me v2</button>
+    <div class="myScreen"><div class="content2 myScreen__content"></div></div>
+    <script>
+        (function() {
+            function MyCounter() {
+                let _value = 0;
+                this.getValue = function() {
+                    return _value;
+                }
+                this.increment = function() {
+                    _value++;
+                }
+            }
+
+            const counter = new MyCounter();
+
+            const contentEl = document.querySelector('.content2');
+            contentEl.innerText = counter.getValue();
+
+            document.querySelector('.button2').addEventListener('click', () => {
+                counter.increment();
+                contentEl.innerText = counter.getValue();
+            });
+        })();
+    </script>
+</body>
+</html>

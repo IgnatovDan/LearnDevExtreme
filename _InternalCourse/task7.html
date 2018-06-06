@@ -1,0 +1,83 @@
+<!-- let result = 'a.value = ' + a.value + '; b.value = ' + b.value + ';';
+a.value+=2; b.value+=3;
+result += '\ra.value+=2; b.value+=3;\ra.value = ' + a.value + '; b.value = ' + b.value + ';'; -->
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Page Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" media="screen" href="main.css" />
+    <script src="main.js"></script>
+</head>
+<body>
+    <hr>
+    'class A' (because there is "" in task description)
+    <pre class="results"></pre>
+    <script>
+        (function() {
+            class A {
+                constructor() {
+                    this.value = 1;
+                }
+            }
+            class B extends A {}
+
+            const a = new A();
+            const b = new B();
+            let result = 'a.value = ' + a.value + '; b.value = ' + b.value + ';';
+            a.value+=2; b.value+=3;
+            result += '\ra.value+=2; b.value+=3;\ra.value = ' + a.value + '; b.value = ' + b.value + ';';
+            document.querySelector('.results').innerText = result;
+            console.log(result);
+        })();
+    </script>
+
+    <hr>
+    'function A() {... + B.prototype'
+    <pre class="resultsPrototype"></pre>
+    <script>
+        (function() {
+            function A() {
+                this.value = 1;
+            }
+            function B() {
+                A.call(this);
+            }
+            B.prototype = A;
+
+            const a = new A();
+            const b = new B();
+            let result = 'a.value = ' + a.value + '; b.value = ' + b.value + ';';
+            a.value+=2; b.value+=3;
+            result += '\ra.value+=2; b.value+=3;\ra.value = ' + a.value + '; b.value = ' + b.value + ';';
+            document.querySelector('.resultsPrototype').innerText = result;
+            console.log(result);
+        })();
+    </script>
+
+    <hr>
+    'function A() {... + B.prototype + property shadowing'
+    <pre class="resultsPrototypeShadowing"></pre>
+    <script>
+        (function() {
+            function A() {
+            }
+            function B() {
+            }
+            A.prototype.value = 1;
+            B.prototype = Object.create(A.prototype);
+
+            const a = new A();
+            const b = new B();
+            let result = 'a.value = ' + a.value + '; b.value = ' + b.value + ';';
+            a.value+=2; b.value+=3;
+            result += '\ra.value+=2; b.value+=3;\ra.value = ' + a.value + '; b.value = ' + b.value + ';';
+            document.querySelector('.resultsPrototypeShadowing').innerText = result;
+            console.log(result);
+        })();
+    </script>
+
+</body>
+</html>

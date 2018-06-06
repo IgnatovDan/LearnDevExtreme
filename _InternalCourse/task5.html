@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        alert('Started.... Click [OK] many times.');
+        //Из этого описания не понятно какой код должен быть успешно выполнен, а для какого выполнение должно прерваться с ошибкой :
+        //Declare the “MyFunc” class with the “funcA” function in the “MyFunc” scope. “functA” should not be accessible directly from “MyFunc”.
+        //и тут же сразу есть разные варианты синтаксиса и стандарты интерпретатора... 
+
+        //------------
+        class MyFunc1 {
+            getFuncA() {
+                function funcA(idx_) { alert(idx_); }
+                return funcA;
+            }
+            butItCanBeCalledFromMyFunc() {
+                this.getFuncA()('1-');
+            }
+        }
+        new MyFunc1().getFuncA()('1+');
+        new MyFunc1().butItCanBeCalledFromMyFunc();
+
+        //------------
+        class MyFunc2 {
+            static getFuncA() {
+                function funcA(idx_) { alert(idx_); }
+                return funcA;
+            }
+            butItCanBeCalledFromMyFunc() {
+                MyFunc2.getFuncA()('2-');
+            }
+        }
+        MyFunc2.getFuncA()('2+');
+        new MyFunc2().butItCanBeCalledFromMyFunc();
+
+        //------------
+        class MyFunc3 {
+            constructor() {
+                this.callFuncA = function funcA(idx_) { alert(idx_); }
+            }
+            butItCanBeCalledFromMyFunc() {
+                this.callFuncA('3-');
+            }
+        }
+        new MyFunc3().callFuncA('3+');
+        new MyFunc3().butItCanBeCalledFromMyFunc();
+
+        /*
+        
+        Другие варианты, может их надо было доделать?
+        
+        //------------
+        class MyFunc1 {
+            getFuncA() {
+                function funcA(idx_) { alert(idx_); }
+                return funcA;
+            }
+        }
+
+        MyFunc.funcA = function(idx) { alert(idx); }
+        MyFunc.funcA(2);
+
+        //------------
+        function MyFunc1(idx) {
+            function funcA(idx_) { alert(idx_); }
+            fincA(idx);
+        }
+        MyFunc1(1);
+
+        //------------
+        class MyFunc2 {
+            funcA(idx) { alert(idx); }
+            //тут funcA доступно для вызова но можно упрятать
+        }
+        new MyFunc2().funcA(2);
+
+        //------------
+        function MyFunc(idx) {
+            let funcA = function() { alert(idx); }
+            return funcA;
+        }
+        MyFunc(3)();
+
+        //------------
+        MyFunc.funcA = function(idx) { alert(idx); }
+        MyFunc.funcA(4);
+
+        //------------
+        function MyFunc(val) {
+            var a = val;
+            result = function funcA(val_) {
+                a += val_;
+                return funcA;
+            }
+            result.toString = () => a.toString();
+            return result;
+        }
+        alert("MyFunc(0)(1)(2)(3)(4)(5) === '15' is " + (MyFunc(0)(1)(2)(3)(4)(5) === '15'));
+
+        //------------
+        function MyFunc(val) {
+            return () => {
+                function funcA(idx) { alert(idx); }
+                return funcA;
+            }
+        }
+        MyFunc(6);
+        */
+    </script>
+    <div>Finished.</div>
+</body>
+</html>
