@@ -13,14 +13,19 @@
 <body>
     <div class="root"></div>
     <script>
-        const backgroundColors = {
+        const backgroundColors = new Map(
+            [[true, 'green'], [false, 'red']]
+        );
+        /*const backgroundColors = {
             true: 'green',
             false: 'red'
         };
+        + backgroundColors[currentBackgroundColor]
+        */
         let currentBackgroundColor = false;
 
         const targetDiv = $(document.createElement('div')).css({
-            backgroundColor: backgroundColors[currentBackgroundColor],
+            backgroundColor: backgroundColors.get(currentBackgroundColor),
             width: '200px',
             height: '100px'
         });
@@ -29,7 +34,7 @@
             .text('click me')
             .click(() => {
                 currentBackgroundColor = !currentBackgroundColor;
-                targetDiv.css({ backgroundColor: backgroundColors[currentBackgroundColor] } );
+                targetDiv.css({ backgroundColor: backgroundColors.get(currentBackgroundColor) } );
             });
 
         $('.root').append(btn1, targetDiv);
