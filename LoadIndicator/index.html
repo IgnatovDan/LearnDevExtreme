@@ -20,16 +20,122 @@
         .entry__properties {
             margin: 10px;
         }
-        .myLoadIndicatorTransitions__inner {
+    </style>
+    <style>
+        /* v3 - transitions*/
+        .myLoadIndicatorTransitions {
+            width:40px; 
+            height:40px; 
+            border: dashed 1px gray; 
+            background: lightskyblue; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center;
+        }
+
+        .myLoadIndicatorTransitions__inner_small {
+            width: 10%; height: 10%; border: solid 1px blue; border-radius: 50%;
             transition-property: width height;
             transition-duration: 1.5s;
             transition-timing-function: ease-in;
         }
-        .myLoadIndicatorTransitions__inner_small {
-            width: 10%; height: 10%; border: solid 1px blue; border-radius: 50%;
-        }
         .myLoadIndicatorTransitions__inner_large {
             width: 100%; height: 100%; border: solid 1px blue; border-radius: 50%;
+            transition-property: width height;
+            transition-duration: 1.5s;
+            transition-timing-function: ease-in;
+        }
+    </style>
+    <style>
+        /* v4 - Animations */
+        .myLoadIndicatorV4Animation {
+            width:40px; 
+            height:40px; 
+            border: dashed 1px gray; 
+            background: lightskyblue; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center;
+        }
+
+        @keyframes myLoadIndicatorV4Animations {
+            0% {
+                width: 10%; height: 10%;
+                }
+            50% {
+                width: 100%; height: 100%;
+                }
+            100% {
+                width: 10%; height: 10%;
+                }
+        }
+
+        .myLoadIndicatorV4Animation__inner {
+            border: solid 1px blue; 
+            border-radius: 50%;
+            animation-name: myLoadIndicatorV4Animations;
+            animation-duration: 3s;
+            animation-iteration-count: infinite;
+            animation-timing-function: ease-in-out;
+        }
+    </style>
+    <style>
+        /* V5 - animations on scale */
+        .myLoadIndicatorV5Animation {
+            width: 40px;
+            height: 40px;
+            border: dashed 1px gray;
+            background-color: lightskyblue;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        @keyframes myLoadIndicatorV5Animations {
+            0% { transform: scale(0.1); }
+            50% { transform: scale(1); }
+            100% { transform: scale(0.1); }
+        }
+
+        .myLoadIndicatorV5Animation__inner {
+            width: 100%;
+            height: 100%;
+            border: solid 1px blue;
+            border-radius: 50%;
+            animation-name: myLoadIndicatorV5Animations;
+            animation-duration: 3s;
+            animation-iteration-count: infinite;
+            animation-timing-function: ease-in-out;
+        }
+    </style>
+    <style>
+        /* V6 - animations on rotate */
+        .myLoadIndicatorV6Animation {
+            width: 40px;
+            height: 40px;
+            border: dashed 1px gray;
+            background-color: lightskyblue;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 50%;
+            animation-name: myLoadIndicatorV6Animations;
+            animation-duration: 3s;
+            animation-iteration-count: infinite;
+            animation-timing-function: ease-in-out;
+        }
+
+        @keyframes myLoadIndicatorV6Animations {
+            0% { transform: rotate(90deg); }
+            100% { transform: rotate(450deg); }
+        }
+
+        .myLoadIndicatorV6Animation_inner {
+            width:30%; 
+            height: 15%;
+            background: lightgray;
+            border-radius: 50% 10% 10% 50%;
+            margin-right: 50%;
         }
     </style>
 </head>
@@ -51,6 +157,7 @@
             </div>
         </div>
     </div>
+    <hr>
     MyLoadIndicator v2:
     <div class="entry">
         <div> v2:
@@ -62,6 +169,7 @@
             </div>
         </div>
     </div>
+    <hr>
     MyLoadIndicator v3 - setInterval + transitions:
     <div class="entry">
         <div class="entry__widget">
@@ -90,9 +198,26 @@
             }
         }, 1500);
     </script>
-    MyLoadIndicator v4 - animations:
+    <hr>
+    MyLoadIndicator v4 - animations width/height 10%->100%:
     <div class="entry">
-        TODO
+        <div class='myLoadIndicatorV4Animation'>
+            <div class="myLoadIndicatorV4Animation__inner"></div>
+        </div>
+    </div>
+    <hr>
+    MyLoadIndicator v5 - animations scale(0.1)->scale(1):
+    <div class="entry">
+        <div class='myLoadIndicatorV5Animation'>
+            <div class="myLoadIndicatorV5Animation__inner"></div>
+        </div>
+    </div>
+    <hr>
+    MyLoadIndicator v6 - animation rotate:
+    <div class="entry">
+        <div class="myLoadIndicatorV6Animation">
+            <div class="myLoadIndicatorV6Animation_inner"></div>
+        </div>
     </div>
 </body>
 </html>
