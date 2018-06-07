@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Page Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script
+        src="https://code.jquery.com/jquery-3.3.1.js"
+        integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60="
+        crossorigin="anonymous"></script>
+</head>
+<body>
+    <hr>
+    JQuery
+    <div class="root1">
+        <img src="yourtimg.png" alt="Test" height="100" width="100">
+    </div>
+    <script>
+        (function () {
+            'use strict';
+            const img = $('.root1 > img');
+
+            $(document.createElement('button'))
+                .text('show attr()')
+                .click(() => {
+                    alert('src=' + img.attr('src'));
+                })
+                .appendTo('.root1');
+
+            $(document.createElement('button'))
+                .text('show prop()')
+                .click(() => {
+                    alert('src=' + img.prop('src'));
+                })
+                .appendTo('.root1');
+
+            $(document.createElement('button'))
+                .text('change')
+                .click(() => {
+                    img.attr('src', '1');
+                })
+                .appendTo('.root1');
+        })();
+    </script>
+
+    <hr>
+    javascript+DOM
+    <div class="root2">
+        <img src="http://volpuri.ru/phh/12/moraine_lake_banff_national_park_canada_ozero_moreyn_kanada_banf_skameyka_peyzazh_eli_2048x1366.jpg" alt="Test" height="100" width="100">
+    </div>
+    <script>
+        (function () {
+            'use strict';
+            const img = document.querySelector('.root2 > img');
+            const showSrcEl = document.createElement('button');
+            showSrcEl.innerText = 'show img.getAttribute(\'src\')';
+            showSrcEl.addEventListener('click', () => {
+                alert('img.src=' + img.getAttribute('src'));
+            });
+            document.querySelector('.root2').appendChild(showSrcEl);
+
+            const showSrc2El = document.createElement('button');
+            showSrc2El.innerText = 'show img.src';
+            showSrc2El.addEventListener('click', () => {
+                alert('img.src=' + img.src);
+            });
+            document.querySelector('.root2').appendChild(showSrc2El);
+
+            const changeSrcEl = document.createElement('button');
+            changeSrcEl.innerText = 'change';
+            changeSrcEl.addEventListener('click', () => {
+                img.src = '1';
+            });
+            document.querySelector('.root2').appendChild(changeSrcEl);
+        })();
+    </script>
+</body>
+</html>
