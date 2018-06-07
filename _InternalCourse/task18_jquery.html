@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Page Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script
+        src="https://code.jquery.com/jquery-3.3.1.js"
+        integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60="
+        crossorigin="anonymous"></script>
+</head>
+<body>
+    <hr>
+    <div class="target" style="color: rgb(68, 68, 68); width: 180px; height: 100px;">
+        <span>Test</span>
+        <span>Test</span>
+        <span>Test</span>
+    </div>
+    <script>
+        (function () {
+            'use strict';
+
+            $(document.createElement('button'))
+                .text('click me 1')
+                .click(() => {
+                    const children = $('.target').children();
+                    if(children.length === 0) {
+                        $('<span>Text</span>').appendTo('.target');
+                        $('<span>Text</span>').appendTo('.target');
+                        $('<span>Text</span>').appendTo('.target');
+                    }
+                    else {
+                        $('.target').children().remove(); //perf??
+                    }
+                })
+                .appendTo('body');
+
+            $(document.createElement('button'))
+                .text('click me 2')
+                .click(() => {
+                    const children = $('.target').children();
+                    if($('.target').is(':empty')) {
+                        $('<span>Text</span>').appendTo('.target');
+                        $('<span>Text</span>').appendTo('.target');
+                        $('<span>Text</span>').appendTo('.target');
+                    }
+                    else {
+                        $('.target').empty(); //perf?? internally textContent + additional code
+                    }
+                })
+                .appendTo('body');
+        })();
+    </script>
+
+    <hr>
+    javascript + DOM
+    <div class="target2" style="color: rgb(68, 68, 68); width: 180px; height: 100px;">
+        <span>Test</span>
+        <span>Test</span>
+        <span>Test</span>
+    </div>
+    <script>
+        (function () {
+            'use strict';
+
+            const toggleContentEl = document.createElement('button');
+            toggleContentEl.innerText = 'click me 1';
+            toggleContentEl.addEventListener('click', () => {
+                const target = document.querySelector('.target2');
+                if(target.childElementCount === 0) {
+                    for(let i = 0; i < 3; i++) {
+                        const item = document.createElement('span');
+                        item.innerText = 'Text';
+                        target.appendChild(item);
+                    }
+                }
+                else {
+                    target.textContent = ''; //fast
+                }
+            });
+            document.body.appendChild(toggleContentEl);
+
+            const toggleContent2El = document.createElement('button');
+            toggleContent2El.innerText = 'click me 1';
+            toggleContent2El.addEventListener('click', () => {
+                const target = document.querySelector('.target2');
+                if(target.childElementCount === 0) {
+                    for(let i = 0; i < 3; i++) {
+                        const item = document.createElement('span');
+                        item.innerText = 'Text';
+                        target.appendChild(item);
+                    }
+                }
+                else {
+                    while(target.lastChild) {
+                        target.removeChild(target.lastChild); //slow 30%
+                    }
+                }
+            });
+            document.body.appendChild(toggleContent2El);
+        })();
+    </script>
+</body>
+</html>
