@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Page Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script
+        src="https://code.jquery.com/jquery-3.3.1.js"
+        integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60="
+        crossorigin="anonymous"></script>
+    <style>
+        .container{
+            float:left;
+            width:40%;
+            height:200px;
+            background:grey;
+            padding:10px;
+            margin:20px;
+        }
+    </style>
+</head>
+<body>
+    Target url: <a class="targetUrl"></a>
+    <hr>
+    JQuery
+    <pre id="target" ></pre>
+    <script>
+        'use strict';
+        const url = 'https://itunes.apple.com/search?term=metallica&limit=1';
+        document.querySelector('.targetUrl').setAttribute('href', 'https://itunes.apple.com/search?term=metallica&limit=1');
+        document.querySelector('.targetUrl').textContent = 'https://itunes.apple.com/search?term=metallica&limit=1';
+    </script>
+    <script>
+        (function () {
+
+            function addLogEntry(entry) {
+                $('#target').text($('#target').text() + '\r\n--' + entry);
+            }
+            let result;
+            $.getJSON(url, function (data) {
+                result = data;
+                addLogEntry('getJSON.callback result:' + JSON.stringify(result));
+            });
+            addLogEntry('getJSON().after result: ' + JSON.stringify(result));
+        })();
+    </script>
+
+    <hr>
+    JQuery with the ITunes Search API 'callback' parameter (global func??? wtf???), https://affiliate.itunes.apple.com/resources/documentation/itunes-store-web-service-search-api/
+    <pre id="target_callback" ></pre>
+    <script>
+        (function () {
+            'use strict';
+
+            function addLogEntry(entry) {
+                $('#target_callback').text($('#target_callback').text() + '\r\n--' + entry);
+            }
+            let result;
+            $.getJSON(url + '&callback=?', function (data) {
+                result = data;
+                addLogEntry('getJSON.callback result:' + JSON.stringify(result));
+            });
+            addLogEntry('getJSON().after result: ' + JSON.stringify(result));
+        })();
+    </script>
+
+    <hr>
+    javascript - fetch
+    <pre id="targetFetch" ></pre>
+    <script>
+        (function () {
+            'use strict';
+
+            function addLogEntry(entry) {
+                document.querySelector('#targetFetch').textContent += '\r\n--' + entry;
+            }
+
+            let result;
+            fetch(url)
+            .then((r) => r.json())
+            .then((json) => {
+                result = json;
+                addLogEntry('fetch.then.then result: ' + JSON.stringify(result));
+            })
+            .catch((err) => addLogEntry('fetch.catch err: ' + e));
+            
+            addLogEntry('fetch().after result: ' + result);
+        })();
+    </script>
+
+    <hr>
+    javascript - XMLHttpRequest
+    <pre id="targetXHR" ></pre>
+    <script>
+        (function () {
+            'use strict';
+
+            function addLogEntry(entry) {
+                document.querySelector('#targetXHR').textContent += '\r\n--' + entry;
+            }
+
+            var result;
+            const xhr = new XMLHttpRequest();
+            xhr.addEventListener('load', (e) => {
+                result = xhr.response;
+                addLogEntry('xhr.load result: ' + JSON.stringify(result));
+            });
+            xhr.open('GET', url, false);
+            xhr.send();
+            if(xhr.status != 200) {
+                addLogEntry('status: ' + xhr.status + ', text: ' + xhr.statusText);
+            }
+            else {
+                result = xhr.responseText;
+                addLogEntry('xhr.send().after result: ' + JSON.stringify(result));
+            }
+        })();
+    </script>
+
+    <hr>
+    javascript - XMLHttpRequest(async = true)
+    <pre id="targetXHR-async" ></pre>
+    <script>
+        (function () {
+            'use strict';
+
+            function addLogEntry(entry) {
+                document.querySelector('#targetXHR-async').textContent += '\r\n--' + entry;
+            }
+
+            var result;
+            const xhr = new XMLHttpRequest();
+            xhr.addEventListener('load', (e) => {
+                if(xhr.status != 200) {
+                    addLogEntry('status: ' + xhr.status + ', text: ' + xhr.statusText);
+                }
+                else {
+                    result = xhr.responseText;
+                    addLogEntry('xhr.load result: ' + JSON.stringify(result));
+                }
+            });
+            xhr.open('GET', url, true);
+            xhr.timeout = 1000;
+            xhr.ontimeout = () => {
+                addLogEntry('timeout 1000ms');
+            };
+            xhr.send();
+            if(xhr.status != 200) {
+                addLogEntry('status: ' + xhr.status + ', text: ' + xhr.statusText);
+            }
+            else {
+                result = xhr.responseText;
+                addLogEntry('xhr.send().after result: ' + JSON.stringify(result));
+            }
+        })();
+    </script>
+</body>
+</html>
