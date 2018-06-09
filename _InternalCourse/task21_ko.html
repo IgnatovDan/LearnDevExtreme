@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Page Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="http://ajax.aspnetcdn.com/ajax/knockout/knockout-3.4.2.js"></script>
+</head>
+<body>
+    <hr>
+    V1:
+    <div class="v1" style="width: 120px; height:60px; border: solid 1px gray">
+        <div style="width: 120px; height: 20px;" data-bind="style: { 'background-color': color1 }"></div>
+        <div style="width: 120px; height: 20px;" data-bind="style: { 'background-color': color2 }"></div>
+        <div style="width: 120px; height: 20px;" data-bind="style: { 'background-color': color3 }"></div>
+    </div>
+    <script>
+        'use strict';
+        (function() {
+            const model = {
+                color1: ko.observable('white'),
+                color2: ko.observable('blue'),
+                color3: ko.observable('red'),
+            };
+            ko.applyBindings(model, document.querySelector('.v1'));
+        })();
+    </script>
+    <hr>
+    V2:
+    <div class="v2" style="width: 120px; height:60px; border: solid 1px gray">
+        <div style="width: 120px; height: 20px;" data-bind="style: { 'background-color': color1 }"></div>
+        <div style="width: 120px; height: 20px;" data-bind="style: { 'background-color': color2 }"></div>
+        <div style="width: 120px; height: 20px;" data-bind="style: { 'background-color': color3 }"></div>
+    </div>
+    <script>
+        'use strict';
+        (function() {
+            function myModel() {
+                this.color1 = ko.observable('white');
+                this.color2 = ko.observable('blue');
+                this.color3 = ko.observable('red');
+            };
+            ko.applyBindings(new myModel(), document.querySelector('.v2'));
+        })();
+    </script>
+    <hr>
+    V3:
+    <div class="v3" style="width: 120px; height:60px; border: solid 1px gray">
+        <div style="width: 120px; height: 20px;" data-bind="style: { 'background-color': color1 }"></div>
+        <div style="width: 120px; height: 20px;" data-bind="style: { 'background-color': color2 }"></div>
+        <div style="width: 120px; height: 20px;" data-bind="style: { 'background-color': color3 }"></div>
+        <button data-bind="click: toggleColor">click me</button>
+    </div>
+    <script>
+        'use strict';
+        (function() {
+            function myModel(val) {
+                this.color1 = ko.observable();
+                this.color2 = ko.observable();
+                this.color3 = ko.observable();
+                this.toggleColor = function() {
+                    this.val = !this.val;
+                    if(this.val) {
+                        this.color1('red');
+                        this.color2('white');
+                        this.color3('blue');
+                    }
+                    else {
+                        this.color1('white');
+                        this.color2('blue');
+                        this.color3('red');
+                    }
+                }
+
+                this.val = !val;
+                this.toggleColor();
+            };
+            ko.applyBindings(new myModel(), document.querySelector('.v3'));
+        })();
+    </script>
+    <hr>
+    V4:
+    <div class="v4" style="width: 120px; height:60px; border: solid 1px gray">
+        <div style="width: 120px; height: 20px;" data-bind="style: { 'background-color': val() ? 'white' : 'red'}"></div>
+        <div style="width: 120px; height: 20px;" data-bind="style: { 'background-color': val() ? 'blue' : 'white' }"></div>
+        <div style="width: 120px; height: 20px;" data-bind="style: { 'background-color': val() ? 'red' : 'blue' }"></div>
+        <button data-bind="click: toggle">click me</button>
+    </div>
+    <script>
+        'use strict';
+        (function() {
+            function myModel(val) {
+                this.val = ko.observable(val);
+                this.toggle = function() {
+                    this.val(!this.val());
+                }
+            };
+            ko.applyBindings(new myModel(true), document.querySelector('.v4'));
+        })();
+    </script>
+    <hr>
+    V5:
+    <div class="v5" style="width: 120px; height:60px; border: solid 1px gray">
+        <div style="width: 120px; height: 20px;" data-bind="style: { 'background-color': color1}"></div>
+        <div style="width: 120px; height: 20px;" data-bind="style: { 'background-color': color2 }"></div>
+        <div style="width: 120px; height: 20px;" data-bind="style: { 'background-color': color3 }"></div>
+        <button data-bind="click: toggle">click me</button>
+    </div>
+    <script>
+        'use strict';
+        (function() {
+            const colors1 = { color1: 'white', color2: 'blue', color3: 'red' };
+            const colors2 = { color1: 'red', color2: 'white', color3: 'blue' };
+
+            function myModel(val) {
+                this.val = ko.observable(val);
+                this.toggle = function() {
+                    this.val(!this.val());
+                }
+                this.color1 = ko.pureComputed(
+                    function() {
+                        return this.val() ? colors1.color1 : colors2.color1;
+                    },
+                    this);
+                this.color2 = ko.pureComputed(
+                    function() {
+                        return this.val() ? colors1.color2 : colors2.color2;
+                    },
+                    this);
+                this.color3 = ko.pureComputed(
+                    function() {
+                        return this.val() ? colors1.color3 : colors2.color3;
+                    },
+                    this);
+            };
+            ko.applyBindings(new myModel(true), document.querySelector('.v5'));
+        })();
+    </script>
+    <hr>
+    V6:
+    <div class="v6" style="width: 120px; height:60px; border: solid 1px gray">
+        <div style="width: 120px; height: 20px;" data-bind="style: { 'background-color': options().color1 }"></div>
+        <div style="width: 120px; height: 20px;" data-bind="style: { 'background-color': options().color2 }"></div>
+        <div style="width: 120px; height: 20px;" data-bind="style: { 'background-color': options().color3 }"></div>
+        <button data-bind="click: toggle">click me</button>
+    </div>
+    <script>
+        'use strict';
+        (function() {
+            const options1 = { color1: 'white', color2: 'blue', color3: 'red' }
+            const options2 = { color1: 'red', color2: 'white', color3: 'blue' }
+
+            function myModel(val) {
+                this.val = ko.observable(val);
+                this.toggle = function() {
+                    this.val(!this.val());
+                }
+                this.options = ko.pureComputed(
+                    function() {
+                        return this.val() ? options1 : options2;
+                    },
+                    this);
+            };
+            ko.applyBindings(new myModel(true), document.querySelector('.v6'));
+        })();
+    </script>
+    <hr>
+    V7:
+    <div class="v7" style="width: 120px; height:60px; border: solid 1px gray">
+        <div style="width: 120px; height: 20px;" data-bind="style: { 'background-color': options().color1 }"></div>
+        <div style="width: 120px; height: 20px;" data-bind="style: { 'background-color': options().color2 }"></div>
+        <div style="width: 120px; height: 20px;" data-bind="style: { 'background-color': options().color3 }"></div>
+        <button data-bind="click: toggle">click me</button>
+    </div>
+    <script>
+        'use strict';
+        (function() {
+            const options1 = { color1: 'white', color2: 'blue', color3: 'red' }
+            const options2 = { color1: 'red', color2: 'white', color3: 'blue' }
+
+            class myModel {
+                constructor(val) {
+                    this.val = ko.observable(val);
+                    this.options = ko.pureComputed(
+                        function() {
+                            return this.val() ? options1 : options2;
+                        },
+                        this);
+                }
+                toggle() {
+                    this.val(!this.val());
+                }
+            };
+            ko.applyBindings(new myModel(true), document.querySelector('.v7'));
+        })();
+    </script>
+    <hr>
+    V8:
+    <div class="v8" style="width: 120px; height:60px; border: solid 1px gray">
+        <mycomponentV8 params="true"></mycomponentV8>
+    </div>
+    <script>
+        'use strict';
+        (function() {
+            const options1 = { color1: 'white', color2: 'blue', color3: 'red' }
+            const options2 = { color1: 'red', color2: 'white', color3: 'blue' }
+
+            class myModel {
+                constructor() {
+                    this.val = ko.observable(false);
+                    this.options = ko.pureComputed(
+                        function() {
+                            return this.val() ? options1 : options2;
+                        },
+                        this);
+                }
+                toggle() {
+                    this.val(!this.val());
+                }
+            };
+
+            ko.components.register('mycomponentV8', {
+                viewModel: myModel,
+                template: `
+                    <div>
+                        <div style="width: 120px; height: 20px;" data-bind="style: { 'background-color': options().color1 }"></div>
+                        <div style="width: 120px; height: 20px;" data-bind="style: { 'background-color': options().color2 }"></div>
+                        <div style="width: 120px; height: 20px;" data-bind="style: { 'background-color': options().color3 }"></div>
+                        <button data-bind="click: toggle">click me</button>
+                    </div>
+                    `,
+            });
+            //ko.applyBindings();
+        })();
+    </script>
+</body>
+</html>
