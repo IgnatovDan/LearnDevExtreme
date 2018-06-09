@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" type="text/css" href="https://cdn3.devexpress.com/jslib/18.1.3/css/dx.common.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdn3.devexpress.com/jslib/18.1.3/css/dx.light.css" />
+    <script type="text/javascript" src="https://cdn3.devexpress.com/jslib/18.1.3/js/dx.all.js"></script>
+</head>
+<body>
+    <hr>
+    <pre>
+    separate DataSource to process records that fits the current grid filters
+    </pre>
+    <div class="myGrid"></div>
+    <button class="myButton">GetFilteredRows</button>
+    <pre class="filteredRecords"></pre>
+    <script>
+        (function() {
+            const ds = new Array();
+            for(let i = 1; i <= 100; i++) {
+                ds.push({ID: i, Name: 'Object ' + i});
+            }
+
+            const dxGrid = new DevExpress.ui.dxDataGrid(document.querySelector('.myGrid'), {
+                dataSource: ds,
+                paging: {
+                    pageSize: 5,
+                },
+                filterRow: {
+                    visible: true,
+                    applyFIlter: 'auto'
+                },
+                headerFilter: {
+                    visible: true,
+                },
+                columns: ['ID', 'Name']
+            });
+
+            document.querySelector('.myButton').addEventListener('click', () => {
+                const filterExpression = dxGrid.getCombinedFilter();
+                const filteredDS = new DevExpress.data.DataSource(ds);
+                if(filterExpression) {
+                    filteredDS.filter(filterExpression);
+                }
+                const promise = filteredDS.load()
+                    .then((data) => {
+                        document.querySelector('.filteredRecords').innerText = JSON.stringify(data);
+                    })
+                    .catch((error) => {
+                        document.querySelector('.filteredRecords').innerText = error;
+                    });
+            });
+        })();
+    </script>
+
+    <hr>
+    <pre>
+    single DataSource for grid and to process records that fits the current grid filters
+    this approach seems to be incorrect: 
+    1. datasource is filtered by grid and the filtered another time when the button is clicked</pre>
+    2. button handler gets only the current page records because the DataSource object is exclusively captured by grid and it is used to implement its behavior
+    <div class="myGrid__singleDS"></div>
+    <button class="myButton__singleDS">GetFilteredRows</button>
+    <pre class="filteredRecords__singleDS"></pre>
+    <script>
+        (function() {
+            const ds = new Array();
+            for(let i = 1; i <= 100; i++) {
+                ds.push({ID: i, Name: 'Object ' + i});
+            }
+
+            const dxDataSource = new DevExpress.data.DataSource(ds);
+
+            const dxGrid = new DevExpress.ui.dxDataGrid(document.querySelector('.myGrid__singleDS'), {
+                dataSource: dxDataSource,
+                paging: {
+                    pageSize: 5,
+                },
+                filterRow: {
+                    visible: true,
+                    applyFIlter: 'auto'
+                },
+                headerFilter: {
+                    visible: true,
+                },
+                columns: ['ID', 'Name']
+            });
+
+            document.querySelector('.myButton__singleDS').addEventListener('click', () => {
+                const filterExpression = dxGrid.getCombinedFilter();
+                if(filterExpression) {
+                    dxDataSource.filter(filterExpression);
+                }
+                const promise = dxDataSource.load()
+                    .then((data) => {
+                        document.querySelector('.filteredRecords__singleDS').innerText = JSON.stringify(data);
+                    })
+                    .catch((error) => {
+                        document.querySelector('.filteredRecords__singleDS').innerText = error;
+                    });
+            });
+        })();
+    </script>
+</body>
+</html>
