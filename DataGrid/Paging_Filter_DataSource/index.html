@@ -11,8 +11,10 @@
 </head>
 <body>
     <hr>
+    From the <a href="https://www.devexpress.com/Support/Center/Question/Details/T639042" target="_blank">DataGrid - How to get rows from other pages for custom "Select All" check box</a> ticket.
+    <hr>
     <pre>
-    separate DataSource to process records that fits the current grid filters
+    1. separate new DataSource each time to process records that fits the current grid filters
     </pre>
     <div class="myGrid"></div>
     <button class="myButton">GetFilteredRows</button>
@@ -58,10 +60,11 @@
 
     <hr>
     <pre>
-    single DataSource for grid and to process records that fits the current grid filters
+    2. single DataSource for grid and to process records that fits the current grid filters
     this approach seems to be incorrect: 
-    1. datasource is filtered by grid and the filtered another time when the button is clicked</pre>
-    2. button handler gets only the current page records because the DataSource object is exclusively captured by grid and it is used to implement its behavior
+      - datasource is filtered by grid and the filtered another time when the button is clicked
+      - button handler gets only the current page records because the DataSource object is exclusively captured by grid and it is used to implement its behavior</pre>
+      - the custom filter remains in the datasource so grid rows are always filtered after the button handler is executed
     <div class="myGrid__singleDS"></div>
     <button class="myButton__singleDS">GetFilteredRows</button>
     <pre class="filteredRecords__singleDS"></pre>
@@ -92,6 +95,7 @@
             document.querySelector('.myButton__singleDS').addEventListener('click', () => {
                 const filterExpression = dxGrid.getCombinedFilter();
                 if(filterExpression) {
+                    debugger;
                     dxDataSource.filter(filterExpression);
                 }
                 const promise = dxDataSource.load()
