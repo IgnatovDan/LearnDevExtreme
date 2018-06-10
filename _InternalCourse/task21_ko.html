@@ -198,7 +198,7 @@
     <hr>
     V8:
     <div class="v8" style="width: 120px; height:60px; border: solid 1px gray">
-        <mycomponentV8 params="true"></mycomponentV8>
+        <mycomponent-v8 params="value: true"></mycomponent-v8>
     </div>
     <script>
         'use strict';
@@ -207,8 +207,8 @@
             const options2 = { color1: 'red', color2: 'white', color3: 'blue' }
 
             class myModel {
-                constructor() {
-                    this.val = ko.observable(false);
+                constructor(params) {
+                    this.val = ko.observable(params.value);
                     this.options = ko.pureComputed(
                         function() {
                             return this.val() ? options1 : options2;
@@ -220,7 +220,7 @@
                 }
             };
 
-            ko.components.register('mycomponentV8', {
+            ko.components.register('mycomponent-v8', {
                 viewModel: myModel,
                 template: `
                     <div>
@@ -231,7 +231,7 @@
                     </div>
                     `,
             });
-            //ko.applyBindings();
+            ko.applyBindings(null, document.querySelector('.v8'));
         })();
     </script>
 </body>
