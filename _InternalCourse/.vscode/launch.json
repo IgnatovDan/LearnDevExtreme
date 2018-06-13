@@ -9,7 +9,7 @@
             "type": "chrome",
             "request": "launch",
             "name": "Launch",
-            "url": "${workspaceFolder}/task23_ko.html"
+            "url": "${workspaceFolder}/task24_ko.html"
         }
     ]
 }

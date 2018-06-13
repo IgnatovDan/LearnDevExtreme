@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Page Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="http://ajax.aspnetcdn.com/ajax/knockout/knockout-3.4.2.js"></script>
+</head>
+<body>
+    <div class="container1">
+        <my-component params="imageURL: imageURL"></my-component>
+    </div>
+    <script>
+        'use strict';
+        (function() {
+            class ViewModel {
+                constructor(params) {
+                    this.predefinedImageUrlIndex = 0;
+                    this.predefinedImageUrlList = [
+                        'https://vignette.wikia.nocookie.net/besiege/images/c/c3/Empty_Besiege_Banner.png',
+                        'http://www.lovethispic.com/uploaded_images/145277-Not-Happy-Not-Sad-But-Empty.jpg',
+                    ];
+                    this.editorValue = ko.observable(params.imageURL || 'empty');
+                    this.imageElementURL = ko.observable('empty');
+                }
+                toggle_EditorValue() {
+                    this.predefinedImageUrlIndex++;
+                    if(this.predefinedImageUrlIndex >= this.predefinedImageUrlList.length) {
+                        this.predefinedImageUrlIndex = 0;
+                    }
+                    this.editorValue(this.predefinedImageUrlList[this.predefinedImageUrlIndex]);
+                }
+                copy_EditorValue_To_ImageElementUrl() {
+                    this.imageElementURL(this.editorValue());
+                }
+            }
+
+            ko.components.register('my-component',
+                {
+                    viewModel: ViewModel,
+                    template: `
+                        <p><button data-bind="click: toggle_EditorValue">Toggle editor value</button></p>
+                        <p>Type URL to any image: <input data-bind="textInput: editorValue" style="width: 100%"/></p>
+                        <button data-bind="click: copy_EditorValue_To_ImageElementUrl">Click me</button></p>
+                        <p>Image:</p><img data-bind="attr: { src: imageElementURL } "/>
+                    `,
+                }
+            );
+
+            const myApp = {
+                imageURL: 'https://cdn-images-1.medium.com/max/1600/1*YBbjremDIKhCHwVC1jvwtw.png',
+            };
+            ko.applyBindings(myApp, document.querySelector('.container1'));
+        })();
+    </script>
+</body>
+</html>
