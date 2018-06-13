@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Page Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="http://ajax.aspnetcdn.com/ajax/knockout/knockout-3.4.2.js"></script>
+</head>
+<body>
+    <hr>
+    V1:
+    <div class=".containerV1" >
+        <mycomponent-v1 params="firstName: 'Ivan', lastName: 'Ivanov'"></mycomponent-v1>
+    </div>
+    <script>
+        'use strict';
+        (function() {
+            class myModel {
+                constructor(params) {
+                    this.firstName = ko.observable(params.firstName);
+                    this.lastName = ko.observable(params.lastName);
+                    this.fullName = ko.pureComputed(
+                        function() {
+                            return this.firstName() + ' ' + this.lastName();
+                        },
+                        this);
+                }
+            };
+
+            ko.components.register('mycomponent-v1', {
+                viewModel: myModel,
+                template: `
+                    <div>
+                        <p>First name: <input data-bind="value: firstName"/></p>
+                        <p>Last name: <input data-bind="value: lastName"/></p>
+                        <p>Full name: <span data-bind="text: fullName"/></p>
+                    </div>
+                    `,
+            });
+            ko.applyBindings(null, document.querySelector('.containerV1'));
+        })();
+    </script>
+
+
+</body>
+</html>
