@@ -6,14 +6,25 @@
     <title>Page Title</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <script src="http://ajax.aspnetcdn.com/ajax/knockout/knockout-3.4.2.js"></script>
+    <style>
+        .colorsRect {
+            width: 120px;
+            height:60px;
+            border: solid 1px gray;
+        }
+        .colorsRect__colorsLine {
+            width: 120px;
+            height: 20px;
+        }
+    </style>
 </head>
 <body>
     <hr>
     V1:
-    <div class="v1" style="width: 120px; height:60px; border: solid 1px gray">
-        <div style="width: 120px; height: 20px;" data-bind="style: { 'background-color': color1 }"></div>
-        <div style="width: 120px; height: 20px;" data-bind="style: { 'background-color': color2 }"></div>
-        <div style="width: 120px; height: 20px;" data-bind="style: { 'background-color': color3 }"></div>
+    <div class="v1 colorsRect">
+        <div class="colorsRect__colorsLine" data-bind="style: { 'background-color': color1 }"></div>
+        <div class="colorsRect__colorsLine" data-bind="style: { 'background-color': color2 }"></div>
+        <div class="colorsRect__colorsLine" data-bind="style: { 'background-color': color3 }"></div>
     </div>
     <script>
         'use strict';
@@ -28,10 +39,10 @@
     </script>
     <hr>
     V2:
-    <div class="v2" style="width: 120px; height:60px; border: solid 1px gray">
-        <div style="width: 120px; height: 20px;" data-bind="style: { 'background-color': color1 }"></div>
-        <div style="width: 120px; height: 20px;" data-bind="style: { 'background-color': color2 }"></div>
-        <div style="width: 120px; height: 20px;" data-bind="style: { 'background-color': color3 }"></div>
+    <div class="v2 colorsRect" >
+        <div class="colorsRect__colorsLine" data-bind="style: { 'background-color': color1 }"></div>
+        <div class="colorsRect__colorsLine" data-bind="style: { 'background-color': color2 }"></div>
+        <div class="colorsRect__colorsLine" data-bind="style: { 'background-color': color3 }"></div>
     </div>
     <script>
         'use strict';
@@ -46,10 +57,12 @@
     </script>
     <hr>
     V3:
-    <div class="v3" style="width: 120px; height:60px; border: solid 1px gray">
-        <div style="width: 120px; height: 20px;" data-bind="style: { 'background-color': color1 }"></div>
-        <div style="width: 120px; height: 20px;" data-bind="style: { 'background-color': color2 }"></div>
-        <div style="width: 120px; height: 20px;" data-bind="style: { 'background-color': color3 }"></div>
+    <div class="v3" >
+        <div class="colorsRect" >
+            <div class="colorsRect__colorsLine" data-bind="style: { 'background-color': color1 }"></div>
+            <div class="colorsRect__colorsLine" data-bind="style: { 'background-color': color2 }"></div>
+            <div class="colorsRect__colorsLine" data-bind="style: { 'background-color': color3 }"></div>
+        </div>
         <button data-bind="click: toggleColor">click me</button>
     </div>
     <script>
@@ -81,10 +94,12 @@
     </script>
     <hr>
     V4:
-    <div class="v4" style="width: 120px; height:60px; border: solid 1px gray">
-        <div style="width: 120px; height: 20px;" data-bind="style: { 'background-color': val() ? 'white' : 'red'}"></div>
-        <div style="width: 120px; height: 20px;" data-bind="style: { 'background-color': val() ? 'blue' : 'white' }"></div>
-        <div style="width: 120px; height: 20px;" data-bind="style: { 'background-color': val() ? 'red' : 'blue' }"></div>
+    <div class="v4" >
+        <div class="colorsRect" >
+            <div class="colorsRect__colorsLine" data-bind="style: { 'background-color': val() ? 'white' : 'red'}"></div>
+            <div class="colorsRect__colorsLine" data-bind="style: { 'background-color': val() ? 'blue' : 'white' }"></div>
+            <div class="colorsRect__colorsLine" data-bind="style: { 'background-color': val() ? 'red' : 'blue' }"></div>
+        </div>
         <button data-bind="click: toggle">click me</button>
     </div>
     <script>
@@ -101,10 +116,12 @@
     </script>
     <hr>
     V5:
-    <div class="v5" style="width: 120px; height:60px; border: solid 1px gray">
-        <div style="width: 120px; height: 20px;" data-bind="style: { 'background-color': color1}"></div>
-        <div style="width: 120px; height: 20px;" data-bind="style: { 'background-color': color2 }"></div>
-        <div style="width: 120px; height: 20px;" data-bind="style: { 'background-color': color3 }"></div>
+    <div class="v5" >
+        <div class="colorsRect" >
+            <div class="colorsRect__colorsLine" data-bind="style: { 'background-color': color1}"></div>
+            <div class="colorsRect__colorsLine" data-bind="style: { 'background-color': color2 }"></div>
+            <div class="colorsRect__colorsLine" data-bind="style: { 'background-color': color3 }"></div>
+        </div>
         <button data-bind="click: toggle">click me</button>
     </div>
     <script>
@@ -139,10 +156,12 @@
     </script>
     <hr>
     V6:
-    <div class="v6" style="width: 120px; height:60px; border: solid 1px gray">
-        <div style="width: 120px; height: 20px;" data-bind="style: { 'background-color': options().color1 }"></div>
-        <div style="width: 120px; height: 20px;" data-bind="style: { 'background-color': options().color2 }"></div>
-        <div style="width: 120px; height: 20px;" data-bind="style: { 'background-color': options().color3 }"></div>
+    <div class="v6" >
+        <div class="colorsRect" >
+            <div class="colorsRect__colorsLine" data-bind="style: { 'background-color': options().color1 }"></div>
+            <div class="colorsRect__colorsLine" data-bind="style: { 'background-color': options().color2 }"></div>
+            <div class="colorsRect__colorsLine" data-bind="style: { 'background-color': options().color3 }"></div>
+        </div>
         <button data-bind="click: toggle">click me</button>
     </div>
     <script>
@@ -167,10 +186,12 @@
     </script>
     <hr>
     V7:
-    <div class="v7" style="width: 120px; height:60px; border: solid 1px gray">
-        <div style="width: 120px; height: 20px;" data-bind="style: { 'background-color': options().color1 }"></div>
-        <div style="width: 120px; height: 20px;" data-bind="style: { 'background-color': options().color2 }"></div>
-        <div style="width: 120px; height: 20px;" data-bind="style: { 'background-color': options().color3 }"></div>
+    <div class="v7" >
+        <div class="colorsRect" >
+            <div class="colorsRect__colorsLine" data-bind="style: { 'background-color': options().color1 }"></div>
+            <div class="colorsRect__colorsLine" data-bind="style: { 'background-color': options().color2 }"></div>
+            <div class="colorsRect__colorsLine" data-bind="style: { 'background-color': options().color3 }"></div>
+        </div>
         <button data-bind="click: toggle">click me</button>
     </div>
     <script>
@@ -197,7 +218,7 @@
     </script>
     <hr>
     V8:
-    <div class="v8" style="width: 120px; height:60px; border: solid 1px gray">
+    <div class="v8 colorsRect" >
         <mycomponent-v8 params="value: true"></mycomponent-v8>
     </div>
     <script>
@@ -224,9 +245,9 @@
                 viewModel: myModel,
                 template: `
                     <div>
-                        <div style="width: 120px; height: 20px;" data-bind="style: { 'background-color': options().color1 }"></div>
-                        <div style="width: 120px; height: 20px;" data-bind="style: { 'background-color': options().color2 }"></div>
-                        <div style="width: 120px; height: 20px;" data-bind="style: { 'background-color': options().color3 }"></div>
+                        <div class="colorsRect__colorsLine" data-bind="style: { 'background-color': options().color1 }"></div>
+                        <div class="colorsRect__colorsLine" data-bind="style: { 'background-color': options().color2 }"></div>
+                        <div class="colorsRect__colorsLine" data-bind="style: { 'background-color': options().color3 }"></div>
                         <button data-bind="click: toggle">click me</button>
                     </div>
                     `,
