@@ -87,7 +87,47 @@
         })();
     </script>
 
+    <hr>
+    V3 root observable:
+    <div class="container3">
+        <my-component3 params="firstName: firstName, lastName: lastName"></my-component3>
+        <button class="container2__button">click me</button>
+    </div>
     <script>
+        'use strict';
+        (function () {
+            class ViewModel {
+                constructor(params) {
+                    this.firstName = params.firstName || '';
+                    this.lastName = params.lastName || '';
+                    this.fullName = ko.pureComputed(
+                        function() {
+                            return this.firstName() + ' ' + this.lastName();
+                        },
+                        this);
+                }
+            }
+
+            ko.components.register('my-component3',
+                {
+                    viewModel: ViewModel,
+                    template: `
+                        <p>First name: <input data-bind="textInput: firstName"/></p>
+                        <p>Last name: <input data-bind="textInput: lastName"/></p>
+                        <p>Full name: <span data-bind="text: fullName"/></p>
+                    `,
+                }
+            );
+            
+            const person = {
+                firstName: ko.observable('Ivan'),
+                lastName: ko.observable('Ivanov'),
+            };
+
+            ko.applyBindings(person, document.querySelector('.container3'));
+            document.querySelector('.container2__button').addEventListener('click', () => alert(person.firstName() + ' ' + person.lastName()));
+        })();
     </script>
+
 </body>
 </html>
