@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+2<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8" />
@@ -10,6 +10,7 @@
 <body>
     <div class="container1">
         <my-component params="imageURL: imageURL"></my-component>
+        <p><button class="container1__showImageURL">Show image url</button></p>
     </div>
     <script>
         'use strict';
@@ -18,10 +19,10 @@
                 constructor(params) {
                     this.predefinedImageUrlIndex = 0;
                     this.predefinedImageUrlList = [
-                        'https://vignette.wikia.nocookie.net/besiege/images/c/c3/Empty_Besiege_Banner.png',
-                        'http://www.lovethispic.com/uploaded_images/145277-Not-Happy-Not-Sad-But-Empty.jpg',
+                        'https://picography.co/wp-content/uploads/2017/11/picography-milk-no-sugar-sm-1.jpg',
+                        'https://picography.co/wp-content/uploads/2018/06/picography-laptop-lake-green-tech-small-1.jpg',
                     ];
-                    this.editorValue = ko.observable(params.imageURL || 'empty');
+                    this.editorValue = params.imageURL || 'empty';
                     this.imageElementURL = ko.observable('empty');
                 }
                 toggle_EditorValue() {
@@ -49,9 +50,10 @@
             );
 
             const myApp = {
-                imageURL: 'https://cdn-images-1.medium.com/max/1600/1*YBbjremDIKhCHwVC1jvwtw.png',
+                imageURL: ko.observable('https://cdn-images-1.medium.com/max/1600/1*YBbjremDIKhCHwVC1jvwtw.png'),
             };
             ko.applyBindings(myApp, document.querySelector('.container1'));
+            document.querySelector('.container1__showImageURL').addEventListener('click', () => alert('URL: ' + myApp.imageURL()));
         })();
     </script>
 </body>
