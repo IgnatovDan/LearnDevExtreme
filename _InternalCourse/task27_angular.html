@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>task 26 angular</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://code.angularjs.org/1.7.2/angular.js"></script>
+    <style>
+        .normal {
+            background-color: lightgreen
+        }
+        .large {
+            background-color: lightcoral
+        }
+        .mydiv {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: green;
+            transition: all 0.5s;
+        }
+        .mydiv_normal {
+            background-color: green;
+            width: 75px;
+            height: 75px;
+        }
+        .mydiv_large {
+            background-color: red;
+            width: 300px;
+            height: 300px;
+        }
+
+        .mydiv4 {
+            width: 75px;
+            height: 75px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: green;
+            transition: all 0.5s;
+        }
+        .mydiv4_large {
+            background-color: red;
+            width: 300px;
+            height: 300px;
+        }
+    </style>
+</head>
+<body data-ng-app="app1">
+    Place a button and a DIV panel with the size of 300x300 pixels. When the button is clicked change the DIV size to 500x500.
+    <script>
+        'use strict';
+        const myApp = angular.module('app1',[]);
+    </script>
+
+    <hr>
+    1. ng-style<br/>
+    <div ng-init="myDivStyle={width: '75px', height: '75px'}">
+        <button data-ng-click="myDivStyle={width: '75px', height: '75px'}" class="normal">normal</button>
+        <button data-ng-click="myDivStyle={width: '300px', height: '300px'}" class="large">large</button>
+        <div class="mydiv" ng-style="myDivStyle">test</div>
+    </div>
+
+    <hr>
+    2. ng-class<br/>
+    <div ng-init="myDivClass='mydiv_normal'">
+        <button data-ng-click="myDivClass='mydiv_normal'" class="normal">normal</button>
+        <button data-ng-click="myDivClass='mydiv_large'" class="large">large</button>
+        <div class="mydiv" ng-class="myDivClass">test</div>
+    </div>
+
+    <hr>
+    3. ng-class + ng-controller.$scope<br/>
+    <div data-ng-controller="MyController3">
+        <button data-ng-click="normal()" class="normal">normal</button>
+        <button data-ng-click="large()" class="large">large</button>
+        <div class="mydiv" ng-class="myDivClass3">test</div>
+        <script>
+            (function () {
+                'use strict';
+                myApp.controller('MyController3', ['$scope', MyController3]);
+                
+                function MyController3($scope) {
+                    $scope.myDivClass3 = 'mydiv_normal';
+                    $scope.normal = () => {
+                        $scope.myDivClass3 = 'mydiv_normal';
+                    };
+                    $scope.large = () => {
+                        $scope.myDivClass3 = 'mydiv_large';
+                    };
+                }
+            })()
+        </script>
+    </div>
+
+    <hr>
+    4. ng-class + ng-controller.$scope + boolean<br/>
+    <div data-ng-controller="MyController4">
+        <button data-ng-click="normal()" class="normal">normal</button>
+        <button data-ng-click="large()" class="large">large</button>
+        <div ng-class="{mydiv4: true, mydiv4_large: islarge }">test</div>
+        <script>
+            (function () {
+                'use strict';
+                myApp.controller('MyController4', ['$scope', MyController4]);
+                
+                function MyController4($scope) {
+                    $scope.islarge = false;
+                    $scope.normal = () => {
+                        $scope.islarge = false;
+                    };
+                    $scope.large = () => {
+                        $scope.islarge = true;
+                    };
+                }
+            })()
+        </script>
+    </div>
+</body>
+</html>
