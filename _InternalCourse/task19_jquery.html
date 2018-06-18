@@ -9,20 +9,12 @@
         src="https://code.jquery.com/jquery-3.3.1.js"
         integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60="
         crossorigin="anonymous"></script>
-    <style>
-        .container{
-            float:left;
-            width:40%;
-            height:200px;
-            background:grey;
-            padding:10px;
-            margin:20px;
-        }
-    </style>
 </head>
 <body>
     <hr>
+    V1 - javascript closure:
     <div id="target" style="width:150px;height:150px;background:red;"></div>
+    <label>obj.text:<input class="text__edit"/></label>
     <script>
         (function () {
             'use strict';
@@ -31,10 +23,95 @@
                 text: 'Hello'
             };
             let counter = 0;
-            $('#target').on('click', () => {
-                $('#target').text(obj.text + ' ' + counter++);
+            $('#target').on('click', (e) => {
+                $(e.target).text(obj.text + ' ' + counter++);
             });
+            $('.text__edit')
+                .val(obj.text)
+                .on('input', (e) => obj.text = e.target.value);
         })();
+    </script>
+
+    <hr>
+    V2 - jquery.data:
+    <div class="v2__target" style="width:150px;height:150px;background:red;"></div>
+    <label>obj.text:<input class="v2__text__edit"/></label>
+    <script>
+        (function () {
+            'use strict';
+
+            var obj = {
+                text: 'Hello'
+            };
+            const DATA_KEY_OBJ = 'obj';
+
+            let counter = 0;
+            $('.v2__target')
+                .data(DATA_KEY_OBJ, obj)
+                .on('click', (e) => $(e.target).text($(e.target).data(DATA_KEY_OBJ).text + ' ' + counter++));
+
+            $('.v2__text__edit')
+                .val(obj.text)
+                .on('input', (e) => obj.text = e.target.value);
+        })();
+    </script>
+
+    <hr>
+    V3 - DOM element property:
+    <div class="v3__target" style="width:150px;height:150px;background:red;"></div>
+    <label>obj.text:<input class="v3__text__edit"/></label>
+    <script>
+        (function () {
+            'use strict';
+
+            var obj = {
+                text: 'Hello'
+            };
+            const DATA_KEY_OBJ = 'obj';
+            const target = $('.v3__target');
+            target.get(0)[DATA_KEY_OBJ] = obj;
+
+            let counter = 0;
+            target.on('click', (e) => $(e.target).text(e.target[DATA_KEY_OBJ].text + ' ' + counter++));
+
+            $('.v3__text__edit')
+                .val(obj.text)
+                .on('input', (e) => obj.text = e.target.value);
+        })();
+    </script>
+
+    <hr>
+    V4 - Symbol:
+    <div class="v4__target" style="width:150px;height:150px;background:red;"></div>
+    <label>obj.text:<input class="v4__text__edit"/></label>
+    <button class="v4__button"/>Another library - Click me</label>
+    <script>
+        (function () {
+            'use strict';
+
+            var obj = {
+                text: 'Hello'
+            };
+            const DATA_KEY_OBJ = Symbol('obj');
+            const target = $('.v4__target');
+            target.get(0)[DATA_KEY_OBJ] = obj;
+
+            let counter = 0;
+            target.on('click', (e) => $(e.target).text(e.target[DATA_KEY_OBJ].text + ' ' + counter++));
+
+            $('.v4__text__edit')
+                .val(obj.text)
+                .on('input', (e) => obj.text = e.target.value);
+        })();
+        (function anotherLibrary() {
+            'use strict';
+
+            const DATA_KEY_OBJ = Symbol('obj');
+            const target = $('.v4__target');
+            target.get(0)[DATA_KEY_OBJ] = 'another library value';
+
+            $('.v4__button').click(() => alert('element[DATA_KEY_OBJ] value:' + target.get(0)[DATA_KEY_OBJ]));
+        })();        
     </script>
 </body>
 </html>
