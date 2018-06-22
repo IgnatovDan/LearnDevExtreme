@@ -29,7 +29,7 @@ import { Component } from '@angular/core';
 })
 
 export class AppComponent  {
-  name = 'task26_angular';
+  name = 'task26 - Angular - Change element background color';
   isAngry: boolean = false;
 
   happy(): void {
