@@ -17,16 +17,79 @@ Place an image (&ltimg>), input and button on your page.
 Type any URL in your input and change the image URL accoringly when the button is clicked. 
     </pre>
 
+    <script>
+        'use strict';
+        const myApp = angular.module('app1',[]);
+    </script>
     <hr>
+    V1:
     <div data-ng-controller="MyController1">
+        <p>Type image URL (ng-model will process new value shortly): <input data-ng-model="imageUrl" style="width:100%"/></p>
+        <p>or click the button: <button data-ng-click="toggleImageUrl()">Toggle image URL</button></p>
+        <p>Image:</p>
+        <div style="height: 300px">
+            <img style="max-width:100%; max-height:100%" ng-src="{{imageUrl}}"></img>
+        </div>
         <script>
-            'use strict';
-            const myApp = angular.module('app1',[]);
-
             (function () {
                 myApp.controller('MyController1', ['$scope', MyController1]);
-                
+
+                const imageUrlList = [
+                    'https://picography.co/wp-content/uploads/2017/11/picography-milk-no-sugar-sm-1.jpg',
+                    'https://picography.co/wp-content/uploads/2018/06/picography-laptop-lake-green-tech-small-1.jpg',
+                ];
+
                 function MyController1($scope) {
+                    $scope.currentImageUrlIndex = 0;
+                    $scope.imageUrl = imageUrlList[$scope.currentImageUrlIndex];
+                    $scope.toggleImageUrl = () => {
+                        $scope.currentImageUrlIndex++;
+                        if($scope.currentImageUrlIndex >= imageUrlList.length) {
+                            $scope.currentImageUrlIndex = 0;
+                        }
+                        $scope.imageUrl = imageUrlList[$scope.currentImageUrlIndex];
+                    }
+                }
+            })()
+        </script>
+    </div>
+
+    <hr>
+    V2:
+    <div data-ng-controller="MyController2">
+        <p>Type image URL and press enter or leave editor:
+            <input value="{{imageUrl}}" 
+                data-ng-keyup="$event.keyCode == 13 ? setImageUrl($event.target.value) : null" style="width:100%"
+                data-ng-blur="setImageUrl($event.target.value)"
+            />
+        </p>
+        <p>or click the button:<button data-ng-click="toggleImageUrl()">Toggle image reference</button></p>
+        <p>Image:</p>
+        <div style="height: 300px">
+            <img style="max-width:100%; max-height:100%" ng-src="{{imageUrl}}"></img>
+        </div>
+        <script>
+            (function () {
+                myApp.controller('MyController2', ['$scope', MyController1]);
+
+                const imageUrlList = [
+                    'https://picography.co/wp-content/uploads/2018/02/picography-laptop-grass-park-green-technology-thumb.jpg',
+                    'https://picography.co/wp-content/uploads/2017/11/picography-creatives-desk-sm-1.jpg',
+                ];
+
+                function MyController1($scope) {
+                    $scope.currentImageUrlIndex = 0;
+                    $scope.imageUrl = imageUrlList[$scope.currentImageUrlIndex];
+                    $scope.toggleImageUrl = () => {
+                        $scope.currentImageUrlIndex++;
+                        if($scope.currentImageUrlIndex >= imageUrlList.length) {
+                            $scope.currentImageUrlIndex = 0;
+                        }
+                        $scope.imageUrl = imageUrlList[$scope.currentImageUrlIndex];
+                    }
+                    $scope.setImageUrl = (imageUrl) => {
+                        $scope.imageUrl = imageUrl;
+                    }
                 }
             })()
         </script>
