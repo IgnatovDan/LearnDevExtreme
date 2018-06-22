@@ -23,18 +23,18 @@
                         'https://picography.co/wp-content/uploads/2017/11/picography-milk-no-sugar-sm-1.jpg',
                         'https://picography.co/wp-content/uploads/2018/06/picography-laptop-lake-green-tech-small-1.jpg',
                     ];
-                    this.editorValue = params.imageURL || 'empty';
+                    this.imageURL = params.imageURL || 'empty';
                     this.imageElementURL = ko.observable('empty');
                 }
-                toggle_EditorValue() {
+                toggle_imageURL() {
                     this.predefinedImageUrlIndex++;
                     if(this.predefinedImageUrlIndex >= this.predefinedImageUrlList.length) {
                         this.predefinedImageUrlIndex = 0;
                     }
-                    this.editorValue(this.predefinedImageUrlList[this.predefinedImageUrlIndex]);
+                    this.imageURL(this.predefinedImageUrlList[this.predefinedImageUrlIndex]);
                 }
-                copy_EditorValue_To_ImageElementUrl() {
-                    this.imageElementURL(this.editorValue());
+                copy_imageURL_To_ImageElementUrl() {
+                    this.imageElementURL(this.imageURL());
                 }
             }
 
@@ -42,9 +42,9 @@
                 {
                     viewModel: ViewModel,
                     template: `
-                        <p><button data-bind="click: toggle_EditorValue">Toggle editor value</button></p>
-                        <p>Type URL to any image: <input data-bind="textInput: editorValue" style="width: 100%"/></p>
-                        <button data-bind="click: copy_EditorValue_To_ImageElementUrl">Click me</button></p>
+                        <p><button data-bind="click: toggle_imageURL">Toggle editor value</button></p>
+                        <p>Type URL to any image: <input data-bind="textInput: imageURL" style="width: 100%"/></p>
+                        <button data-bind="click: copy_imageURL_To_ImageElementUrl">Click me</button></p>
                         <p>Image:</p><img data-bind="attr: { src: imageElementURL } "/>
                     `,
                 }
