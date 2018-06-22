@@ -23,6 +23,24 @@
     </style>
 </head>
 <body>
+    <pre>
+    JavaScript - Call function in the context of an object
+        
+Declare the “MyClass” class with the “counter” variable in its context. “counter” should be declared as a “property” of “MyClass” as shown below:
+
+function MyClass() {
+    this.counter = 0;
+}
+
+Declare the “AddCounter” function outside of “MyClass” as shown below:
+
+function AddCounter() {
+    this.counter++;
+}
+
+How to call AddCounter to increment the "MyClass.counter" option?        
+    </pre>
+    <hr/>
     <button class="button1">Click me v1 - manually assign methods to object</button>
     <div class="myScreen"><div class="content1 myScreen__content"></div></div>
     <script>

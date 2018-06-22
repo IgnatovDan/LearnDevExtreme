@@ -21,6 +21,19 @@
     </style>
 </head>
 <body>
+    <pre>
+    jQuery - Loading data using asynchronous calls
+
+Execute the following code:
+
+var result;
+$.getJSON(''https://itunes.apple.com/search?term=metallica&callback=?'', function (data) {
+    result = data
+})
+console.log(result);
+
+Explain the results. What should be changed in the code to display correct results in the console?        
+    </pre>
     Target url: <a class="targetUrl"></a>
     <hr>
     JQuery
