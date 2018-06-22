@@ -10,7 +10,7 @@ import { Component, Input } from '@angular/core';
     <p>Modify values:</p>
 
     <p><label>First:<input [(ngModel)]="first"/></label></p>
-    <p><label>Last:<input [(ngModel)]="first"/></label></p>
+    <p><label>Last:<input [(ngModel)]="last"/></label></p>
     <p><button (click)="changeFirst()">Change first</button></p>
     
     <p>View values:</p>
