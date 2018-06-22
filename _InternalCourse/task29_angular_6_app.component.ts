@@ -6,6 +6,7 @@ import { Component, Input, OnInit } from '@angular/core';
   template: `
     <p>{{name}}</p>
     <pre>{{description}}</pre>
+    <a href="https://stackblitz.com/edit/internal-training-task29">https://stackblitz.com/edit/internal-training-task29</a>
     <hr/>
     <p>Type image URL and press enter or leave editor:
         <input #imageUrlEditor value="{{imageUrl}}" style="width:100%"
