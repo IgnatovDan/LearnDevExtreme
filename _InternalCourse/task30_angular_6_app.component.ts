@@ -48,7 +48,7 @@ import { Component, Input, OnInit } from '@angular/core';
 
 
 export class AppComponent implements OnInit {
-  sourceEmployees = [
+  sourceEmployees: Employee[] = [
     {
       name: 'Ilya Muromets',
       wikiLink: 'https://en.wikipedia.org/wiki/Ilya_Muromets',
@@ -72,7 +72,7 @@ export class AppComponent implements OnInit {
 For example: each item has the FirstName and LastName options.
 Display this array data in the table representation.`;
 
-  employees;
+  employees: Employee[];
   JSON: string;
 
   ngOnInit() {
@@ -89,4 +89,10 @@ Display this array data in the table representation.`;
   reset() {
     this.employees = JSON.parse(JSON.stringify(this.sourceEmployees))
   }
+}
+
+class Employee {
+  name: string;
+  wikiLink: string;
+  imgUrl: string;
 }
