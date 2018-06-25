@@ -7,6 +7,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <script src="https://code.angularjs.org/1.7.2/angular.js"></script>
     <style>
+        .employeesList {
+            display: flex; flex-direction: row; justify-content: space-between; width: 100%
+        }
+        .employeesList__item {
+            margin: 10px; padding: 10px; border: solid 1px gray; flex-grow: 1
+        }
+        .employeesList__item__img {
+            height:200px; width:200px; object-fit:contain
+        }
+        .employeesList__item__details {
+            border: dashed 1px lightgray; padding: 10px; margin-top: 10px
+        }
+        .employeesList__item__details__item {
+            width: 100%;
+        }
     </style>
 </head>
 <body data-ng-app="app1">
@@ -21,11 +36,64 @@ Generate any array of items. For example: each item has the FirstName and LastNa
         const myApp = angular.module('app1',[]);
     </script>
     <hr>
-    <div data-ng-controller="MyController1">
+    <div data-ng-controller="MyController1" style="width:100%">
+        <div class="employeesList">
+            <div data-ng-repeat="employee in employees" class="employeesList__item">
+                <div><a data-ng-href="{{employee.wikiLink}}">{{employee.name}}</a></div>
+                <img data-ng-src="{{employee.imgUrl}}" title="{{employee.name}}" class="employeesList__item__img"/>
+                <div class="employeesList__item__details">
+                    <label>Name:<input data-ng-model="employee.name" class="employeesList__item__details__item"/></label>
+                    <label>Wiki link:<input data-ng-model="employee.wikiLink" class="employeesList__item__details__item"/></label>
+                    <label>Image url:<input data-ng-model="employee.imgUrl" class="employeesList__item__details__item"/></label>
+                </div>
+            </div>
+        </div>
+        <button data-ng-click="reset()">Reset</button>
+        <button data-ng-click="updateJSON()">Show JSON</button>
+        <pre ng-if="JSON !== ''">{{JSON}}</pre>
         <script>
             (function () {
+                const employees = [
+                    {
+                        name: 'Ilya Muromets',
+                        wikiLink: 'https://en.wikipedia.org/wiki/Ilya_Muromets',
+                        imgUrl: 'https://upload.wikimedia.org/wikipedia/ru/thumb/9/92/%D0%A2%D1%80%D0%B8_%D0%B1%D0%BE%D0%B3%D0%B0%D1%82%D1%8B%D1%80%D1%8F_%28%D0%BF%D0%B5%D1%80%D1%81%D0%BE%D0%BD%D0%B0%D0%B6%D0%B8_%D0%BC%D1%83%D0%BB%D1%8C%D1%82%D1%84%D0%B8%D0%BB%D1%8C%D0%BC%D0%BE%D0%B2%29.jpg/525px-%D0%A2%D1%80%D0%B8_%D0%B1%D0%BE%D0%B3%D0%B0%D1%82%D1%8B%D1%80%D1%8F_%28%D0%BF%D0%B5%D1%80%D1%81%D0%BE%D0%BD%D0%B0%D0%B6%D0%B8_%D0%BC%D1%83%D0%BB%D1%8C%D1%82%D1%84%D0%B8%D0%BB%D1%8C%D0%BC%D0%BE%D0%B2%29.jpg'
+                    },
+                    {   
+                        name: 'Dobrynya Nikitich',
+                        wikiLink: 'https://en.wikipedia.org/wiki/Alyosha_Popovich',
+                        imgUrl: 'https://upload.wikimedia.org/wikipedia/ru/e/ee/%D0%90%D0%BB%D1%91%D1%88%D0%B0_%D0%9F%D0%BE%D0%BF%D0%BE%D0%B2%D0%B8%D1%87_%D0%B8_%D0%A2%D1%83%D0%B3%D0%B0%D1%80%D0%B8%D0%BD_%D0%97%D0%BC%D0%B5%D0%B9_%28%D0%BF%D0%BE%D1%81%D1%82%D0%B5%D1%80_%D1%84%D0%B8%D0%BB%D1%8C%D0%BC%D0%B0%29.jpg'
+                    },
+                    {
+                        name: 'Alyosha Popovich',
+                        wikiLink: 'https://en.wikipedia.org/wiki/Dobrynya_Nikitich',
+                        imgUrl: 'https://upload.wikimedia.org/wikipedia/ru/b/b5/%D0%94%D0%BE%D0%B1%D1%80%D1%8B%D0%BD%D1%8F_%D0%9D%D0%B8%D0%BA%D0%B8%D1%82%D0%B8%D1%87_%D0%B8_%D0%97%D0%BC%D0%B5%D0%B9_%D0%93%D0%BE%D1%80%D1%8B%D0%BD%D1%8B%D1%87_%28%D0%BF%D0%BE%D1%81%D1%82%D0%B5%D1%80_%D1%84%D0%B8%D0%BB%D1%8C%D0%BC%D0%B0%29.jpg'
+                    },
+                ];
                 myApp.controller('MyController1', ['$scope', MyController1]);
                 function MyController1($scope) {
+                    $scope.employees_source = employees;
+                    $scope.employees = angular.copy($scope.employees_source);
+                    $scope.JSON = "there will be JSON, click the button above";
+                    $scope.updateJSON = () => {
+                        const data = $scope.employees;
+                        /*
+                        copy required properties to avoid the "$$hashKey": "object:3" property in JSON
+
+                        const data = new Array();
+                        $scope.employees.forEach(item => {
+                            data.push({
+                                name: item.name,
+                                wikiLink: item.wikiLink,
+                                imgUrl: item.imgUrl
+                            })
+                        });
+                        */
+                        $scope.JSON = JSON.stringify(data, undefined, 2);
+                    };
+                    $scope.reset = () => {
+                        $scope.employees = angular.copy($scope.employees_source);
+                    }
                 }
             })()
         </script>
