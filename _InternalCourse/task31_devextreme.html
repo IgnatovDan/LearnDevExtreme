@@ -26,7 +26,7 @@ b.jQuery approach
 c.Angular approach
     </pre>
     <hr/>
-    Native button:
+    &ltbutton&gt:
     <button class="buttonNative">native button</button>
     <script>
         'use strict';
@@ -36,7 +36,7 @@ c.Angular approach
     </script>
 
     <hr/>
-    dxButton:
+    new DevExpress.ui.dxButton:
     <div class="dxButton"></div>
     <script>
         'use strict';
@@ -53,58 +53,46 @@ c.Angular approach
     </script>
     
     <hr/>
-    Knockout:
+    Knockout component:
     <div class=".knockoutContainer" >
-        <mycomponent params="buttonCaption: buttonCaption; message: message"></mycomponent>
-        <!-- <div data-bind="dxButton: {text: 'Click me'}"></div> -->
+        <mycomponent params="buttonCaption: buttonCaption, message: message, clickMeHandler: clickMe"></mycomponent>
+        <div data-bind="dxButton: {text: 'Click me2', onClick: () => alert('hi')}"></div>
     </div>
     <script>
+        /*
+        https://js.devexpress.com/Documentation/16_1/Guide/UI_Widgets/Basics/Widget_Basics_-_Knockout
+        - from this topic it is not clear how to handle widget events when I am using components
+        */
         'use strict';
         (function() {
-            class myModel {
+            class MyModel {
                 constructor(params) {
                     this.buttonCaption = params.buttonCaption;
                     this.message = params.message;
+                    this.clickMe = params.clickMeHandler;
                 }
                 clickMe() {
-                    alert('Привет!');
+                    this.clickMe();
                 }
             };
 
             ko.components.register('mycomponent', {
-                viewModel: myModel,
-                template: `<div data-bind="dxButton: {text: buttonCaption, click: clickMe }"></div>`,
+                viewModel: MyModel,
+                template: `
+                    <div data-bind="dxButton: {text: buttonCaption, onClick: clickMe}"></div>
+                    <label>Message:<input data-bind="textInput: message"/></label>
+                    <label>Button caption:<input data-bind="textInput: buttonCaption"/></label>
+                `,
             });
 
             const model = {
                 buttonCaption: ko.observable('Click me'),
                 message: ko.observable('Привет!'),
-                onClick: () => {debugger;},
+                clickMe() { alert(this.message()); }
             };
 
             ko.applyBindings(model, document.querySelector('.knockoutContainer'));
         })();
-        // 'use strict';
-        // (function() {
-        //     class myModel {
-        //         constructor(params) {
-        //             this.message = params.message;
-        //         }
-        //         clickMe() {
-        //             alert(message);
-        //         }
-        //     };
-
-        //     ko.components.register('mycomponent', {
-        //         viewModel: myModel,
-        //         template: `<button data-bind="click: clickMe">click me</button>`,
-        //     });
-        //     ko.applyBindings(
-        //         {
-        //             message: ko.observable('Привет!')
-        //         },
-        //         document.querySelector('.knockoutContainer'));
-        // })();
     </script>
 
     <hr/>
