@@ -46,7 +46,7 @@ c.Angular approach
                 type: 'danger',
                 icon: 'https://image.flaticon.com/icons/svg/565/565357.svg',
                 onClick: () => {
-                    alert('Мы к вам приехали на час!');
+                    alert('Мы к вам заехали на час,');
                 }
             });
         })();
@@ -79,7 +79,7 @@ c.Angular approach
             ko.components.register('mycomponent', {
                 viewModel: MyModel,
                 template: `
-                    <div data-bind="dxButton: {text: buttonCaption, onClick: clickMe}"></div>
+                    <div data-bind="dxButton: {text: buttonCaption, onClick: clickMe, icon: 'https://image.flaticon.com/icons/svg/565/565355.svg'}"></div>
                     <label>Message:<input data-bind="textInput: message"/></label>
                     <label>Button caption:<input data-bind="textInput: buttonCaption"/></label>
                 `,
@@ -104,7 +104,7 @@ c.Angular approach
         (function () {
             $('.jqueryContainer').dxButton({
                 text: 'Click me',
-                icon: 'https://image.flaticon.com/icons/svg/565/565357.svg',
+                icon: 'https://image.flaticon.com/icons/svg/565/565350.svg',
                 onClick: () => {
                     alert('Бонжур!');
                 }
@@ -112,24 +112,35 @@ c.Angular approach
         })();
     </script>
         
-    <script>
-        'use strict';
-        const myApp = angular.module('app1',[]);
-    </script>
     <hr/>
     AngularJS 1:
-    <button data-ng-click="alert('Хеллоу!')">ClickMe</button>
+    <!-- <div data-ng-app="app1">
+        <div dx-button="{ text: 'Click me' }">ClickMe</div>
+    </div>
+    <script>
+        'use strict';
+        const myApp = angular.module('app1', ['dx']);
+    </script> -->
 
     <hr/>
     AngularJS 2:
-    <button data-ng-click="clickMe()">ClickMe</button>
+    <div data-ng-app="app1">
+        <div data-ng-controller="MyController1" style="width:100%">
+            Hello {{message}}
+            <div dx-button="buttonOptions">
+            </div>
+        </div>
+    </div>
+
     <script>
         'use strict';
+        const myApp = angular.module('app1', ['dx']);
         (function () {
             myApp.controller('MyController1', ['$scope', MyController1]);
 
             function MyController1($scope) {
                 $scope.message = 'Привет!';
+                $scope.buttonCaption = 'Click me';
 
                 $scope.clickMe = () => {
                     alert($scope.message);
