@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+
+    <!-- https://js.devexpress.com/Documentation/Guide/Getting_Started/Installation/CDN_Services/ -->
+
+    <!-- DevExtreme dependencies -->
+    <script type="text/javascript" src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-3.1.0.min.js"></script>
+    <!-- The AngularJS library -->
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.11/angular.min.js"></script>
+    <!-- The Knockout library -->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.4.0/knockout-min.js"></script>
+    <!-- DevExtreme themes -->
+    <link rel="stylesheet" type="text/css" href="https://cdn3.devexpress.com/jslib/18.1.3/css/dx.common.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdn3.devexpress.com/jslib/18.1.3/css/dx.light.css" />
+    <!-- A DevExtreme library -->
+    <script type="text/javascript" src="https://cdn3.devexpress.com/jslib/18.1.3/js/dx.all.js"></script>
+</head>
+<body>
+    <pre>
+    DevExtreme - Display dxTextBox value
+
+Create the dxButton and dxTextBox widgets. When the button is clicked display the dxTextBox text in the alert window. Implement it using:
+a.Knockout approach
+b.jQuery approach
+c.Angular approach
+    </pre>
+    <hr/>
+    <p>&ltbutton&gt + &ltinput&gt:</p>
+    <label>Type something:<input class="nativeInput"/></label>
+    <button class="nativeButton">Click me</button>
+    <script>
+        'use strict';
+        (function() {
+            let myText = 'something';
+            const inputEl = document.querySelector('.nativeInput');
+            inputEl.value = myText;
+            inputEl.addEventListener('input', () => myText = inputEl.value);
+            document.querySelector('.nativeButton').addEventListener('click', () => alert(myText));
+        })();
+    </script>
+
+    <hr/>
+    <p>new DevExpress.ui.dxButton + dxTextBox:</p>
+    <label>Type something:<div class="jsdxTextBox"></div></label>
+    <div class="jsdxClickMeButton"></div>
+    <script>
+        'use strict';
+        (function() {
+            let myText = 'something';
+            const dxTextBox = new DevExpress.ui.dxTextBox(document.querySelector('.jsdxTextBox'), {
+                value: myText,
+                onValueChanged: (e) => myText = e.value,
+            });
+            const dxButton = new DevExpress.ui.dxButton(document.querySelector('.jsdxClickMeButton'), {
+                text: 'Click me',
+                onClick: () => alert(myText)
+            });
+        })();
+    </script>
+    
+    <hr/>
+    <p>Knockout component + dxTextBox + dxButton:</p>
+    <div class=".knockoutContainer" >
+        <mycomponent params="message: message, clickMeHandler: clickMe"></mycomponent>
+    </div>
+    <script>
+        'use strict';
+        (function() {
+            class MyModel {
+                constructor({message = '', clickMeHandler = null}) {
+                    this.message = message;
+                    this.clickMe = clickMeHandler;
+                }
+                clickMe() {
+                    this.clickMe();
+                }
+            };
+
+            ko.components.register('mycomponent', {
+                viewModel: MyModel,
+                template: `
+                    <label>Type shomething:<div data-bind="dxTextBox: {text: message}"></div></label>
+                    <div data-bind="dxButton: {text: 'Click me', onClick: clickMe}"></div>
+                `,
+            });
+
+            const model = {
+                message: ko.observable('Привет!'),
+                clickMe() { alert(this.message()); }
+            };
+
+            ko.applyBindings(model, document.querySelector('.knockoutContainer'));
+        })();
+    </script>
+
+    <hr/>
+    <p>jQuery:</p>
+    <label>Type something:<div class="jqueryTextBox"></div></label>
+    <div class="jqueryClickMeButton"></div>
+    <script>
+        'use strict';
+        (function () {
+            let message = 'something';
+            $('.jqueryTextBox').dxTextBox({
+                text: message,
+                onValueChanged: (e) => message = e.value,
+            });
+            $('.jqueryClickMeButton').dxButton({
+                text: 'Click me',
+                onClick: () => alert(message)
+            });
+        })();
+    </script>
+
+    <hr/>
+    <p>AngularJS:</p>
+    <div ng-app="app2">
+        <div ng-controller="App2MyController1">
+            <label>Type something dxTextBox + ngModel:<div class="jqueryTextBox" dx-text-box="" ng-model="message"></div></label>
+            <div dx-button="clickMeButtonOptions"></div>
+            <label>Message native input + ngModel:<input ng-model="message"/></label>
+        </div>
+    </div>
+
+    <script>
+        'use strict';
+        const myApp = angular.module('app2', ['dx']);
+        (function () {
+            myApp.controller('App2MyController1', ['$scope', App2MyController1]);
+
+            function App2MyController1($scope) {
+                $scope.message = 'Хелло!';
+                $scope.clickMeButtonOptions = {
+                    text: 'Click me',
+                    onClick: () => {
+                        alert($scope.message);
+                    },
+                }
+            }
+        })();
+    </script>
+
+    <hr/>
+    Angular6: <a href="https://stackblitz.com/edit/internal-training-task31-devextreme?file=src%2Fapp%2Fapp.component.ts">https://stackblitz.com/edit/internal-training-task31-devextreme?file=src%2Fapp%2Fapp.component.ts</a>
+</body>
+</html>

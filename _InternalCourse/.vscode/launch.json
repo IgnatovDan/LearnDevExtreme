@@ -9,7 +9,7 @@
             "type": "chrome",
             "request": "launch",
             "name": "Launch",
-            "url": "${workspaceFolder}/task31_devextreme.html"
+            "url": "${workspaceFolder}/task32_devextreme.html"
         }
     ]
 }
