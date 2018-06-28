@@ -1,0 +1,12 @@
+<p>{{name}}</p>
+<pre>{{description}}</pre>
+<p>See also other implementations at <a href="{{otherImplementationUrl}}">{{otherImplementationUrl}}</a></p>
+
+<hr/>
+<dx-button
+    text={{buttonCaption}}
+    icon='https://image.flaticon.com/icons/svg/565/565412.svg'
+    (onClick)="buttonClickHandler()">
+</dx-button>
+<label>Message:<input [(ngModel)]="message"/></label>
+<label>Button caption:<input [(ngModel)]="buttonCaption"/></label>
