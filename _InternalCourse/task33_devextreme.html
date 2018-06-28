@@ -71,9 +71,108 @@ c.Angular approach
 
     <hr/>
     <p>Knockout component + dxTextBox + dxButton:</p>
+    <div class=".knockoutContainer" >
+        <mycomponent params="message: message"></mycomponent>
+        <div class="knockoutPopupContainer"></div>
+    </div>
+    <script>
+        'use strict';
+        (function() {
+            class MyModel {
+                constructor({message = ''}) {
+                    this.message = message;
+                }
+                clickMe() {
+                    const popupContainerEl = document.createElement('div');
+                    document.querySelector('.knockoutPopupContainer').appendChild(popupContainerEl);
+                    const dxPopup = new DevExpress.ui.dxPopup(popupContainerEl, {
+                        title: this.message(),
+                        contentTemplate: () => { 
+                            const containerEl = document.createElement('div');
+                            const labelEl = document.createElement('label');
+                            containerEl.appendChild(labelEl);
+                            labelEl.innerText = this.message();
+
+                            const mypopupcomponentEl = document.createElement('mypopupcomponent');
+                            mypopupcomponentEl.setAttribute('params', 'message: message');
+                            containerEl.appendChild(mypopupcomponentEl);
+                            ko.applyBindingsToDescendants({message: this.message}, containerEl);
+
+                            return containerEl;
+                        },
+                        onHidden: () => {
+                            dxPopup.dispose();
+                            popupContainerEl.remove();
+                        },
+                        closeOnOutsideClick: true,
+                        visible: true
+                    });
+                }
+            };
+
+            ko.components.register('mycomponent', {
+                viewModel: MyModel,
+                template: `
+                    <label>Type shomething:<div data-bind="dxTextBox: {text: message}"></div></label>
+                    <div data-bind="dxButton: {text: 'Click me', onClick: clickMe}"></div>
+                `,
+            });
+
+            class MyPopupModel {
+                constructor({message = ''}) {
+                    this.message = message;
+                }
+            }
+            ko.components.register('mypopupcomponent', {
+                viewModel: MyPopupModel,
+                template: `
+                    <label>Type shomething 2:<div data-bind="dxTextBox: {text: message}"></div></label>
+                    <div data-bind="dxButton: {text: 'Просто кнопка'}"></div>
+                `,
+            });
+
+            const model = {
+                message: ko.observable('Привет!'),
+            };
+            ko.applyBindings(model, document.querySelector('.knockoutContainer'));
+        })();
+    </script>
 
     <hr/>
     <p>jQuery:</p>
+    <label>Type something:<div class="jqueryTextBox"></div></label>
+    <div class="jqueryClickMeButton"></div>
+    <div class="jqueryPopup"></div>
+    <script>
+        'use strict';
+        (function() {
+            let myText = 'something';
+            const dxTextBox = $('.jqueryTextBox').dxTextBox({
+                value: myText,
+                onValueChanged: (e) => myText = e.value,
+            });
+            const dxButton = $('.jqueryClickMeButton').dxButton({
+                text: 'Click me',
+                onClick: () => {
+                    const popupContainerEl = document.createElement('div');
+                    $('.jqueryPopup').append(popupContainerEl);
+                    const dxPopup = $(popupContainerEl).dxPopup({
+                        title: myText,
+                        contentTemplate: () => { 
+                            const labelEl = document.createElement('label');
+                            labelEl.innerText = myText;
+                            return labelEl;
+                        },
+                        onHidden: () => {
+                            $(popupContainerEl).remove();
+                        },
+                        closeOnOutsideClick: true,
+                        visible: true
+                    });
+                }
+            });
+        })();
+    </script>
 
     <hr/>
     <p>AngularJS:</p>
