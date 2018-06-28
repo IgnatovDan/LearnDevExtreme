@@ -13,6 +13,7 @@ export class AppComponent implements OnInit {
 `Create the dxButton and dxTextBox widgets.
 When the button is clicked display the dxTextBox text in the alert window.`;
   otherImplementationUrl: string = 'https://github.com/IgnatovDan/LearnDevExtreme/blob/master/_InternalCourse/task32_devextreme.html';
+  otherImplementationUrl2: string = 'https://github.com/IgnatovDan/LearnDevExtreme/blob/master/_InternalCourse/task33_devextreme.html';
   _message: string;
   clickMeButtonOptions;
 
@@ -20,7 +21,7 @@ When the button is clicked display the dxTextBox text in the alert window.`;
     return this._message;
   }
   set message(val) {
-    //debugger;
+    debugger;
     this._message = val;
   }
   ngOnInit() {
