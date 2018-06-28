@@ -1,0 +1,11 @@
+<p>{{name}}</p>
+<pre>{{description}}</pre>
+<p>See also other implementations at <a href="{{otherImplementationUrl}}">{{otherImplementationUrl}}</a></p>
+<hr/>
+<label>Type something dxTextBox + ngModel:
+  <dx-text-box valueChangeEvent="input" [(ngModel)]="message"></dx-text-box>
+</label>
+<dx-button 
+  text="Click me"
+  (onClick)="processMessage()"></dx-button>
+<label>Message native input + ngModel:<input [(ngModel)]="message"/></label>
