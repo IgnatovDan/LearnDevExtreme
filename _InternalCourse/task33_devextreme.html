@@ -33,7 +33,41 @@ c.Angular approach
     <p>&ltbutton&gt + &ltinput&gt:</p>
 
     <hr/>
-    <p>new DevExpress.ui.dxButton + dxTextBox:</p>
+    <p>new dxButton + new dxTextBox + new dxPopup:</p>
+    <label>Type something:<div class="jsdxTextBox"></div></label>
+    <div class="jsdxClickMeButton"></div>
+    <div class="jsdxPopup"></div>
+    <script>
+        'use strict';
+        (function() {
+            let myText = 'something';
+            const dxTextBox = new DevExpress.ui.dxTextBox(document.querySelector('.jsdxTextBox'), {
+                value: myText,
+                onValueChanged: (e) => myText = e.value,
+            });
+            const dxButton = new DevExpress.ui.dxButton(document.querySelector('.jsdxClickMeButton'), {
+                text: 'Click me',
+                onClick: () => {
+                    const popupContainerEl = document.createElement('div');
+                    document.querySelector('.jsdxPopup').appendChild(popupContainerEl);
+                    const dxPopup = new DevExpress.ui.dxPopup(popupContainerEl, {
+                        title: myText,
+                        contentTemplate: () => { 
+                            const labelEl = document.createElement('label');
+                            labelEl.innerText = myText;
+                            return labelEl;
+                        },
+                        onHidden: () => {
+                            dxPopup.dispose();
+                            popupContainerEl.remove();
+                        },
+                        closeOnOutsideClick: true,
+                        visible: true
+                    });
+                }
+            });
+        })();
+    </script>
 
     <hr/>
     <p>Knockout component + dxTextBox + dxButton:</p>
