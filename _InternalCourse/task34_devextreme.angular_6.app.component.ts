@@ -12,18 +12,39 @@ export class AppComponent implements OnInit {
   description: string =
   `Generate array of items. Each item has the ID, FirstName and LastName options. 
 Create ArrayStore based on this array. Bind dxDataGrid to the store. The ID column should not be displayed. 
-dxDataGrid should allow editing rows. Does not allow user to enter empty values for FirstName and LastName.`;
+dxDataGrid should allow editing rows. Does not allow user to enter empty values for FirstName and LastName.
+If wikiLink and imgUrl are empty, grid should save "https://en.wikipedia.org" and "https://commons.wikimedia.org/wiki/Main_Page” correspondingly. 
+`;
   otherImplementationUrl: string = 'https://github.com/IgnatovDan/LearnDevExtreme/blob/master/_InternalCourse/task34_devextreme.html';
+  otherImplementationUrl2: string = 'https://github.com/IgnatovDan/LearnDevExtreme/blob/master/_InternalCourse/task35_devextreme.html';
+
   employeesArrayStore: ArrayStore;
   clickMeButtonOptions;
 
   ngOnInit() {
-    //this.employees = employeesArray;
     this.employeesArrayStore = new ArrayStore({ key: 'id', data: employeesArray });
   }
 
   showArray_0_Name() {
     alert('employees[0].Name : "' + employeesArray[0].name + '"');
+  }
+
+  correctDataGridNewData(newData) {
+    const EMPLOYEE_WIKILINK_DEFAULTVALUE = 'https://en.wikipedia.org';
+    const EMPLOYEE_WIKILINK_PROPERTYNAME = 'wikiLink';
+    const EMPLOYEE_IMGURL_DEFAULTVALUE = 'https://commons.wikimedia.org/wiki/Main_Page';
+    const EMPLOYEE_IMGURL_PROPERTYNAME = 'imgUrl';
+
+    function setDataGridNewDataDefaultValue(obj, propertyName, defaultValue) {
+      debugger;
+      //TODO: https://js.devexpress.com/Documentation/ApiReference/UI_Widgets/dxDataGrid/Configuration/#onRowUpdated
+      // topic doesn't describe the format of the 'newData' object
+      if (obj.hasOwnProperty(propertyName) && (obj[propertyName] === '' || obj[propertyName] === null || obj[propertyName] === undefined)) {
+        obj[propertyName] = defaultValue;
+      }
+    }
+    setDataGridNewDataDefaultValue(newData, EMPLOYEE_WIKILINK_PROPERTYNAME, EMPLOYEE_WIKILINK_DEFAULTVALUE);
+    setDataGridNewDataDefaultValue(newData, EMPLOYEE_IMGURL_PROPERTYNAME, EMPLOYEE_IMGURL_DEFAULTVALUE);
   }
 
 }

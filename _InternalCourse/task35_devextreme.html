@@ -24,10 +24,10 @@
     <pre>
     DevExtreme - dxDataGrid with empty values
 
-Generate array of items. Each item has the ID, FirstName and LastName options. 
+Generate array of items. Each item has the name, wikiLink and imgUrl options. 
 Create ArrayStore based on this array. Bind dxDataGrid to the store. The ID column should not be displayed. 
-dxDataGrid should allow editing rows. Allow dxDataGrid to accept empty values.
-If FirstName and LastName are empty, grid should save “John” and “Doe” correspondingly. 
+dxDataGrid should allow editing rows. Allow dxDataGrid to accept empty values for the wikiLink and imgUrl columns and require a value for the name column.
+If wikiLink and imgUrl are empty, grid should save "https://en.wikipedia.org" and "https://commons.wikimedia.org/wiki/Main_Page” correspondingly. 
 
 a.Knockout approach
 b.jQuery approach
@@ -35,6 +35,10 @@ c.Angular approach
     </pre>
     <script>
         'use strict';
+        const EMPLOYEE_WIKILINK_DEFAULTVALUE = 'https://en.wikipedia.org';
+        const EMPLOYEE_WIKILINK_PROPERTYNAME = 'wikiLink';
+        const EMPLOYEE_IMGURL_DEFAULTVALUE = 'https://commons.wikimedia.org/wiki/Main_Page';
+        const EMPLOYEE_IMGURL_PROPERTYNAME = 'imgUrl';
         const employeesArray = [
             {
                 id: 1,
@@ -55,30 +59,170 @@ c.Angular approach
                 imgUrl: 'https://upload.wikimedia.org/wikipedia/ru/b/b5/%D0%94%D0%BE%D0%B1%D1%80%D1%8B%D0%BD%D1%8F_%D0%9D%D0%B8%D0%BA%D0%B8%D1%82%D0%B8%D1%87_%D0%B8_%D0%97%D0%BC%D0%B5%D0%B9_%D0%93%D0%BE%D1%80%D1%8B%D0%BD%D1%8B%D1%87_%28%D0%BF%D0%BE%D1%81%D1%82%D0%B5%D1%80_%D1%84%D0%B8%D0%BB%D1%8C%D0%BC%D0%B0%29.jpg'
             },
         ];
+        function correctDataGridNewData(newData) {
+            function setDataGridNewDataDefaultValue(obj, propertyName, defaultValue) {
+                //TODO: https://js.devexpress.com/Documentation/ApiReference/UI_Widgets/dxDataGrid/Configuration/#onRowUpdated
+                // topic doesn't describe the format of the 'newData' object
+                if(obj.hasOwnProperty(propertyName) && (obj[propertyName] === '' || obj[propertyName] === null || obj[propertyName] === undefined)) {
+                    obj[propertyName] = defaultValue;
+                }
+            }
+            setDataGridNewDataDefaultValue(newData, EMPLOYEE_WIKILINK_PROPERTYNAME, EMPLOYEE_WIKILINK_DEFAULTVALUE);
+            setDataGridNewDataDefaultValue(newData, EMPLOYEE_IMGURL_PROPERTYNAME, EMPLOYEE_IMGURL_DEFAULTVALUE);
+        }
     </script>
+    <hr/>
     <hr/>
     <p>javascript/DOM</p>
     todo
+    <button onclick="alert(employeesArray[0].name);">show employeesArray[0].name</button>
 
     <hr/>
     <p>new dxDataGrid:</p>
-    todo
+    <div class="jsdxDataGrid"></div>
+    <script>
+        (function() {
+            function setDataGridNewDataDefaultValue(obj, propertyName, defaultValue) {
+                if(obj.hasOwnProperty(propertyName) && (obj[propertyName] === '' || obj[propertyName] === null || obj[propertyName] === undefined)) {
+                    obj[propertyName] = defaultValue;
+                }
+            }
+            const dxDataGrid = new DevExpress.ui.dxDataGrid(document.querySelector('.jsdxDataGrid'),
+                {
+                    dataSource: new DevExpress.data.ArrayStore({ key: 'id', data: employeesArray }),
+                    //dataSource: employeesArrayStore,
+                    columns: [
+                        {
+                            dataField: 'name', 
+                            validationRules: [ { type:'required' } ] 
+                        },
+                        'wikiLink',
+                        'imgUrl'
+                    ],
+                    editing: { allowUpdating: true },
+                    onRowUpdating: (e) => {
+                        correctDataGridNewData(e.newData);
+                    }
+                }
+            );
+        })()
+    </script>
 
     <hr/>
     <p>Knockout + dxDataGrid:</p>
-    todo
+    <div class=".knockoutcontainer">
+        <mycomponent params="employees: employees"></mycomponent>
+    </div>
+    <script>
+        (function() {
+
+            class MyModel {
+                constructor({ employees = [] }) {
+                    this.employeesGridOptions = {
+                        dataSource: new DevExpress.data.ArrayStore({ key: 'id', data: employees }),
+                        //dataSource: employees,
+                        columns: [
+                            {
+                                dataField: 'name', 
+                                validationRules: [ { type:'required' } ] 
+                            },
+                            'wikiLink',
+                            'imgUrl'
+                        ],
+                        editing: { allowUpdating: true },
+                        onRowUpdating: (e) => {
+                            correctDataGridNewData(e.newData);
+                        }
+                    };
+                }
+            }
+
+            ko.components.register('mycomponent', {
+                viewModel: MyModel,
+                template: '<div data-bind="dxDataGrid: employeesGridOptions"></div>'
+            });
+
+            const model = {
+                employees: employeesArray,
+            }
+            ko.applyBindings(model, document.querySelector('.knockoutcontainer'));
+        })()
+    </script>
 
     <hr/>
     <p>jQuery:</p>
-    todo
+    <div class="jqueryGrid"></div>
+    <script>
+        (function() {
+            $('.jqueryGrid').dxDataGrid({
+                dataSource: new DevExpress.data.ArrayStore({ key: 'id', data: employeesArray }),
+                //dataSource: employeesArrayStore,
+                columns: [
+                    {
+                        dataField: 'name', 
+                        validationRules: [ { type:'required' } ] 
+                    },
+                    'wikiLink',
+                    'imgUrl'
+                ],
+                editing: { allowUpdating: true },
+                onRowUpdating: (e) => {
+                    correctDataGridNewData(e.newData);
+                }
+            });
+        })()
+    </script>
 
     <hr/>
     <p>AngularJS:</p>
-    todo
+    <div ng-app="app1">
+        <div ng-controller="Controller1">
+            <div dx-data-grid="gridOptions"></div>
+        </div>
+    </div>
+    <script>
+        (function() {
+            const myApp = angular.module('app1', ['dx']);
+            myApp.controller('Controller1', ['$scope', Controller1]);
+            
+            function Controller1($scope) {
+                $scope.employees = new DevExpress.data.ArrayStore({ key: 'id', data: employeesArray });
+                //$scope.employees = employeesArrayStore;
+                $scope.gridOptions = {
+                    dataSource: $scope.employees,
+                    columns: [
+                        {
+                            dataField: 'name', 
+                            validationRules: [ 
+                                { type:'required' }
+                            ] 
+                        },
+                        'wikiLink',
+                        'imgUrl'],
+                    editing: {
+                        allowUpdating: true
+                    },
+                    onRowUpdating: (e) => {
+                        correctDataGridNewData(e.newData);
+                    }
+                };
+            }
+        })();
+    </script>
 
     <hr/>
     <p>Angular6:</p>
-    todo
+    <ul>
+        <li>
+            <a href="https://stackblitz.com/edit/internal-training-task34-devextreme?file=src%2Fapp%2Fapp.component.ts">https://stackblitz.com/edit/internal-training-task34-devextreme?file=src%2Fapp%2Fapp.component.ts</a>
+        </li>
+        <li>
+            <a href="https://github.com/IgnatovDan/LearnDevExtreme/blob/master/_InternalCourse/task34_devextreme.angular_6.app.component.html">https://github.com/IgnatovDan/LearnDevExtreme/blob/master/_InternalCourse/task34_devextreme.angular_6.app.component.html</a>
+        </li>
+        <li>
+            <a href="https://github.com/IgnatovDan/LearnDevExtreme/blob/master/_InternalCourse/task34_devextreme.angular_6.app.component.ts">https://github.com/IgnatovDan/LearnDevExtreme/blob/master/_InternalCourse/task34_devextreme.angular_6.app.component.ts</a>
+        </li>
+    </ul>
     
 </body>
 </html>

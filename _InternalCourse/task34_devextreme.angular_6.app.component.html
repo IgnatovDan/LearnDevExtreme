@@ -1,9 +1,9 @@
 <p>{{name}}</p>
 <pre>{{description}}</pre>
-<p>See also other implementations at <a href="{{otherImplementationUrl}}">{{otherImplementationUrl}}</a></p>
+<p>See also other implementations at <a href="{{otherImplementationUrl}}">{{otherImplementationUrl}}</a> and <a href="{{otherImplementationUrl2}}">{{otherImplementationUrl2}}</a></p>
 <hr/>
 
-<dx-data-grid [dataSource] = "employeesArrayStore">
+<dx-data-grid [dataSource] = "employeesArrayStore" (onRowUpdating) = "correctDataGridNewData($event.newData)">
   <dxo-editing [allowUpdating]="true"></dxo-editing>
   <dxi-column dataField="name">
     <dxi-validation-rule type="required"></dxi-validation-rule>
