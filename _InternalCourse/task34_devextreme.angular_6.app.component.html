@@ -1,0 +1,17 @@
+<p>{{name}}</p>
+<pre>{{description}}</pre>
+<p>See also other implementations at <a href="{{otherImplementationUrl}}">{{otherImplementationUrl}}</a></p>
+<hr/>
+
+<dx-data-grid [dataSource] = "employeesArrayStore">
+  <dxo-editing [allowUpdating]="true"></dxo-editing>
+  <dxi-column dataField="name">
+    <dxi-validation-rule type="required"></dxi-validation-rule>
+  </dxi-column>
+  <dxi-column dataField="wikiLink"></dxi-column>
+  <dxi-column dataField="imgUrl"></dxi-column>
+</dx-data-grid>
+
+<dx-button 
+  text="show employeesArray[0].name"
+  (onClick)="showArray_0_Name()"></dx-button>

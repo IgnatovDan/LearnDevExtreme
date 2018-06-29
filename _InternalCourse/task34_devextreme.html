@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+
+    <!-- https://js.devexpress.com/Documentation/Guide/Getting_Started/Installation/CDN_Services/ -->
+
+    <!-- DevExtreme dependencies -->
+    <script type="text/javascript" src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-3.1.0.min.js"></script>
+    <!-- The AngularJS library -->
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.11/angular.js"></script>
+    <!-- The Knockout library -->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.4.0/knockout-debug.js"></script>
+    <!-- DevExtreme themes -->
+    <link rel="stylesheet" type="text/css" href="https://cdn3.devexpress.com/jslib/18.1.3/css/dx.common.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdn3.devexpress.com/jslib/18.1.3/css/dx.light.css" />
+    <!-- A DevExtreme library -->
+    <script type="text/javascript" src="https://cdn3.devexpress.com/jslib/18.1.3/js/dx.all.debug.js"></script>
+</head>
+<body>
+    <pre>
+    DevExtreme - dxDataGrid without empty values
+
+Generate array of items. Each item has the ID, FirstName and LastName options. 
+Create ArrayStore based on this array. Bind dxDataGrid to the store. The ID column should not be displayed. 
+dxDataGrid should allow editing rows. Does not allow user to enter empty values for FirstName and LastName.
+
+a.Knockout approach
+b.jQuery approach
+c.Angular approach
+    </pre>
+    <script>
+        'use strict';
+        const employeesArray = [
+            {
+                id: 1,
+                name: 'Ilya Muromets',
+                wikiLink: 'https://en.wikipedia.org/wiki/Ilya_Muromets',
+                imgUrl: 'https://upload.wikimedia.org/wikipedia/ru/thumb/9/92/%D0%A2%D1%80%D0%B8_%D0%B1%D0%BE%D0%B3%D0%B0%D1%82%D1%8B%D1%80%D1%8F_%28%D0%BF%D0%B5%D1%80%D1%81%D0%BE%D0%BD%D0%B0%D0%B6%D0%B8_%D0%BC%D1%83%D0%BB%D1%8C%D1%82%D1%84%D0%B8%D0%BB%D1%8C%D0%BC%D0%BE%D0%B2%29.jpg/525px-%D0%A2%D1%80%D0%B8_%D0%B1%D0%BE%D0%B3%D0%B0%D1%82%D1%8B%D1%80%D1%8F_%28%D0%BF%D0%B5%D1%80%D1%81%D0%BE%D0%BD%D0%B0%D0%B6%D0%B8_%D0%BC%D1%83%D0%BB%D1%8C%D1%82%D1%84%D0%B8%D0%BB%D1%8C%D0%BC%D0%BE%D0%B2%29.jpg'
+            },
+            {   
+                id: 2,
+                name: 'Dobrynya Nikitich',
+                wikiLink: 'https://en.wikipedia.org/wiki/Alyosha_Popovich',
+                imgUrl: 'https://upload.wikimedia.org/wikipedia/ru/e/ee/%D0%90%D0%BB%D1%91%D1%88%D0%B0_%D0%9F%D0%BE%D0%BF%D0%BE%D0%B2%D0%B8%D1%87_%D0%B8_%D0%A2%D1%83%D0%B3%D0%B0%D1%80%D0%B8%D0%BD_%D0%97%D0%BC%D0%B5%D0%B9_%28%D0%BF%D0%BE%D1%81%D1%82%D0%B5%D1%80_%D1%84%D0%B8%D0%BB%D1%8C%D0%BC%D0%B0%29.jpg'
+            },
+            {
+                id: 3,
+                name: 'Alyosha Popovich',
+                wikiLink: 'https://en.wikipedia.org/wiki/Dobrynya_Nikitich',
+                imgUrl: 'https://upload.wikimedia.org/wikipedia/ru/b/b5/%D0%94%D0%BE%D0%B1%D1%80%D1%8B%D0%BD%D1%8F_%D0%9D%D0%B8%D0%BA%D0%B8%D1%82%D0%B8%D1%87_%D0%B8_%D0%97%D0%BC%D0%B5%D0%B9_%D0%93%D0%BE%D1%80%D1%8B%D0%BD%D1%8B%D1%87_%28%D0%BF%D0%BE%D1%81%D1%82%D0%B5%D1%80_%D1%84%D0%B8%D0%BB%D1%8C%D0%BC%D0%B0%29.jpg'
+            },
+        ];
+
+        //TODO: other controls are not notified when data changed through one and the same ArrayStore object?
+        const employeesArrayStore = new DevExpress.data.ArrayStore({ key: 'id', data: employeesArray });
+    </script>
+    <hr/>
+    <p>javascript/DOM</p>
+    todo
+    <button onclick="alert(employeesArray[0].name);">show employeesArray[0].name</button>
+
+    <hr/>
+    <p>new dxDataGrid:</p>
+    <div class="jsdxDataGrid"></div>
+    <script>
+        (function() {
+            const dxDataGrid = new DevExpress.ui.dxDataGrid(document.querySelector('.jsdxDataGrid'),
+                {
+                    dataSource: new DevExpress.data.ArrayStore({ key: 'id', data: employeesArray }),
+                    //dataSource: employeesArrayStore,
+                    columns: [
+                        {
+                            dataField: 'name', 
+                            validationRules: [ { type:'required' } ] 
+                        },
+                        'wikiLink',
+                        'imgUrl'
+                    ],
+                    editing: { allowUpdating: true },
+                }
+            );
+        })()
+    </script>
+
+    <hr/>
+    <p>Knockout + dxDataGrid:</p>
+    <div class=".knockoutcontainer">
+        <mycomponent params="employees: employees"></mycomponent>
+    </div>
+    <script>
+        (function() {
+
+            class MyModel {
+                constructor({ employees = [] }) {
+                    this.employeesGridOptions = {
+                        dataSource: new DevExpress.data.ArrayStore({ key: 'id', data: employees }),
+                        //dataSource: employees,
+                        columns: [
+                            {
+                                dataField: 'name', 
+                                validationRules: [ { type:'required' } ] 
+                            },
+                            'wikiLink',
+                            'imgUrl'
+                        ],
+                        editing: { allowUpdating: true },
+                    };
+                }
+            }
+
+            ko.components.register('mycomponent', {
+                viewModel: MyModel,
+                template: '<div data-bind="dxDataGrid: employeesGridOptions"></div>'
+            });
+
+            const model = {
+                employees: employeesArray,
+            }
+            ko.applyBindings(model, document.querySelector('.knockoutcontainer'));
+        })()
+    </script>
+
+    <hr/>
+    <p>jQuery:</p>
+    <div class="jqueryGrid"></div>
+    <script>
+        (function() {
+            $('.jqueryGrid').dxDataGrid({
+                dataSource: new DevExpress.data.ArrayStore({ key: 'id', data: employeesArray }),
+                //dataSource: employeesArrayStore,
+                columns: [
+                    {
+                        dataField: 'name', 
+                        validationRules: [ { type:'required' } ] 
+                    },
+                    'wikiLink',
+                    'imgUrl'
+                ],
+                editing: { allowUpdating: true },
+            });
+        })()
+    </script>
+
+    <hr/>
+    <p>AngularJS:</p>
+    <div ng-app="app1">
+        <div ng-controller="Controller1">
+            <div dx-data-grid="gridOptions"></div>
+        </div>
+    </div>
+    <script>
+        (function() {
+            const myApp = angular.module('app1', ['dx']);
+            myApp.controller('Controller1', ['$scope', Controller1]);
+            
+            function Controller1($scope) {
+                $scope.employees = new DevExpress.data.ArrayStore({ key: 'id', data: employeesArray });
+                //$scope.employees = employeesArrayStore;
+                $scope.gridOptions = {
+                    dataSource: $scope.employees,
+                    columns: [
+                        {
+                            dataField: 'name', 
+                            validationRules: [ 
+                                { type:'required' }
+                            ] 
+                        },
+                        'wikiLink',
+                        'imgUrl'],
+                    editing: {
+                        allowUpdating: true
+                    }
+                };
+            }
+        })();
+    </script>
+
+    <hr/>
+    <p>Angular6:</p>
+    <ul>
+        <li>
+            <a href="https://stackblitz.com/edit/internal-training-task34-devextreme?file=src%2Fapp%2Fapp.component.ts">https://stackblitz.com/edit/internal-training-task34-devextreme?file=src%2Fapp%2Fapp.component.ts</a>
+        </li>
+        <li>
+            <a href="https://github.com/IgnatovDan/LearnDevExtreme/blob/master/_InternalCourse/task34_devextreme.angular_6.app.component.html">https://github.com/IgnatovDan/LearnDevExtreme/blob/master/_InternalCourse/task34_devextreme.angular_6.app.component.html</a>
+        </li>
+        <li>
+            <a href="https://github.com/IgnatovDan/LearnDevExtreme/blob/master/_InternalCourse/task34_devextreme.angular_6.app.component.ts">https://github.com/IgnatovDan/LearnDevExtreme/blob/master/_InternalCourse/task34_devextreme.angular_6.app.component.ts</a>
+        </li>
+    </ul>
+    
+</body>
+</html>
