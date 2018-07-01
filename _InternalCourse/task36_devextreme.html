@@ -44,9 +44,14 @@ c.Angular approach
                     this._rootSvcUrl = 'http://services.odata.org/V3/Northwind/Northwind.svc';
                 }
                 getCategoriesPromise() {
-                    return fetch(this._rootSvcUrl + '/Categories?$format=json')
+                    return fetch(this._rootSvcUrl + '/Categories?$select=CategoryID,CategoryName&$format=json')
                         .then(response => response.json())
                         .then(data => Promise.resolve(data.value));
+                }
+                getCategoryPromise(categoryId) {
+                    return fetch(this._rootSvcUrl + '/Categories(' + categoryId + ')?$format=json')
+                        .then(response => response.json())
+                        .then(data => Promise.resolve(data));
                 }
                 getProductsPromise(categoryID) {
                     return fetch(this._rootSvcUrl + '/Products?$filter=CategoryID eq ' + categoryID + '&$format=json')
@@ -56,10 +61,10 @@ c.Angular approach
             }
 
             class Grid {
-                constructor({ queryCategoriesPromise, queryProductsPromise}) {
+                constructor({ queryCategoriesPromise, queryProductsPromise, queryCategoryPromise}) {
                     this._queryCategoriesPromise = queryCategoriesPromise;
                     this._queryProductsPromise = queryProductsPromise;
-                    this._isWaitingGetProductsPromise = false;
+                    this.queryCategoryPromise = queryCategoryPromise;
 
                     this.element = document.createElement('div');
                 }
@@ -73,21 +78,8 @@ c.Angular approach
                         detailsEl = document.createElement('div');
                         detailsEl.classList.add(Grid.CATEGORY_DETAILS_ELEMENT_CSS_CLASS);
                         detailsEl.innerHTML = 'Loading...';
+                        this._renderCategoryDetails(detailsEl, categoryEl.dataset[Grid.CATEGORY_DATASET_CategoryID]);
                         categoryEl.appendChild(detailsEl);
-                        this.isWaitingGetProductsPromise = true;
-                        setTimeout(
-                            () => {
-                                if(this.isWaitingGetProductsPromise) {
-                                    //todo: cancel current request to server.
-                                    //'fetch' is not cancellable, change code to use XHR.
-                                }
-                                this._queryProductsPromise({ categoryId: categoryEl.dataset[Grid.CATEGORY_DATASET_CategoryID] })
-                                    .then(products => {
-                                        this.isWaitingGetProductsPromise = false;
-                                        this._renderProducts(detailsEl, products);
-                                    });
-                            },
-                            1000);
                     }
                 }
                 _renderCategories(targetEl, categories) {
@@ -95,21 +87,46 @@ c.Angular approach
                     categories.forEach(item => {
                         const liEl = document.createElement('li');
                         liEl.innerText = item.CategoryName;
-                        liEl.addEventListener('click', (e) => this._toggleCategoryDetails(e.target));
+                        liEl.addEventListener('click', (e) => { 
+                            if(e.target === e.currentTarget) {
+                                this._toggleCategoryDetails(e.target);
+                            }
+                        });
                         liEl.dataset[Grid.CATEGORY_DATASET_CategoryID] = item.CategoryID;
                         ulEl.appendChild(liEl);
                     });
                     targetEl.innerHTML = null;
                     targetEl.appendChild(ulEl);
                 }
+                _renderCategoryDetails(targetEl, categoryId) {
+                    targetEl.innerHTML = null;
+
+                    const detailsEl = document.createElement('div');
+                    this.queryCategoryPromise({ categoryId })
+                        .then(category => detailsEl.innerText = "Description: " + category.Description);
+                    targetEl.appendChild(detailsEl);
+
+                    const productsEl = document.createElement('div');
+                    productsEl.innerHTML = 'Loading...';
+                    targetEl.appendChild(productsEl);
+                    setTimeout(
+                        () => {
+                            this._queryProductsPromise({ categoryId })
+                                .then(products => {
+                                    this.isWaitingGetProductsPromise = false;
+                                    this._renderProducts(productsEl, products);
+                                });
+                        },
+                        1000);
+                }
                 _renderProducts(targetEl, products) {
+                    targetEl.innerHTML = null;
                     const ulEl = document.createElement('ul');
                     products.forEach(item => {
                         const liEl = document.createElement('li');
                         liEl.innerText = item.ProductName;
                         ulEl.appendChild(liEl);
                     });
-                    targetEl.innerHTML = null;
                     targetEl.appendChild(ulEl);
                 }
 
@@ -126,7 +143,8 @@ c.Angular approach
             const store = new Store();
             const grid = new Grid({
                 queryCategoriesPromise: () => store.getCategoriesPromise(),
-                queryProductsPromise: (e) => store.getProductsPromise(e.categoryId)
+                queryProductsPromise: (e) => store.getProductsPromise(e.categoryId),
+                queryCategoryPromise: (e) => store.getCategoryPromise(e.categoryId),
             });
             document.querySelector('.js').appendChild(grid.element);
             grid.render();
