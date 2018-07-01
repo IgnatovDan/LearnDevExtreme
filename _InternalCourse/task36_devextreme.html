@@ -9,7 +9,7 @@
     <!-- https://js.devexpress.com/Documentation/Guide/Getting_Started/Installation/CDN_Services/ -->
 
     <!-- DevExtreme dependencies -->
-    <script type="text/javascript" src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-3.1.0.min.js"></script>
+    <script type="text/javascript" src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-3.1.0.js"></script>
     <!-- The AngularJS library -->
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.11/angular.js"></script>
     <!-- The Knockout library -->
@@ -24,7 +24,8 @@
     <pre>
     DevExtreme - Master-detail grid
 
-Implement a master-detail grid. Data can be generated manually. Alternatively, use the Categories and Products entities from the (http://services.odata.org/V3/Northwind/Northwind.svc/) OData service (hint: use ODataContext/ODataStore). 
+Implement a master-detail grid. Data can be generated manually.
+Alternatively, use the Categories and Products entities from the (http://services.odata.org/V3/Northwind/Northwind.svc/) OData service (hint: use ODataContext/ODataStore). 
 
 a.Knockout approach
 b.jQuery approach
@@ -33,7 +34,105 @@ c.Angular approach
 
     <hr/>
     <p>javascript/DOM</p>
-    todo
+    <div class="js"></div>
+    <script>
+        'use strict';
+        (function() {
+            //'all in one' because I want to place all approaches in a single file
+            class Store {
+                constructor() {
+                    this._rootSvcUrl = 'http://services.odata.org/V3/Northwind/Northwind.svc';
+                }
+                getCategoriesPromise() {
+                    return fetch(this._rootSvcUrl + '/Categories?$format=json')
+                        .then(response => response.json())
+                        .then(data => Promise.resolve(data.value));
+                }
+                getProductsPromise(categoryID) {
+                    return fetch(this._rootSvcUrl + '/Products?$filter=CategoryID eq ' + categoryID + '&$format=json')
+                        .then(response => response.json())
+                        .then(data => Promise.resolve(data.value));
+                }
+            }
+
+            class Grid {
+                constructor({ queryCategoriesPromise, queryProductsPromise}) {
+                    this._queryCategoriesPromise = queryCategoriesPromise;
+                    this._queryProductsPromise = queryProductsPromise;
+                    this._isWaitingGetProductsPromise = false;
+
+                    this.element = document.createElement('div');
+                }
+
+                _toggleCategoryDetails(categoryId) {
+                    if(this.isWaitingGetProductsPromise) {
+                        //todo: cancel current request to server.
+                        //'fetch' is not cancellable, change code to use XHR.
+                    }
+                    const currentSelectedCategoryEl = this.element.querySelector('.' + Grid.CATEGORY_SELECTED_CSS_CLASS);
+                    if(currentSelectedCategoryEl && currentSelectedCategoryEl.dataset[Grid.CATEGORY_DATASET_CategoryID] !== categoryId) {
+                        currentSelectedCategoryEl.classList.remove(Grid.CATEGORY_SELECTED_CSS_CLASS);
+                        const contentEl = this.element.querySelector('.' + Grid.CATEGORY_SELECTED_CONTENT_CSS_CLASS);
+                        if(contentEl) {
+                            currentSelectedCategoryEl.removeChild(contentEl);
+                        }
+                    }
+                    const newSelectedCategoryEl = this.element.querySelector('[data-' + Grid.CATEGORY_DATASET_CategoryID + '=\'' + categoryId + '\']');
+                    if(newSelectedCategoryEl) {
+                        newSelectedCategoryEl.classList.add(Grid.CATEGORY_SELECTED_CSS_CLASS);
+                        const contentEl = document.createElement('div');
+                        contentEl.classList.add(Grid.CATEGORY_SELECTED_CONTENT_CSS_CLASS);
+                        contentEl.innerHTML = 'Loading...';
+                        newSelectedCategoryEl.appendChild(contentEl);
+                        this.isWaitingGetProductsPromise = true;
+                        setTimeout(
+                            () => this._queryProductsPromise({ categoryId }).then(products => { this.isWaitingGetProductsPromise = false; this._showProducts(contentEl, products); }),
+                            1000);
+                    }
+                }
+                _showCategories(targetEl, categories) {
+                    const ulEl = document.createElement('ul');
+                    categories.forEach(item => {
+                        const liEl = document.createElement('li');
+                        liEl.innerText = item.CategoryName;
+                        liEl.addEventListener('click', () => this._toggleCategoryDetails(item.CategoryID));
+                        liEl.dataset[Grid.CATEGORY_DATASET_CategoryID] = item.CategoryID;
+                        ulEl.appendChild(liEl);
+                    });
+                    targetEl.innerHTML = null;
+                    targetEl.appendChild(ulEl);
+                }
+                _showProducts(targetEl, products) {
+                    const ulEl = document.createElement('ul');
+                    products.forEach(item => {
+                        const liEl = document.createElement('li');
+                        liEl.innerText = item.ProductName;
+                        ulEl.appendChild(liEl);
+                    });
+                    targetEl.innerHTML = null;
+                    targetEl.appendChild(ulEl);
+                }
+
+                render() {
+                    this.element.innerText = 'Loading...';
+                    setTimeout(
+                        () => this._queryCategoriesPromise().then(categories => this._showCategories(this.element, categories)),
+                        1000 /*to review the 'Loading...' message*/);
+                }
+            }
+            Grid.CATEGORY_SELECTED_CSS_CLASS = 'js__selectedCategory';
+            Grid.CATEGORY_SELECTED_CONTENT_CSS_CLASS = 'js__selectedCategory__content';
+            Grid.CATEGORY_DATASET_CategoryID = 'categoryid';
+
+            const store = new Store();
+            const grid = new Grid({
+                queryCategoriesPromise: () => store.getCategoriesPromise(),
+                queryProductsPromise: (e) => store.getProductsPromise(e.categoryId)
+            });
+            document.querySelector('.js').appendChild(grid.element);
+            grid.render();
+        })();
+    </script>
 
     <hr/>
     <p>new dxDataGrid:</p>
