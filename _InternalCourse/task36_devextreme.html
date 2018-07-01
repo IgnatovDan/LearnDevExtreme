@@ -45,8 +45,9 @@ c.Angular approach
                 constructor(rootSvcUrl) {
                     this._rootSvcUrl = rootSvcUrl;
                 }
-                //todo: data versions can be different if loaded in several requests.
                 getCategoriesPromise() {
+                    //todo: data versions can be different if loaded in several requests (getCategoryPromise can return new value for the CategoryName property of the same CategoryID object)
+                    // fetch all required data in a single request.
                     return fetch(this._rootSvcUrl + '/Categories?$select=CategoryID,CategoryName&$format=json')
                         .then(response => response.json())
                         .then(data => Promise.resolve(data.value));
