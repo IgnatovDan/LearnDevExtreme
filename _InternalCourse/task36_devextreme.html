@@ -31,17 +31,20 @@ a.Knockout approach
 b.jQuery approach
 c.Angular approach
     </pre>
+    <script>
+        'use strict';
+        const rootSvcUrl = 'http://services.odata.org/V3/Northwind/Northwind.svc';
+    </script>
 
     <hr/>
     <p>javascript/DOM</p>
     <div class="js"></div>
     <script>
-        'use strict';
         (function() {
             //'all in one' because I want to place all approaches in a single file
             class Store {
-                constructor() {
-                    this._rootSvcUrl = 'http://services.odata.org/V3/Northwind/Northwind.svc';
+                constructor(rootSvcUrl) {
+                    this._rootSvcUrl = rootSvcUrl;
                 }
                 getCategoriesPromise() {
                     return fetch(this._rootSvcUrl + '/Categories?$select=CategoryID,CategoryName&$format=json')
@@ -140,7 +143,7 @@ c.Angular approach
             Grid.CATEGORY_DETAILS_ELEMENT_CSS_CLASS = 'js__category__details';
             Grid.CATEGORY_DATASET_CategoryID = 'categoryid';
 
-            const store = new Store();
+            const store = new Store(rootSvcUrl);
             const grid = new Grid({
                 queryCategoriesPromise: () => store.getCategoriesPromise(),
                 queryProductsPromise: (e) => store.getProductsPromise(e.categoryId),
@@ -153,7 +156,69 @@ c.Angular approach
 
     <hr/>
     <p>new dxDataGrid:</p>
-    todo
+    <div class="jsdx"></div>
+    <script>
+        (function() {
+            const context = new DevExpress.data.ODataContext({
+                url: rootSvcUrl,
+                errorHandler: error => alert(error.message),
+                entities: {
+                    Categories: {
+                        key: 'CategoryID',
+                        fieldTypes: {
+                            CategoryID: 'Int32'
+                        }
+                    },
+                    Products: {
+                        key: 'ProductID',
+                        fieldTypes: {
+                            ProductID: 'Int32',
+                            CategoryID: 'Int32'
+                        }
+                    }
+                }
+            });
+            const dxDataGrid = new DevExpress.ui.dxDataGrid(document.querySelector('.jsdx'),
+                {
+                    dataSource: new DevExpress.data.DataSource( {
+                        store: context.Categories,
+                        expand: ["Products"]
+                    }),
+                    columns: [
+                        {
+                            dataField: 'CategoryName', 
+                            validationRules: [ { type:'required' } ] 
+                        },
+                    ],
+                    masterDetail: {
+                        enabled: true,
+                        template: (detailElement, detailInfo) => {
+                            let detailEl = detailElement;
+                            if(!detailElement.appendChild) {
+                                // todo: there is no the 'appendChild' method if I added a link to jQuery
+                                detailEl = detailElement[0];
+                            }
+
+                            const category = detailInfo.data;
+                            const captionEl = document.createElement('div');
+                            captionEl.innerText = 'Description: ' + category.Description;
+                            detailEl.appendChild(captionEl);
+
+                            const productsEl = document.createElement('div');
+                            new DevExpress.ui.dxDataGrid(productsEl,
+                                {
+                                    columns: ['ProductName'],
+                                    dataSource: new DevExpress.data.DataSource(category.Products),
+                                }
+                            );
+
+                            detailEl.appendChild(productsEl);
+                        }
+                    },
+                }
+            );
+        })()
+    </script>
 
     <hr/>
     <p>Knockout + dxDataGrid:</p>
