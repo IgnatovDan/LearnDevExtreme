@@ -41,11 +41,11 @@ c.Angular approach
     <div class="js"></div>
     <script>
         (function() {
-            //'all in one' because I want to place all approaches in a single file
             class Store {
                 constructor(rootSvcUrl) {
                     this._rootSvcUrl = rootSvcUrl;
                 }
+                //todo: data versions can be different if loaded in several requests.
                 getCategoriesPromise() {
                     return fetch(this._rootSvcUrl + '/Categories?$select=CategoryID,CategoryName&$format=json')
                         .then(response => response.json())
@@ -206,7 +206,7 @@ c.Angular approach
                             new DevExpress.ui.dxDataGrid(productsEl,
                                 {
                                     columns: ['ProductName'],
-                                    dataSource: new DevExpress.data.DataSource(category.Products),
+                                    dataSource: category.Products,
                                 }
                             );
 
@@ -252,7 +252,7 @@ c.Angular approach
                                 new DevExpress.ui.dxDataGrid(productsEl,
                                     {
                                         columns: ['ProductName'],
-                                        dataSource: new DevExpress.data.DataSource(category.Products),
+                                        dataSource: category.Products,
                                     }
                                 );
 
@@ -335,7 +335,7 @@ c.Angular approach
                         $('<div>')
                             .dxDataGrid({
                                 columns: ['ProductName'],
-                                dataSource: new DevExpress.data.DataSource(category.Products),
+                                dataSource: category.Products,
                             })
                             .appendTo(detailElement);
                     }
@@ -346,8 +346,61 @@ c.Angular approach
 
     <hr/>
     <p>AngularJS:</p>
-    todo
-    
+    <div ng-app="app1">
+        <div ng-controller="Controller1">
+            <div dx-data-grid="gridOptions" dx-item-alias="category">
+                <div data-options="dxTemplate: {name: 'detail'}">
+                    <div>Description: {{category.Description}}</div>
+                    <div dx-data-grid="{
+                        dataSource: category.data.Products,
+                        columns: ['ProductName'],
+                    }"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        (function() {
+            const myApp = angular.module('app1', ['dx']);
+            myApp.controller('Controller1', ['$scope', Controller1]);
+
+            const context = new DevExpress.data.ODataContext({
+                url: rootSvcUrl,
+                errorHandler: error => alert(error.message),
+                entities: {
+                    Categories: {
+                        key: 'CategoryID',
+                        fieldTypes: {
+                            CategoryID: 'Int32'
+                        }
+                    },
+                    Products: {
+                        key: 'ProductID',
+                        fieldTypes: {
+                            ProductID: 'Int32',
+                            CategoryID: 'Int32'
+                        }
+                    }
+                }
+            })
+            
+            function Controller1($scope) {
+                $scope.categories = new DevExpress.data.DataSource( {
+                    store: context.Categories,
+                    expand: ["Products"]
+                }),
+                $scope.gridOptions = {
+                    dataSource: $scope.categories,
+                    columns: ['CategoryName'],
+                    masterDetail: {
+                        enabled: true,
+                        template: "detail"
+                    }
+                };
+            }
+        })();
+    </script>
+
     <hr/>
     <p>Angular6:</p>
     todo
