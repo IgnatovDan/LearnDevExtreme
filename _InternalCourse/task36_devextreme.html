@@ -159,6 +159,9 @@ c.Angular approach
     <div class="jsdx"></div>
     <script>
         (function() {
+            //https://js.devexpress.com/Documentation/ApiReference/Data_Layer/ODataStore
+            //To access an entire OData service, use the ODataContext instead.
+
             const context = new DevExpress.data.ODataContext({
                 url: rootSvcUrl,
                 errorHandler: error => alert(error.message),
@@ -184,12 +187,7 @@ c.Angular approach
                         store: context.Categories,
                         expand: ["Products"]
                     }),
-                    columns: [
-                        {
-                            dataField: 'CategoryName', 
-                            validationRules: [ { type:'required' } ] 
-                        },
-                    ],
+                    columns: ['CategoryName'],
                     masterDetail: {
                         enabled: true,
                         template: (detailElement, detailInfo) => {
@@ -222,16 +220,134 @@ c.Angular approach
 
     <hr/>
     <p>Knockout + dxDataGrid:</p>
-    todo
+    <div class=".knockoutcontainer">
+        <mycomponent params="categories: categories"></mycomponent>
+    </div>
+    <script>
+        (function() {
+
+            class MyModel {
+                constructor({ categories = [] }) {
+                    this.categoriesGridOptions = {
+                        dataSource: new DevExpress.data.DataSource( {
+                            store: context.Categories,
+                            expand: ["Products"]
+                        }),
+                        columns: ['CategoryName'],
+                        masterDetail: {
+                            enabled: true,
+                            template: (detailElement, detailInfo) => {
+                                let detailEl = detailElement;
+                                if(!detailElement.appendChild) {
+                                    // todo: there is no the 'appendChild' method if I added a link to jQuery
+                                    detailEl = detailElement[0];
+                                }
+
+                                const category = detailInfo.data;
+                                const captionEl = document.createElement('div');
+                                captionEl.innerText = 'Description: ' + category.Description;
+                                detailEl.appendChild(captionEl);
+
+                                const productsEl = document.createElement('div');
+                                new DevExpress.ui.dxDataGrid(productsEl,
+                                    {
+                                        columns: ['ProductName'],
+                                        dataSource: new DevExpress.data.DataSource(category.Products),
+                                    }
+                                );
+
+                                detailEl.appendChild(productsEl);
+                            }
+                        },
+                    };
+                }
+            }
+
+            ko.components.register('mycomponent', {
+                viewModel: MyModel,
+                template: '<div data-bind="dxDataGrid: categoriesGridOptions"></div>'
+            });
+
+            const context = new DevExpress.data.ODataContext({
+                url: rootSvcUrl,
+                errorHandler: error => alert(error.message),
+                entities: {
+                    Categories: {
+                        key: 'CategoryID',
+                        fieldTypes: {
+                            CategoryID: 'Int32'
+                        }
+                    },
+                    Products: {
+                        key: 'ProductID',
+                        fieldTypes: {
+                            ProductID: 'Int32',
+                            CategoryID: 'Int32'
+                        }
+                    }
+                }
+            })
+            const model = {
+                categories: context.Categories,
+            }
+            ko.applyBindings(model, document.querySelector('.knockoutcontainer'));
+        })()
+    </script>
 
     <hr/>
     <p>jQuery:</p>
-    todo
+    <div class="jqueryGrid"></div>
+    <script>
+        (function() {
+            const context = new DevExpress.data.ODataContext({
+                url: rootSvcUrl,
+                errorHandler: error => alert(error.message),
+                entities: {
+                    Categories: {
+                        key: 'CategoryID',
+                        fieldTypes: {
+                            CategoryID: 'Int32'
+                        }
+                    },
+                    Products: {
+                        key: 'ProductID',
+                        fieldTypes: {
+                            ProductID: 'Int32',
+                            CategoryID: 'Int32'
+                        }
+                    }
+                }
+            })
+            $('.jqueryGrid').dxDataGrid({
+                dataSource: new DevExpress.data.DataSource( {
+                    store: context.Categories,
+                    expand: ["Products"]
+                }),
+                columns: ['CategoryName'],
+                masterDetail: {
+                    enabled: true,
+                    template: (detailElement, detailInfo) => {
+                        const category = detailInfo.data;
+                        $('<div>')
+                            .text('Description: ' + category.Description)
+                            .appendTo(detailElement);
+
+                        $('<div>')
+                            .dxDataGrid({
+                                columns: ['ProductName'],
+                                dataSource: new DevExpress.data.DataSource(category.Products),
+                            })
+                            .appendTo(detailElement);
+                    }
+                },
+            });
+        })()
+    </script>
 
     <hr/>
     <p>AngularJS:</p>
     todo
-
+    
     <hr/>
     <p>Angular6:</p>
     todo
