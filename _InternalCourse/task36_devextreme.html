@@ -64,45 +64,45 @@ c.Angular approach
                     this.element = document.createElement('div');
                 }
 
-                _toggleCategoryDetails(categoryId) {
-                    if(this.isWaitingGetProductsPromise) {
-                        //todo: cancel current request to server.
-                        //'fetch' is not cancellable, change code to use XHR.
+                _toggleCategoryDetails(categoryEl) {
+                    let detailsEl = categoryEl.querySelector('.' + Grid.CATEGORY_DETAILS_ELEMENT_CSS_CLASS);
+                    if(detailsEl) {
+                        categoryEl.removeChild(detailsEl);
                     }
-                    const currentSelectedCategoryEl = this.element.querySelector('.' + Grid.CATEGORY_SELECTED_CSS_CLASS);
-                    if(currentSelectedCategoryEl && currentSelectedCategoryEl.dataset[Grid.CATEGORY_DATASET_CategoryID] !== categoryId) {
-                        currentSelectedCategoryEl.classList.remove(Grid.CATEGORY_SELECTED_CSS_CLASS);
-                        const contentEl = this.element.querySelector('.' + Grid.CATEGORY_SELECTED_CONTENT_CSS_CLASS);
-                        if(contentEl) {
-                            currentSelectedCategoryEl.removeChild(contentEl);
-                        }
-                    }
-                    const newSelectedCategoryEl = this.element.querySelector('[data-' + Grid.CATEGORY_DATASET_CategoryID + '=\'' + categoryId + '\']');
-                    if(newSelectedCategoryEl) {
-                        newSelectedCategoryEl.classList.add(Grid.CATEGORY_SELECTED_CSS_CLASS);
-                        const contentEl = document.createElement('div');
-                        contentEl.classList.add(Grid.CATEGORY_SELECTED_CONTENT_CSS_CLASS);
-                        contentEl.innerHTML = 'Loading...';
-                        newSelectedCategoryEl.appendChild(contentEl);
+                    else {
+                        detailsEl = document.createElement('div');
+                        detailsEl.classList.add(Grid.CATEGORY_DETAILS_ELEMENT_CSS_CLASS);
+                        detailsEl.innerHTML = 'Loading...';
+                        categoryEl.appendChild(detailsEl);
                         this.isWaitingGetProductsPromise = true;
                         setTimeout(
-                            () => this._queryProductsPromise({ categoryId }).then(products => { this.isWaitingGetProductsPromise = false; this._showProducts(contentEl, products); }),
+                            () => {
+                                if(this.isWaitingGetProductsPromise) {
+                                    //todo: cancel current request to server.
+                                    //'fetch' is not cancellable, change code to use XHR.
+                                }
+                                this._queryProductsPromise({ categoryId: categoryEl.dataset[Grid.CATEGORY_DATASET_CategoryID] })
+                                    .then(products => {
+                                        this.isWaitingGetProductsPromise = false;
+                                        this._renderProducts(detailsEl, products);
+                                    });
+                            },
                             1000);
                     }
                 }
-                _showCategories(targetEl, categories) {
+                _renderCategories(targetEl, categories) {
                     const ulEl = document.createElement('ul');
                     categories.forEach(item => {
                         const liEl = document.createElement('li');
                         liEl.innerText = item.CategoryName;
-                        liEl.addEventListener('click', () => this._toggleCategoryDetails(item.CategoryID));
+                        liEl.addEventListener('click', (e) => this._toggleCategoryDetails(e.target));
                         liEl.dataset[Grid.CATEGORY_DATASET_CategoryID] = item.CategoryID;
                         ulEl.appendChild(liEl);
                     });
                     targetEl.innerHTML = null;
                     targetEl.appendChild(ulEl);
                 }
-                _showProducts(targetEl, products) {
+                _renderProducts(targetEl, products) {
                     const ulEl = document.createElement('ul');
                     products.forEach(item => {
                         const liEl = document.createElement('li');
@@ -116,12 +116,11 @@ c.Angular approach
                 render() {
                     this.element.innerText = 'Loading...';
                     setTimeout(
-                        () => this._queryCategoriesPromise().then(categories => this._showCategories(this.element, categories)),
-                        1000 /*to review the 'Loading...' message*/);
+                        () => this._queryCategoriesPromise().then(categories => this._renderCategories(this.element, categories)),
+                        1000);
                 }
             }
-            Grid.CATEGORY_SELECTED_CSS_CLASS = 'js__selectedCategory';
-            Grid.CATEGORY_SELECTED_CONTENT_CSS_CLASS = 'js__selectedCategory__content';
+            Grid.CATEGORY_DETAILS_ELEMENT_CSS_CLASS = 'js__category__details';
             Grid.CATEGORY_DATASET_CategoryID = 'categoryid';
 
             const store = new Store();
