@@ -28,25 +28,102 @@ Implement a master-detail grid. Data can be generated manually.
 Alternatively, use the Categories and Products entities from the (http://services.odata.org/V3/Northwind/Northwind.svc/) OData service (hint: use ODataContext/ODataStore). 
 Bind grid to a custom data source (see CustomStore, Custom Sources). Implement CRUD operations in master-detail grid. 
 
+https://js.devexpress.com/Documentation/Guide/Data_Layer/Data_Source_Examples/#Custom_Sources/Connect_to_RESTful_Service
+https://js.devexpress.com/Documentation/ApiReference/Data_Layer/CustomStore/
+https://js.devexpress.com/Documentation/Guide/Data_Layer/Data_Source_Examples/#OData/Associations
+
 a.Knockout approach
 b.jQuery approach
 c.Angular approach
     </pre>
     <script>
         'use strict';
-        const rootSvcUrl = 'http://services.odata.org/V3/Northwind/Northwind.svc';
+        const ROOT_SVC_URL = 'http://services.odata.org/V3/(S(3zwailwijauqyyhse0tls12h))/OData/OData.svc';
     </script>
 
     <hr/>
     <p>javascript/DOM</p>
     todo
 
-    <hr/>
-    <p>new dxDataGrid:</p>
-    todo
+    <script>
+        class MyCustomStoreArgs {
+            //
+            // Implementation from https://js.devexpress.com/Documentation/Guide/Data_Layer/Data_Source_Examples/#Custom_Sources
+            //
+            constructor({rootUrl = ROOT_SVC_URL} = {}) {
+                //
+                //  'this' is not available in all methods of this object, methods are attached to another object:
+                //
+                //this.rootUrl = rootUrl;
+                this.load = (loadOptions) => {
+                    // return fetch(this.rootUrl + '/Categories?$format=json')
+                    //     .then(response => { debugger; response.json(); });
+                    return fetch(rootUrl + '/Categories?$format=json')
+                        .then(response => response.json())
+                        .then(data => Promise.resolve(data.value))
+                        .catch(error => {
+                            debugger;
+                            alert(error);
+                        });
+                };
+                this.update = (key, values) => {
+                    debugger;
+                    return fetch(rootUrl + '/Categories(' + key + ')', 
+                        {
+                            method: 'PATCH', //'PUT',
+                            headers: new Headers(),
+                            // headers: {
+                            //     'Accept': 'application/json',
+                            //     'Content-Type': 'application/json',
+                            // },
+                            body: JSON.stringify(values)
+                        })
+                        .then(response => {
+                            debugger;
+                            return response.json();
+                        })
+                        .then(data => {
+                            debugger;
+                            return Promise.resolve(data.value);
+                        }).catch(error => {
+                            debugger;
+                            alert(error);
+                        });
+                };
+            }
+            // byKey(key) {
+            //     // return fetch(this._rootSvcUrl + '/Categories(' + key + ')?$format=json')
+            //     //     .then(response => response.json());
+            //     debugger;
+            //     return fetch(ROOT_SVC_URL + '/Categories(' + key + ')?$format=json')
+            //         .then(response => response.json());
+            // }
+        }
+    </script>
 
     <hr/>
+    <p>new dxDataGrid:</p>
+    <div class="jsdx"></div>
+    <script>
+            (function() {
+                //https://js.devexpress.com/Documentation/ApiReference/Data_Layer/ODataStore
+                //To access an entire OData service, use the ODataContext instead.
+    
+                const dxDataGrid = new DevExpress.ui.dxDataGrid(document.querySelector('.jsdx'),
+                    {
+                        dataSource: new DevExpress.data.DataSource( {
+                            store: new DevExpress.data.CustomStore(new MyCustomStoreArgs())
+                        }),
+                        columns: ['Name'],
+                        editing: { allowUpdating: true },
+                    }
+                );
+            })()
+        </script>
+    
+    <hr/>
     <p>Knockout + dxDataGrid:</p>
+    <!-- https://stackoverflow.com/questions/33757239/how-correct-use-patch-reqvest-with-odata -->
     todo
 
     <hr/>
