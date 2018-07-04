@@ -46,80 +46,114 @@ c.Angular approach
     todo
 
     <script>
-        class MyCustomStoreArgs {
-            //
-            // Implementation from https://js.devexpress.com/Documentation/Guide/Data_Layer/Data_Source_Examples/#Custom_Sources
-            //
-            constructor({rootUrl = ROOT_SVC_URL} = {}) {
-                //
-                //  'this' is not available in all methods of this object, methods are attached to another object:
-                //
-                //this.rootUrl = rootUrl;
-                this.load = (loadOptions) => {
-                    // return fetch(this.rootUrl + '/Categories?$format=json')
-                    //     .then(response => { debugger; response.json(); });
-                    return fetch(rootUrl + '/Categories?$format=json')
-                        .then(response => response.json())
-                        .then(data => Promise.resolve(data.value))
-                        .catch(error => {
-                            debugger;
-                            alert(error);
-                        });
-                };
-                this.update = (key, values) => {
-                    debugger;
-                    return fetch(rootUrl + '/Categories(' + key + ')', 
-                        {
-                            method: 'PATCH', //'PUT',
-                            headers: new Headers(),
-                            // headers: {
-                            //     'Accept': 'application/json',
-                            //     'Content-Type': 'application/json',
-                            // },
-                            body: JSON.stringify(values)
-                        })
-                        .then(response => {
-                            debugger;
-                            return response.json();
-                        })
-                        .then(data => {
-                            debugger;
-                            return Promise.resolve(data.value);
-                        }).catch(error => {
-                            debugger;
-                            alert(error);
-                        });
-                };
-            }
-            // byKey(key) {
-            //     // return fetch(this._rootSvcUrl + '/Categories(' + key + ')?$format=json')
-            //     //     .then(response => response.json());
-            //     debugger;
-            //     return fetch(ROOT_SVC_URL + '/Categories(' + key + ')?$format=json')
-            //         .then(response => response.json());
-            // }
+        //
+        // Implementation from https://js.devexpress.com/Documentation/Guide/Data_Layer/Data_Source_Examples/#Custom_Sources
+        //
+        function CategoriesStoreLoad(loadOptions) {
+            return fetch(ROOT_SVC_URL + '/Categories?$format=json')
+                .then(response => response.json())
+                .then(data => Promise.resolve(data.value));
+                // .catch(error => {debugger;});
         }
+        function CategoriesStoreUpdate(key, values) {
+            return fetch(ROOT_SVC_URL + '/Categories(' + key + ')', 
+                {
+                    method: 'PATCH',
+                    //method: 'PUT',
+                    headers: new Headers({
+                        'Content-Type': 'application/json'
+                    }),
+                    body: JSON.stringify(values)
+                })
+                .then(response => {
+                    debugger;
+                    return response.json();
+                })
+                .then(data => {
+                    debugger;
+                    return Promise.resolve(data.value);
+                });
+                // .catch(error => {debugger;});
+        }
+    </script>
+
+    <hr/>
+    <p>new dxDataGrid with ODataSource:</p>
+    <div class="jsdx_odatasource"></div>
+    <script>
+        (function() {
+            const context = new DevExpress.data.ODataContext({
+                url: ROOT_SVC_URL,
+                errorHandler: error => alert(error.message),
+                entities: {
+                    Categories: {
+                        key: 'ID',
+                        fieldTypes: {
+                            ID: 'Int32'
+                        }
+                    },
+                }
+            });
+            new DevExpress.ui.dxDataGrid(document.querySelector('.jsdx_odatasource'),
+                {
+                    dataSource: new DevExpress.data.ODataStore({
+                        store: context.Categories,
+                    }),
+                    columns: ['Name'],
+                    editing: { allowUpdating: true },
+                }
+            );
+        })()
+    </script>
+
+    <hr/>
+    <p>new dxDataGrid with ODataSource on https://js.devexpress.com/Demos/DevAV/odata:</p>
+    <div class="jsdxOdatasourceDevAV"></div>
+    <script>
+        (function() {
+            const context = new DevExpress.data.ODataContext({
+                url: 'https://js.devexpress.com/Demos/DevAV/odata',
+                errorHandler: error => alert(error.message),
+                entities: {
+                    Products: {
+                        key: 'Product_ID',
+                        fieldTypes: {
+                            Product_ID: 'Int32'
+                        }
+                    },
+                },
+            });
+            new DevExpress.ui.dxDataGrid(document.querySelector('.jsdxOdatasourceDevAV'),
+                {
+                    dataSource: new DevExpress.data.ODataStore({
+                        store: context.Categories,
+                    }),
+                    columns: ['Product_Name'],
+                    editing: { allowUpdating: true },
+                }
+            );
+        })()
     </script>
 
     <hr/>
     <p>new dxDataGrid:</p>
     <div class="jsdx"></div>
     <script>
-            (function() {
-                //https://js.devexpress.com/Documentation/ApiReference/Data_Layer/ODataStore
-                //To access an entire OData service, use the ODataContext instead.
-    
-                const dxDataGrid = new DevExpress.ui.dxDataGrid(document.querySelector('.jsdx'),
-                    {
-                        dataSource: new DevExpress.data.DataSource( {
-                            store: new DevExpress.data.CustomStore(new MyCustomStoreArgs())
-                        }),
-                        columns: ['Name'],
-                        editing: { allowUpdating: true },
-                    }
-                );
-            })()
-        </script>
+        (function() {
+            const dxDataGrid = new DevExpress.ui.dxDataGrid(document.querySelector('.jsdx'),
+                {
+                    dataSource: new DevExpress.data.DataSource( {
+                        store: new DevExpress.data.CustomStore({
+                            load: CategoriesStoreLoad,
+                            update: CategoriesStoreUpdate
+                        })
+                    }),
+                    columns: ['Name'],
+                    editing: { allowUpdating: true },
+                }
+            );
+        })()
+    </script>
     
     <hr/>
     <p>Knockout + dxDataGrid:</p>
