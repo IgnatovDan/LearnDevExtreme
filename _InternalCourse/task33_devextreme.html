@@ -70,6 +70,53 @@ c.Angular approach
     </script>
 
     <hr/>
+    <p>new dxButton + new dxTextBox + new dxPopup + &lttemplate&gt:</p>
+    <label>Type something:<div class="jsdx__template__TextBox"></div></label>
+    <div class="jsdx__template__ClickMeButton"></div>
+    <div class="jsdx__template__Popup"></div>
+    <template class="jsdx__template__popupContentTemplate">
+        <div>
+            <label><div data-bind-property="myText"></div></label>
+        </div>
+    </template>
+    <script>
+        'use strict';
+        (function() {
+            let myText = 'something';
+            const dxTextBox = new DevExpress.ui.dxTextBox(document.querySelector('.jsdx__template__TextBox'), {
+                value: myText,
+                onValueChanged: (e) => myText = e.value,
+            });
+            const dxButton = new DevExpress.ui.dxButton(document.querySelector('.jsdx__template__ClickMeButton'), {
+                text: 'Click me',
+                onClick: () => {
+                    const popupContainerEl = document.createElement('div');
+                    document.querySelector('.jsdx__template__Popup').appendChild(popupContainerEl);
+                    const dxPopup = new DevExpress.ui.dxPopup(popupContainerEl, {
+                        title: myText,
+                        contentTemplate: (container) => { 
+                            const popupTemplateEl = document.querySelector('.jsdx__template__popupContentTemplate');
+                            const popupContentEl = document.importNode(popupTemplateEl.content, true);
+                            [].forEach.call(
+                                popupContentEl.querySelectorAll('[data-bind-property]'),
+                                (el) => {
+                                    el.innerText = eval(el.dataset.bindProperty);
+                                });
+                            container[0].appendChild(popupContentEl);
+                        },
+                        onHidden: () => {
+                            dxPopup.dispose();
+                            popupContainerEl.remove();
+                        },
+                        closeOnOutsideClick: true,
+                        visible: true
+                    });
+                }
+            });
+        })();
+    </script>
+
+    <hr/>
     <p>Knockout component + dxTextBox + dxButton:</p>
     <div class=".knockoutContainer" >
         <mycomponent params="message: message"></mycomponent>
@@ -162,6 +209,52 @@ c.Angular approach
                             const labelEl = document.createElement('label');
                             labelEl.innerText = myText;
                             return labelEl;
+                        },
+                        onHidden: () => {
+                            $(popupContainerEl).remove();
+                        },
+                        closeOnOutsideClick: true,
+                        visible: true
+                    });
+                }
+            });
+        })();
+    </script>
+
+    <hr/>
+    <p>jQuery + dxPopup +&lttemplate&gt":</p>
+    <label>Type something:<div class="jqueryTextBox"></div></label>
+    <div class="jqueryClickMeButton"></div>
+    <div class="jqueryPopup"></div>
+    <template class="jquery__popupContentTemplate">
+        <div>
+            <label><div data-bind-property="myText"></div></label>
+        </div>
+    </template>
+    <script>
+        'use strict';
+        (function() {
+            let myText = 'something';
+            const dxTextBox = $('.jqueryTextBox').dxTextBox({
+                value: myText,
+                onValueChanged: (e) => myText = e.value,
+            });
+            const dxButton = $('.jqueryClickMeButton').dxButton({
+                text: 'Click me',
+                onClick: () => {
+                    const popupContainerEl = document.createElement('div');
+                    $('.jqueryPopup').append(popupContainerEl);
+                    const dxPopup = $(popupContainerEl).dxPopup({
+                        title: myText,
+                        contentTemplate: (container) => { 
+                            const popupTemplateEl = document.querySelector('.jquery__popupContentTemplate');
+                            const popupContentEl = document.importNode(popupTemplateEl.content, true);
+                            [].forEach.call(
+                                popupContentEl.querySelectorAll('[data-bind-property]'),
+                                (el) => {
+                                    el.innerText = eval(el.dataset.bindProperty);
+                                });
+                            container[0].appendChild(popupContentEl);
                         },
                         onHidden: () => {
                             $(popupContainerEl).remove();
