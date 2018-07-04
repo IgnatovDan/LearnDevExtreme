@@ -41,9 +41,9 @@ c.Angular approach
         const SERVICES_ODATA_ORG_SVC = 'http://services.odata.org/V3/(S(3zwailwijauqyyhse0tls12h))/OData/OData.svc';
     </script>
 
-    <hr/>
-    <p>javascript/DOM</p>
-    todo
+    <!-- <hr/>
+    <p>javascript/DOM on services.odata.org</p>
+    todo -->
 
     <script>
         //
@@ -53,7 +53,7 @@ c.Angular approach
             return fetch(SERVICES_ODATA_ORG_SVC + '/Categories?$format=json')
                 .then(response => response.json())
                 .then(data => Promise.resolve(data.value));
-                // .catch(error => {debugger;});
+                // .catch(error => {debugger;}); - handled in dxDataGrid
         }
         function CategoriesStoreUpdate(key, values) {
             return fetch(SERVICES_ODATA_ORG_SVC + '/Categories(' + key + ')', 
@@ -73,12 +73,12 @@ c.Angular approach
                     debugger;
                     return Promise.resolve(data.value);
                 });
-                // .catch(error => {debugger;});
+                // .catch(error => {debugger;}); - handled in dxDataGrid
         }
     </script>
 
     <hr/>
-    <p>new dxDataGrid with ODataContext:</p>
+    <p>new dxDataGrid with ODataContext on services.odata.org:</p>
     <div class="jsdx__ODataContext"></div>
     <script>
         (function() {
@@ -107,7 +107,7 @@ c.Angular approach
     </script>
 
     <hr/>
-    <p>new dxDataGrid with ODataStore:</p>
+    <p>new dxDataGrid with ODataStore on services.odata.org:</p>
     <div class="jsdx__ODataStore"></div>
     <script>
         (function() {
@@ -172,10 +172,6 @@ c.Angular approach
                             type: "odata",
                             url: "https://js.devexpress.com/Demos/DevAV/odata/Products"
                         },
-                        select: [
-                            "Product_ID",
-                            "Product_Name",
-                        ],
                     },
                     columns: ['Product_Name'],
                     editing: { allowUpdating: true },
@@ -185,7 +181,7 @@ c.Angular approach
     </script>
 
     <hr/>
-    <p>new dxDataGrid:</p>
+    <p>new dxDataGrid with CustomStore on services.odata.org:</p>
     <div class="jsdx"></div>
     <script>
         (function() {
@@ -203,10 +199,10 @@ c.Angular approach
             );
         })()
     </script>
-    
+<!--     
     <hr/>
     <p>Knockout + dxDataGrid:</p>
-    <!-- https://stackoverflow.com/questions/33757239/how-correct-use-patch-reqvest-with-odata -->
+    https://stackoverflow.com/questions/33757239/how-correct-use-patch-reqvest-with-odata
     todo
 
     <hr/>
@@ -220,6 +216,6 @@ c.Angular approach
     <hr/>
     <p>Angular6:</p>
     todo
-    
+     -->
 </body>
 </html>
