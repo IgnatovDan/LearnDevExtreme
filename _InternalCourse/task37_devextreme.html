@@ -42,13 +42,23 @@ c.Angular approach
         var customers = [{
             "ID": 1,
             "CompanyName": "Super Mart of the West",
+            "Address": "702 SW 8th Street",
+            "City": "Bentonville",
+            "State": "Arkansas",
         }, {
             "ID": 2,
             "CompanyName": "Electronics Depot",
+            "Address": "2455 Paces Ferry Road NW",
+            "City": "Atlanta",
+            "State": "Georgia",
         }, {
             "ID": 3,
             "CompanyName": "K&S Music",
-        }]
+            "Address": "1000 Nicllet Mall",
+            "City": "Minneapolis",
+            "State": "Minnesota",
+        }];
+
 
         //
         // Implementation from https://js.devexpress.com/Documentation/Guide/Data_Layer/Data_Source_Examples/#Custom_Sources
@@ -88,7 +98,7 @@ c.Angular approach
                             key: 'ID'
                         })
                     }),
-                    columns: ['CompanyName'],
+                    columns: ['CompanyName', 'Address', 'City', 'State'],
                     editing: { allowUpdating: true },
                 }
             );
