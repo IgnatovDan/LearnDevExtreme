@@ -37,6 +37,14 @@ c.Angular approach
     </script>
 
     <hr/>
+    <p>javascript/DOM</p>
+    todo
+
+    <hr/>
+    <p>new dxDataGrid:</p>
+    todo
+
+    <hr/>
     <p>Knockout + dxDataGrid (https://js.devexpress.com/Demos/WidgetsGallery/Demo/DataGrid/MasterDetailView/Knockout/Light/):</p>
     <div class="knockoutcontainer">
         <div data-bind="dxDataGrid: categoriesGridOptions">
@@ -94,53 +102,7 @@ c.Angular approach
 
     <hr/>
     <p>jQuery:</p>
-    <div class="jqueryGrid"></div>
-    <script>
-        (function() {
-            const context = new DevExpress.data.ODataContext({
-                url: rootSvcUrl,
-                errorHandler: error => alert(error.message),
-                entities: {
-                    Categories: {
-                        key: 'CategoryID',
-                        fieldTypes: {
-                            CategoryID: 'Int32'
-                        }
-                    },
-                    Products: {
-                        key: 'ProductID',
-                        fieldTypes: {
-                            ProductID: 'Int32',
-                            CategoryID: 'Int32'
-                        }
-                    }
-                }
-            })
-            $('.jqueryGrid').dxDataGrid({
-                dataSource: new DevExpress.data.DataSource( {
-                    store: context.Categories,
-                    expand: ["Products"]
-                }),
-                columns: ['CategoryName'],
-                masterDetail: {
-                    enabled: true,
-                    template: (detailElement, detailInfo) => {
-                        const category = detailInfo.data;
-                        $('<div>')
-                            .text('Description: ' + category.Description)
-                            .appendTo(detailElement);
-
-                        $('<div>')
-                            .dxDataGrid({
-                                columns: ['ProductName'],
-                                dataSource: category.Products,
-                            })
-                            .appendTo(detailElement);
-                    }
-                },
-            });
-        })()
-    </script>
+    todo
 
     <hr/>
     <p>AngularJS:</p>
