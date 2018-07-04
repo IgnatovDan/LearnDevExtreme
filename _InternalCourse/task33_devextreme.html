@@ -13,7 +13,7 @@
     <!-- The AngularJS library -->
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.11/angular.js"></script>
     <!-- The Knockout library -->
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.4.0/knockout-min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.4.0/knockout-debug.js"></script>
     <!-- DevExtreme themes -->
     <link rel="stylesheet" type="text/css" href="https://cdn3.devexpress.com/jslib/18.1.3/css/dx.common.css" />
     <link rel="stylesheet" type="text/css" href="https://cdn3.devexpress.com/jslib/18.1.3/css/dx.light.css" />
@@ -118,9 +118,9 @@ c.Angular approach
 
     <hr/>
     <p>Knockout component + dxTextBox + dxButton:</p>
-    <div class=".knockoutContainer" >
+    <div class="knockoutContainer" >
         <mycomponent params="message: message"></mycomponent>
-        <div class="knockoutPopupContainer"></div>
+        <div class="knockoutContainer__popupContainer"></div>
     </div>
     <script>
         'use strict';
@@ -131,7 +131,7 @@ c.Angular approach
                 }
                 clickMe() {
                     const popupContainerEl = document.createElement('div');
-                    document.querySelector('.knockoutPopupContainer').appendChild(popupContainerEl);
+                    document.querySelector('.knockoutContainer__popupContainer').appendChild(popupContainerEl);
                     const dxPopup = new DevExpress.ui.dxPopup(popupContainerEl, {
                         title: this.message(),
                         contentTemplate: () => { 
@@ -182,6 +182,49 @@ c.Angular approach
                 message: ko.observable('Привет!'),
             };
             ko.applyBindings(model, document.querySelector('.knockoutContainer'));
+        })();
+    </script>
+
+
+    <hr/>
+    <p>Knockout component + dxTextBox + dxButton + dxTemplate:</p>
+    <div class="knockoutContainer__dxTemplate" >
+        <label>Type shomething:<div data-bind="dxTextBox: {text: message}"></div></label>
+        <div data-bind="dxButton: {text: 'Click me', onClick: clickMe}"></div>
+        
+        <dxtemplatecomponent params="message: message"></dxtemplatecomponent>
+        <div data-bind="with: message">
+            <div data-bind="dxPopup: $parent.popupOptions">
+                <div data-options="dxTemplate: { name:'knockout_popup_template1' }">
+                    Message: <span data-bind="text: $data"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        'use strict';
+        (function() {
+            class MyModel {
+                constructor() {
+                    this.message = ko.observable('Привет!');
+                    this.visiblePopup = ko.observable(false);
+                    this.popupOptions = {
+                        width: 300,
+                        height: 250,
+                        contentTemplate: "knockout_popup_template1",
+                        showTitle: true,
+                        title: "Hello!!!",
+                        visible: this.visiblePopup,
+                        dragEnabled: false,
+                        closeOnOutsideClick: true
+                    };
+                }
+                clickMe() {
+                    this.visiblePopup(true);
+                }
+            };
+
+            ko.applyBindings(new MyModel(), document.querySelector('.knockoutContainer__dxTemplate'));
         })();
     </script>
 
@@ -268,31 +311,31 @@ c.Angular approach
     </script>
 
     <hr/>
-    <p>AngularJS:</p>
-    <div ng-app="app2">
-        <div ng-controller="App2MyController1">
+    <p>AngularJS + dxPopup.dxTemplate:</p>
+    <div ng-app="appTemplate">
+        <div ng-controller="AppTemplateMyController1">
             <div dx-text-box="{valueChangeEvent: 'input'}" ng-model="message"></div>
             <div dx-button="clickMeButtonOptions"></div>
             <div ng-init="message">
-                <div dx-popup="popupOptions"></div>
+                <div dx-popup="popupOptions">
+                    <div data-options="dxTemplate: { name: 'myTemplate' }">
+                        Message: '{{message}}'
+                    </div>
+                </div>
             </div>
         </div>
     </div>
     <script>
         'use strict';
-        const myApp = angular.module('app2', ['dx']);
+        const appTemplate = angular.module('appTemplate', ['dx']);
         (function () {
-            myApp.controller('App2MyController1', ['$scope', App2MyController1]);
+            appTemplate.controller('AppTemplateMyController1', ['$scope', AppTemplateMyController1]);
 
-            function App2MyController1($scope) {
+            function AppTemplateMyController1($scope) {
                 $scope._message = 'Хелло AngularJS!';
                 $scope.popupVisible = false;
                 $scope.popupOptions = {
-                    contentTemplate: () => { 
-                        const labelEl = document.createElement('label');
-                        labelEl.innerText = $scope.message;
-                        return labelEl;
-                    },
+                    contentTemplate: 'myTemplate',
                     title: 'Hello JS',
                     closeOnOutsideClick: true,
                     bindingOptions: {
@@ -307,10 +350,6 @@ c.Angular approach
                 $scope.clickMeButtonOptions = {
                     text: 'Click me',
                     onClick: () => {
-                        //TODO: it's not clear how to create a new DOM element, bind it to angular objects, attach dxPopup code,
-                        //pass values to show, get values back when a button is clicked and close popup
-                        //
-                        //With the current approach DOM elements are
                         $scope.popupVisible = true;
                     },
                 }
