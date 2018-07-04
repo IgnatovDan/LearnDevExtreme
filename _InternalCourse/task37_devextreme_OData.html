@@ -150,8 +150,8 @@ c.Angular approach
             });
             new DevExpress.ui.dxDataGrid(document.querySelector('.jsdxOdatasourceDevAV'),
                 {
-                    dataSource: new DevExpress.data.ODataStore({
-                        store: context.Categories,
+                    dataSource: new DevExpress.data.DataSource({
+                        store: context.Products,
                     }),
                     columns: ['Product_Name'],
                     editing: { allowUpdating: true },
