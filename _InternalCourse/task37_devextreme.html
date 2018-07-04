@@ -38,151 +38,41 @@ c.Angular approach
     </pre>
     <script>
         'use strict';
-        const SERVICES_ODATA_ORG_SVC = 'http://services.odata.org/V3/(S(3zwailwijauqyyhse0tls12h))/OData/OData.svc';
+
+        var customers = [{
+            "ID": 1,
+            "CompanyName": "Super Mart of the West",
+        }, {
+            "ID": 2,
+            "CompanyName": "Electronics Depot",
+        }, {
+            "ID": 3,
+            "CompanyName": "K&S Music",
+        }]
+
+        //
+        // Implementation from https://js.devexpress.com/Documentation/Guide/Data_Layer/Data_Source_Examples/#Custom_Sources
+        //
+        function CustomersStoreLoad(loadOptions) {
+            return Promise.resolve({ data: customers, totalCount: customers.length });
+        }
+        function CustomersStoreUpdate(key, values) {
+            const targetObj = customers.find((item) => { if(item.ID === key) return item;});
+            Object.getOwnPropertyNames(values).forEach(propertyName => targetObj[propertyName] = values[propertyName]);
+            return Promise.resolve();
+        }
+        function CustomersStoreRemove(key) {
+            customers.splice
+        }
+        function CustomersStoreInsert(values) {
+            //copy values and assign new value to the 'ID' property
+        }
+        
     </script>
 
     <hr/>
     <p>javascript/DOM</p>
     todo
-
-    <script>
-        //
-        // Implementation from https://js.devexpress.com/Documentation/Guide/Data_Layer/Data_Source_Examples/#Custom_Sources
-        //
-        function CategoriesStoreLoad(loadOptions) {
-            return fetch(SERVICES_ODATA_ORG_SVC + '/Categories?$format=json')
-                .then(response => response.json())
-                .then(data => Promise.resolve(data.value));
-                // .catch(error => {debugger;});
-        }
-        function CategoriesStoreUpdate(key, values) {
-            return fetch(SERVICES_ODATA_ORG_SVC + '/Categories(' + key + ')', 
-                {
-                    method: 'PATCH',
-                    //method: 'PUT',
-                    headers: new Headers({
-                        'Content-Type': 'application/json'
-                    }),
-                    body: JSON.stringify(values)
-                })
-                .then(response => {
-                    debugger;
-                    return response.json();
-                })
-                .then(data => {
-                    debugger;
-                    return Promise.resolve(data.value);
-                });
-                // .catch(error => {debugger;});
-        }
-    </script>
-
-    <hr/>
-    <p>new dxDataGrid with ODataContext:</p>
-    <div class="jsdx__ODataContext"></div>
-    <script>
-        (function() {
-            const context = new DevExpress.data.ODataContext({
-                url: SERVICES_ODATA_ORG_SVC,
-                errorHandler: error => alert(error.message),
-                entities: {
-                    Categories: {
-                        key: 'ID',
-                        fieldTypes: {
-                            ID: 'Int32'
-                        }
-                    },
-                }
-            });
-            new DevExpress.ui.dxDataGrid(document.querySelector('.jsdx__ODataContext'),
-                {
-                    dataSource: new DevExpress.data.ODataStore({
-                        store: context.Categories,
-                    }),
-                    columns: ['Name'],
-                    editing: { allowUpdating: true },
-                }
-            );
-        })()
-    </script>
-
-    <hr/>
-    <p>new dxDataGrid with ODataStore:</p>
-    <div class="jsdx__ODataStore"></div>
-    <script>
-        (function() {
-            new DevExpress.ui.dxDataGrid(document.querySelector('.jsdx__ODataStore'),
-                {
-                    dataSource: {
-                        store: {
-                            type: "odata",
-                            url: SERVICES_ODATA_ORG_SVC + '/Categories'
-                        },
-                        select: [
-                            "ID",
-                            "Name",
-                        ],
-                    },
-                    columns: ['Name'],
-                    editing: { allowUpdating: true },
-                }
-            );
-        })()
-    </script>
-
-
-    <hr/>
-    <p>new dxDataGrid with ODataContext on https://js.devexpress.com/Demos/DevAV/odata:</p>
-    <div class="jsdxOdatasourceDevAV"></div>
-    <script>
-        (function() {
-            const context = new DevExpress.data.ODataContext({
-                url: 'https://js.devexpress.com/Demos/DevAV/odata',
-                errorHandler: error => alert(error.message),
-                entities: {
-                    Products: {
-                        key: 'Product_ID',
-                        fieldTypes: {
-                            Product_ID: 'Int32'
-                        }
-                    },
-                },
-            });
-            new DevExpress.ui.dxDataGrid(document.querySelector('.jsdxOdatasourceDevAV'),
-                {
-                    dataSource: new DevExpress.data.ODataStore({
-                        store: context.Categories,
-                    }),
-                    columns: ['Product_Name'],
-                    editing: { allowUpdating: true },
-                }
-            );
-        })()
-    </script>
-
-    <hr/>
-    <p>new dxDataGrid with ODataStore on https://js.devexpress.com/Demos/DevAV/odata:</p>
-    <div class="jsdxOdatastoreDevAV"></div>
-    <script>
-        (function() {
-            new DevExpress.ui.dxDataGrid(document.querySelector('.jsdxOdatastoreDevAV'),
-                {
-                    dataSource: {
-                        store: {
-                            type: "odata",
-                            url: "https://js.devexpress.com/Demos/DevAV/odata/Products"
-                        },
-                        select: [
-                            "Product_ID",
-                            "Product_Name",
-                        ],
-                    },
-                    columns: ['Product_Name'],
-                    editing: { allowUpdating: true },
-                }
-            );
-        })()
-    </script>
 
     <hr/>
     <p>new dxDataGrid:</p>
@@ -193,11 +83,12 @@ c.Angular approach
                 {
                     dataSource: new DevExpress.data.DataSource( {
                         store: new DevExpress.data.CustomStore({
-                            load: CategoriesStoreLoad,
-                            update: CategoriesStoreUpdate
+                            load: CustomersStoreLoad,
+                            update: CustomersStoreUpdate,
+                            key: 'ID'
                         })
                     }),
-                    columns: ['Name'],
+                    columns: ['CompanyName'],
                     editing: { allowUpdating: true },
                 }
             );
@@ -206,7 +97,6 @@ c.Angular approach
     
     <hr/>
     <p>Knockout + dxDataGrid:</p>
-    <!-- https://stackoverflow.com/questions/33757239/how-correct-use-patch-reqvest-with-odata -->
     todo
 
     <hr/>
