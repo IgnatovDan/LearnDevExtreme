@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+
+    <!-- https://js.devexpress.com/Documentation/Guide/Getting_Started/Installation/CDN_Services/ -->
+
+    <!-- DevExtreme dependencies -->
+    <script type="text/javascript" src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-3.1.0.js"></script>
+    <!-- The AngularJS library -->
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.11/angular.js"></script>
+    <!-- The Knockout library -->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.4.0/knockout-debug.js"></script>
+    <!-- DevExtreme themes -->
+    <link rel="stylesheet" type="text/css" href="https://cdn3.devexpress.com/jslib/18.1.3/css/dx.common.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdn3.devexpress.com/jslib/18.1.3/css/dx.light.css" />
+    <!-- A DevExtreme library -->
+    <script type="text/javascript" src="https://cdn3.devexpress.com/jslib/18.1.3/js/dx.all.debug.js"></script>
+</head>
+<body>
+    <pre>
+    DevExtreme - Master-detail grid
+
+Implement a master-detail grid. Data can be generated manually.
+Alternatively, use the Categories and Products entities from the (http://services.odata.org/V3/Northwind/Northwind.svc/) OData service (hint: use ODataContext/ODataStore). 
+
+a.Knockout approach
+b.jQuery approach
+c.Angular approach
+    </pre>
+    <script>
+        'use strict';
+        const rootSvcUrl = 'http://services.odata.org/V3/Northwind/Northwind.svc';
+    </script>
+
+    <hr/>
+    <p>javascript/DOM</p>
+    <div class="js"></div>
+    <script>
+        (function() {
+            class Store {
+                constructor(rootSvcUrl) {
+                    this._rootSvcUrl = rootSvcUrl;
+                }
+                getCategoriesPromise() {
+                    //todo: data versions can be different if loaded in several requests (getCategoryPromise can return new value for the CategoryName property of the same CategoryID object)
+                    // fetch all required data in a single request.
+                    return fetch(this._rootSvcUrl + '/Categories?$select=CategoryID,CategoryName&$format=json')
+                        .then(response => response.json())
+                        .then(data => Promise.resolve(data.value));
+                }
+                getCategoryPromise(categoryId) {
+                    return fetch(this._rootSvcUrl + '/Categories(' + categoryId + ')?$format=json')
+                        .then(response => response.json())
+                        .then(data => Promise.resolve(data));
+                }
+                getProductsPromise(categoryID) {
+                    return fetch(this._rootSvcUrl + '/Products?$filter=CategoryID eq ' + categoryID + '&$format=json')
+                        .then(response => response.json())
+                        .then(data => Promise.resolve(data.value));
+                }
+            }
+
+            class Grid {
+                constructor({ queryCategoriesPromise, queryProductsPromise, queryCategoryPromise}) {
+                    this._queryCategoriesPromise = queryCategoriesPromise;
+                    this._queryProductsPromise = queryProductsPromise;
+                    this.queryCategoryPromise = queryCategoryPromise;
+
+                    this.element = document.createElement('div');
+                }
+
+                _toggleCategoryDetails(categoryEl) {
+                    let detailsEl = categoryEl.querySelector('.' + Grid.CATEGORY_DETAILS_ELEMENT_CSS_CLASS);
+                    if(detailsEl) {
+                        categoryEl.removeChild(detailsEl);
+                    }
+                    else {
+                        detailsEl = document.createElement('div');
+                        detailsEl.classList.add(Grid.CATEGORY_DETAILS_ELEMENT_CSS_CLASS);
+                        detailsEl.innerHTML = 'Loading...';
+                        this._renderCategoryDetails(detailsEl, categoryEl.dataset[Grid.CATEGORY_DATASET_CategoryID]);
+                        categoryEl.appendChild(detailsEl);
+                    }
+                }
+                _renderCategories(targetEl, categories) {
+                    const ulEl = document.createElement('ul');
+                    categories.forEach(item => {
+                        const liEl = document.createElement('li');
+                        liEl.innerText = item.CategoryName;
+                        liEl.addEventListener('click', (e) => { 
+                            if(e.target === e.currentTarget) {
+                                this._toggleCategoryDetails(e.target);
+                            }
+                        });
+                        liEl.dataset[Grid.CATEGORY_DATASET_CategoryID] = item.CategoryID;
+                        ulEl.appendChild(liEl);
+                    });
+                    targetEl.innerHTML = null;
+                    targetEl.appendChild(ulEl);
+                }
+                _renderCategoryDetails(targetEl, categoryId) {
+                    targetEl.innerHTML = null;
+
+                    const detailsEl = document.createElement('div');
+                    this.queryCategoryPromise({ categoryId })
+                        .then(category => detailsEl.innerText = "Description: " + category.Description);
+                    targetEl.appendChild(detailsEl);
+
+                    const productsEl = document.createElement('div');
+                    productsEl.innerHTML = 'Loading...';
+                    targetEl.appendChild(productsEl);
+                    setTimeout(
+                        () => {
+                            this._queryProductsPromise({ categoryId })
+                                .then(products => {
+                                    this.isWaitingGetProductsPromise = false;
+                                    this._renderProducts(productsEl, products);
+                                });
+                        },
+                        1000);
+                }
+                _renderProducts(targetEl, products) {
+                    targetEl.innerHTML = null;
+                    const ulEl = document.createElement('ul');
+                    products.forEach(item => {
+                        const liEl = document.createElement('li');
+                        liEl.innerText = item.ProductName;
+                        ulEl.appendChild(liEl);
+                    });
+                    targetEl.appendChild(ulEl);
+                }
+
+                render() {
+                    this.element.innerText = 'Loading...';
+                    setTimeout(
+                        () => this._queryCategoriesPromise().then(categories => this._renderCategories(this.element, categories)),
+                        1000);
+                }
+            }
+            Grid.CATEGORY_DETAILS_ELEMENT_CSS_CLASS = 'js__category__details';
+            Grid.CATEGORY_DATASET_CategoryID = 'categoryid';
+
+            const store = new Store(rootSvcUrl);
+            const grid = new Grid({
+                queryCategoriesPromise: () => store.getCategoriesPromise(),
+                queryProductsPromise: (e) => store.getProductsPromise(e.categoryId),
+                queryCategoryPromise: (e) => store.getCategoryPromise(e.categoryId),
+            });
+            document.querySelector('.js').appendChild(grid.element);
+            grid.render();
+        })();
+    </script>
+
+    <hr/>
+    <p>new dxDataGrid:</p>
+    <div class="jsdx"></div>
+    <script>
+        (function() {
+            //https://js.devexpress.com/Documentation/ApiReference/Data_Layer/ODataStore
+            //To access an entire OData service, use the ODataContext instead.
+
+            const context = new DevExpress.data.ODataContext({
+                url: rootSvcUrl,
+                errorHandler: error => alert(error.message),
+                entities: {
+                    Categories: {
+                        key: 'CategoryID',
+                        fieldTypes: {
+                            CategoryID: 'Int32'
+                        }
+                    },
+                    Products: {
+                        key: 'ProductID',
+                        fieldTypes: {
+                            ProductID: 'Int32',
+                            CategoryID: 'Int32'
+                        }
+                    }
+                }
+            });
+            const dxDataGrid = new DevExpress.ui.dxDataGrid(document.querySelector('.jsdx'),
+                {
+                    dataSource: new DevExpress.data.DataSource( {
+                        store: context.Categories,
+                        expand: ["Products"]
+                    }),
+                    columns: ['CategoryName'],
+                    masterDetail: {
+                        enabled: true,
+                        template: (detailElement, detailInfo) => {
+                            let detailEl = detailElement;
+                            if(!detailElement.appendChild) {
+                                // todo: there is no the 'appendChild' method if I added a link to jQuery
+                                detailEl = detailElement[0];
+                            }
+
+                            const category = detailInfo.data;
+                            const captionEl = document.createElement('div');
+                            captionEl.innerText = 'Description: ' + category.Description;
+                            detailEl.appendChild(captionEl);
+
+                            const productsEl = document.createElement('div');
+                            new DevExpress.ui.dxDataGrid(productsEl,
+                                {
+                                    columns: ['ProductName'],
+                                    dataSource: category.Products,
+                                }
+                            );
+
+                            detailEl.appendChild(productsEl);
+                        }
+                    },
+                }
+            );
+        })()
+    </script>
+
+    <hr/>
+    <p>Knockout + dxDataGrid:</p>
+    <div class=".knockoutcontainer">
+        <mycomponent params="categories: categories"></mycomponent>
+    </div>
+    <script>
+        (function() {
+
+            class MyModel {
+                constructor({ categories = [] }) {
+                    this.categoriesGridOptions = {
+                        dataSource: new DevExpress.data.DataSource( {
+                            store: context.Categories,
+                            expand: ["Products"]
+                        }),
+                        columns: ['CategoryName'],
+                        masterDetail: {
+                            enabled: true,
+                            template: (detailElement, detailInfo) => {
+                                let detailEl = detailElement;
+                                if(!detailElement.appendChild) {
+                                    // todo: there is no the 'appendChild' method if I added a link to jQuery
+                                    detailEl = detailElement[0];
+                                }
+
+                                const category = detailInfo.data;
+                                const captionEl = document.createElement('div');
+                                captionEl.innerText = 'Description: ' + category.Description;
+                                detailEl.appendChild(captionEl);
+
+                                const productsEl = document.createElement('div');
+                                new DevExpress.ui.dxDataGrid(productsEl,
+                                    {
+                                        columns: ['ProductName'],
+                                        dataSource: category.Products,
+                                    }
+                                );
+
+                                detailEl.appendChild(productsEl);
+                            }
+                        },
+                    };
+                }
+            }
+
+            ko.components.register('mycomponent', {
+                viewModel: MyModel,
+                template: '<div data-bind="dxDataGrid: categoriesGridOptions"></div>'
+            });
+
+            const context = new DevExpress.data.ODataContext({
+                url: rootSvcUrl,
+                errorHandler: error => alert(error.message),
+                entities: {
+                    Categories: {
+                        key: 'CategoryID',
+                        fieldTypes: {
+                            CategoryID: 'Int32'
+                        }
+                    },
+                    Products: {
+                        key: 'ProductID',
+                        fieldTypes: {
+                            ProductID: 'Int32',
+                            CategoryID: 'Int32'
+                        }
+                    }
+                }
+            })
+            const model = {
+                categories: context.Categories,
+            }
+            ko.applyBindings(model, document.querySelector('.knockoutcontainer'));
+        })()
+    </script>
+
+    <hr/>
+    <p>jQuery:</p>
+    <div class="jqueryGrid"></div>
+    <script>
+        (function() {
+            const context = new DevExpress.data.ODataContext({
+                url: rootSvcUrl,
+                errorHandler: error => alert(error.message),
+                entities: {
+                    Categories: {
+                        key: 'CategoryID',
+                        fieldTypes: {
+                            CategoryID: 'Int32'
+                        }
+                    },
+                    Products: {
+                        key: 'ProductID',
+                        fieldTypes: {
+                            ProductID: 'Int32',
+                            CategoryID: 'Int32'
+                        }
+                    }
+                }
+            })
+            $('.jqueryGrid').dxDataGrid({
+                dataSource: new DevExpress.data.DataSource( {
+                    store: context.Categories,
+                    expand: ["Products"]
+                }),
+                columns: ['CategoryName'],
+                masterDetail: {
+                    enabled: true,
+                    template: (detailElement, detailInfo) => {
+                        const category = detailInfo.data;
+                        $('<div>')
+                            .text('Description: ' + category.Description)
+                            .appendTo(detailElement);
+
+                        $('<div>')
+                            .dxDataGrid({
+                                columns: ['ProductName'],
+                                dataSource: category.Products,
+                            })
+                            .appendTo(detailElement);
+                    }
+                },
+            });
+        })()
+    </script>
+
+    <hr/>
+    <p>AngularJS:</p>
+    <div ng-app="app1">
+        <div ng-controller="Controller1">
+            <div dx-data-grid="gridOptions" dx-item-alias="category">
+                <div data-options="dxTemplate: {name: 'detail'}">
+                    <div>Description: {{category.Description}}</div>
+                    <div dx-data-grid="{
+                        dataSource: category.data.Products,
+                        columns: ['ProductName'],
+                    }"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        (function() {
+            const myApp = angular.module('app1', ['dx']);
+            myApp.controller('Controller1', ['$scope', Controller1]);
+
+            const context = new DevExpress.data.ODataContext({
+                url: rootSvcUrl,
+                errorHandler: error => alert(error.message),
+                entities: {
+                    Categories: {
+                        key: 'CategoryID',
+                        fieldTypes: {
+                            CategoryID: 'Int32'
+                        }
+                    },
+                    Products: {
+                        key: 'ProductID',
+                        fieldTypes: {
+                            ProductID: 'Int32',
+                            CategoryID: 'Int32'
+                        }
+                    }
+                }
+            })
+            
+            function Controller1($scope) {
+                $scope.categories = new DevExpress.data.DataSource( {
+                    store: context.Categories,
+                    expand: ["Products"]
+                }),
+                $scope.gridOptions = {
+                    dataSource: $scope.categories,
+                    columns: ['CategoryName'],
+                    masterDetail: {
+                        enabled: true,
+                        template: "detail"
+                    }
+                };
+            }
+        })();
+    </script>
+
+    <hr/>
+    <p>Angular6:</p>
+    todo
+    
+</body>
+</html>
