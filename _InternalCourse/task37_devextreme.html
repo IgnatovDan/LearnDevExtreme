@@ -118,7 +118,9 @@ c.Angular approach
         let customersCurrentIdentity = 1000;
         let tasksCurrentIdentity = 1000;
         function updateDatabaseContentElement() {
+            document.querySelector('.databaseCustomers__count').innerText = 'Customers (count: ' + customersDatabaseArray.length + ')';
             document.querySelector('.databaseCustomers').innerText = JSON.stringify(customersDatabaseArray, null, 2);
+            document.querySelector('.databaseTasks__count').innerText = 'Tasks (count: ' + tasksDatabaseArray.length + ')';
             document.querySelector('.databaseTasks').innerText = JSON.stringify(tasksDatabaseArray, null, 2);
         }
         
@@ -389,7 +391,64 @@ c.Angular approach
     
     <hr/>
     <p>jQuery:</p>
-    todo
+    <div class="jqueryGrid"></div>
+    <script>
+        (function() {
+            $('.jqueryGrid').dxDataGrid({
+                dataSource: 
+                    new DevExpress.data.DataSource( {
+                        store: new DevExpress.data.CustomStore(
+                            new CustomStoreOnArrayArgs({
+                                targetArray: customersDatabaseArray,
+                                keyPropertyName: 'ID',
+                                expand: {
+                                    propertyName: 'Tasks',
+                                    backRefPropertyName: 'CustomerID',
+                                }
+                            })
+                        ),
+                    }),
+                columns: ['CompanyName', 'Address', 'City', 'State'],
+                editing: {
+                    allowUpdating: true,
+                    allowAdding: true,
+                    allowDeleting: true
+                },
+                masterDetail: {
+                    enabled: true,
+                    template: (detailElement, detailInfo) => {
+                        const customer = detailInfo.data;
+                        $('<div>')
+                            .text('Total tasks: ' + customer.Tasks.length)
+                            .appendTo(detailElement);
+
+                        $('<div>')
+                            .dxDataGrid({
+                                dataSource:
+                                    new DevExpress.data.DataSource( {
+                                        store: new DevExpress.data.CustomStore(
+                                            new CustomStoreOnArrayArgs({
+                                                targetArray: tasksDatabaseArray,
+                                                keyPropertyName: 'ID', 
+                                                association: {
+                                                    parentRefPropertyName: 'CustomerID', parentRefPropertyValue: customer.ID
+                                                }
+                                            })
+                                        ),
+                                    }),
+                                columns: ['Subject', 'Priority'],
+                                editing: {
+                                    allowUpdating: true,
+                                    allowAdding: true,
+                                    allowDeleting: true
+                                },
+                            })
+                            .appendTo(detailElement);
+                    }
+                },
+            });
+        })()
+    </script>
 
     <hr/>
     <p>AngularJS:</p>
@@ -401,9 +460,9 @@ c.Angular approach
     
     <hr/>
     <button onclick="updateDatabaseContentElement()">Update database content</button>
-    <p><b>Customers:</b></p>
+    <b><div class="databaseCustomers__count"></div></b>
     <pre class="databaseCustomers"></pre>
-    <p><b>Tasks:</b></p>
+    <b><div class="databaseTasks__count"></div></b>
     <pre class="databaseTasks"></pre>
 </body>
 </html>
