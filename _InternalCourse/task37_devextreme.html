@@ -127,6 +127,7 @@ c.Angular approach
         //
         // Implementation on separate functions from https://js.devexpress.com/Documentation/Guide/Data_Layer/Data_Source_Examples/#Custom_Sources
         // I don't like it because of direct refs to global vars.
+        // It can be 'function' + 'self/that closure'.
         //
         function customersStoreLoad(loadOptions) {
             return new Promise((resolve) => {
@@ -173,15 +174,16 @@ c.Angular approach
         // Implementation on 'class', I like it better.
         //
         class CustomStoreOnArrayArgs {
-            constructor({ targetArray = [], keyPropertyName = '', masterDetails = null }) {
+            constructor({ targetArray = [], keyPropertyName = '', association = null, expand = null }) {
                 this._targetArray = targetArray;
                 this._keyPropertyName = keyPropertyName;  // CustomStore can pass objects but key is often required
-                this._masterDetails = masterDetails;
+                this._association = association;
+                this._expand = expand;
                 this._initializeMembersForCustomStore();
             }
             _initializeMembersForCustomStore() {
                 //
-                // todo: change to 'function' + 'self/that' if you need to access properties of the outer 'this' object
+                // todo: change to 'function' + 'self/that closure' if you need to access properties of the outer 'this' object
                 // What are the common implementations for the requirements like in the CustomStore.ctor(args) ???
                 //
                 this.load = this._load.bind(this);
@@ -193,11 +195,11 @@ c.Angular approach
             _load(loadOptions) {
                 return new Promise((resolve) => {
                     let filteredTargetArray = null;
-                    if(this._masterDetails) {
+                    if(this._association) {
                         //
                         // Looks like https://js.devexpress.com/Demos/WidgetsGallery/Demo/DataGrid/WebAPIService/jQuery/Light/
                         //
-                        filteredTargetArray = this._targetArray.filter(item => item[this._masterDetails.parentRefPropertyName] === this._masterDetails.parentRefPropertyValue);
+                        filteredTargetArray = this._targetArray.filter(item => item[this._association.parentRefPropertyName] === this._association.parentRefPropertyValue);
                     }
                     else {
                         filteredTargetArray = this._targetArray.slice();
@@ -205,6 +207,11 @@ c.Angular approach
                     const localArray = filteredTargetArray.map((item) => {
                         const result = {};
                         Object.assign(result, item);
+                        if(this._expand) {
+                            result[this._expand.propertyName] = {
+                                length: tasksDatabaseArray.filter(task => task[this._expand.backRefPropertyName] === item[this._keyPropertyName]).length
+                            };
+                        }
                         return result;
                     });
                     resolve({ data: localArray, totalCount: localArray.length });
@@ -233,8 +240,8 @@ c.Angular approach
                     };
                     tasksCurrentIdentity++;
                     Object.assign(newItem, values); //Object.keys(values) / for(prop in values) ?
-                    if(this._masterDetails) {
-                        newItem[this._masterDetails.parentRefPropertyName] = this._masterDetails.parentRefPropertyValue;
+                    if(this._association) {
+                        newItem[this._association.parentRefPropertyName] = this._association.parentRefPropertyValue;
                     }
                     this._targetArray.push(newItem);
                     resolve();
@@ -286,7 +293,7 @@ c.Angular approach
                             const tasksEl = document.createElement('div');
                             const tasksGrid = new DevExpress.ui.dxDataGrid(tasksEl,
                                 {
-                                    columns: ['Subject'],
+                                    columns: ['Subject', 'Priority'],
                                     dataSource:
                                         new DevExpress.data.DataSource( {
                                             store: new DevExpress.data.CustomStore(
@@ -316,9 +323,70 @@ c.Angular approach
     </script>
     
     <hr/>
-    <p>Knockout + dxDataGrid:</p>
-    todo
-
+    <p>Knockout + dxDataGrid (https://js.devexpress.com/Demos/WidgetsGallery/Demo/DataGrid/MasterDetailView/Knockout/Light/):</p>
+    <div class="knockoutcontainer">
+        <div data-bind="dxDataGrid: gridOptions">
+            <div data-options="dxTemplate: {name: 'customerdetails1'}">
+                <div data-bind="text: 'Total tasks: ' + data.Tasks.length"></div>
+                <div data-bind="dxDataGrid: {
+                    dataSource: 
+                        new DevExpress.data.DataSource( {
+                            store: new DevExpress.data.CustomStore(
+                                new CustomStoreOnArrayArgs({
+                                    targetArray: tasksDatabaseArray,
+                                    keyPropertyName: 'ID', 
+                                    association: {
+                                        parentRefPropertyName: 'CustomerID', parentRefPropertyValue: data.ID
+                                    }
+                                })
+                            ),
+                        }),
+                    columns: ['Subject', 'Priority'],
+                    editing: {
+                        allowUpdating: true,
+                        allowAdding: true,
+                        allowDeleting: true
+                    },
+                }">
+            </div>
+        </div>
+        </div>
+    </div>
+    <script>
+        (function() {
+            class MyModel {
+                constructor({ customersDatabaseArray = [] }) {
+                    this.gridOptions = {
+                        dataSource:
+                            new DevExpress.data.DataSource( {
+                                store: new DevExpress.data.CustomStore(
+                                    new CustomStoreOnArrayArgs({
+                                        targetArray: customersDatabaseArray,
+                                        keyPropertyName: 'ID',
+                                        expand: {
+                                            propertyName: 'Tasks',
+                                            backRefPropertyName: 'CustomerID',
+                                        }
+                                    })
+                                ),
+                            }),
+                        columns: ['CompanyName', 'Address', 'City', 'State'],
+                        editing: {
+                            allowUpdating: true,
+                            allowAdding: true,
+                            allowDeleting: true
+                        },
+                        masterDetail: {
+                            enabled: true,
+                            template: 'customerdetails1',
+                        },
+                    };
+                }
+            }
+            ko.applyBindings(new MyModel({customersDatabaseArray}), document.querySelector('.knockoutcontainer'));
+        })()
+    </script>
+    
     <hr/>
     <p>jQuery:</p>
     todo
