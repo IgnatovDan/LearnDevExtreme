@@ -36,48 +36,212 @@ a.Knockout approach
 b.jQuery approach
 c.Angular approach
     </pre>
+    <button onclick="updateDatabaseContentElement()">Update database content</button>
     <script>
         'use strict';
 
-        var customers = [{
-            "ID": 1,
+        const tasksDatabaseArray = [
+            {
+                "ID": 1,
+                "Subject": "Choose between PPO and HMO Health Plan",
+                "StartDate": "2013/02/15",
+                "DueDate": "2013/04/15",
+                "Status": "In Progress",
+                "Priority": "High",
+                "Completion": 75,
+                "CustomerID": 0,
+            }, {
+                "ID": 2,
+                "Subject": "Google AdWords Strategy",
+                "StartDate": "2013/02/16",
+                "DueDate": "2013/02/28",
+                "Status": "Completed",
+                "Priority": "High",
+                "Completion": 100,
+                "CustomerID": 0,
+            }, {
+                "ID": 3,
+                "Subject": "Update Personnel Files",
+                "StartDate": "2013/02/03",
+                "DueDate": "2013/02/28",
+                "Status": "Completed",
+                "Priority": "High",
+                "Completion": 100,
+                "CustomerID": 0,
+            }, {
+                "ID": 4,
+                "Subject": "Review Health Insurance Options Under the Affordable Care Act",
+                "StartDate": "2013/02/12",
+                "DueDate": "2013/04/25",
+                "Status": "In Progress",
+                "Priority": "High",
+                "Completion": 50,
+                "CustomerID": 1,
+            }, {
+                "ID": 5,
+                "Subject": "Non-Compete Agreements",
+                "StartDate": "2013/03/12",
+                "DueDate": "2013/03/14",
+                "Status": "Completed",
+                "Priority": "Low",
+                "Completion": 100,
+                "CustomerID": 2,
+            }, {
+                "ID": 6,
+                "Subject": "Deliver R&D Plans for 2013",
+                "StartDate": "2013/03/01",
+                "DueDate": "2013/03/10",
+                "Status": "Completed",
+                "Priority": "High",
+                "Completion": 100,
+                "CustomerID": 2,
+            }
+        ];
+        const customersDatabaseArray = [{
+            "ID": 0,
             "CompanyName": "Super Mart of the West",
             "Address": "702 SW 8th Street",
             "City": "Bentonville",
             "State": "Arkansas",
         }, {
-            "ID": 2,
+            "ID": 1,
             "CompanyName": "Electronics Depot",
             "Address": "2455 Paces Ferry Road NW",
             "City": "Atlanta",
             "State": "Georgia",
         }, {
-            "ID": 3,
+            "ID": 2,
             "CompanyName": "K&S Music",
             "Address": "1000 Nicllet Mall",
             "City": "Minneapolis",
             "State": "Minnesota",
         }];
-
-
-        //
-        // Implementation from https://js.devexpress.com/Documentation/Guide/Data_Layer/Data_Source_Examples/#Custom_Sources
-        //
-        function CustomersStoreLoad(loadOptions) {
-            return Promise.resolve({ data: customers, totalCount: customers.length });
-        }
-        function CustomersStoreUpdate(key, values) {
-            const targetObj = customers.find((item) => { if(item.ID === key) return item;});
-            Object.getOwnPropertyNames(values).forEach(propertyName => targetObj[propertyName] = values[propertyName]);
-            return Promise.resolve();
-        }
-        function CustomersStoreRemove(key) {
-            customers.splice
-        }
-        function CustomersStoreInsert(values) {
-            //copy values and assign new value to the 'ID' property
+        let customersCurrentIdentity = 1000;
+        let tasksCurrentIdentity = 1000;
+        function updateDatabaseContentElement() {
+            document.querySelector('.databaseCustomers').innerText = JSON.stringify(customersDatabaseArray, null, 2);
+            document.querySelector('.databaseTasks').innerText = JSON.stringify(tasksDatabaseArray, null, 2);
         }
         
+        updateDatabaseContentElement();
+
+        //
+        // Implementation on separate functions from https://js.devexpress.com/Documentation/Guide/Data_Layer/Data_Source_Examples/#Custom_Sources
+        // I don't like it because of direct refs to global vars.
+        //
+        function customersStoreLoad(loadOptions) {
+            return new Promise((resolve) => {
+                const customersLocal = customersDatabaseArray.map(customer => {
+                    const result = {};
+                    Object.assign(result, customer);
+                    result.Tasks = {
+                        length: tasksDatabaseArray.filter(task => task["CustomerID"] === customer.ID).length
+                    };
+                    return result;
+                });
+                resolve({ data: customersLocal, totalCount: customersLocal.length });
+            });
+        }
+        function customersStoreUpdate(key, values) {
+            return new Promise((resolve) => {
+                const targetObj = customersDatabaseArray.find((item) => { if(item.ID === key) return item;});
+                Object.assign(targetObj, values); //Object.keys(values) / for(prop in values) ?
+                resolve();
+            });
+        }
+        function customersStoreRemove(key) {
+            return new Promise((resolve) => {
+                const targetIndex = customersDatabaseArray.findIndex(item => item.ID === key);
+                if(targetIndex >= -1) {
+                    customersDatabaseArray.splice(targetIndex, 1);
+                }
+                resolve();
+            });
+        }
+        function customersStoreInsert(values) {
+            return new Promise((resolve) => {
+                const newItem = {
+                    ID: customersCurrentIdentity
+                };
+                customersCurrentIdentity++;
+                Object.assign(newItem, values); //Object.keys(values) / for(prop in values) ?
+                customersDatabaseArray.push(newItem);
+                resolve();
+            });
+        }
+
+        //
+        // Implementation on 'class', I like it better.
+        //
+        class CustomStoreOnArrayArgs {
+            constructor({ targetArray = [], keyPropertyName = '', masterDetails = null }) {
+                this._targetArray = targetArray;
+                this._keyPropertyName = keyPropertyName;  // CustomStore can pass objects but key is often required
+                this._masterDetails = masterDetails;
+                this._initializeMembersForCustomStore();
+            }
+            _initializeMembersForCustomStore() {
+                //
+                // todo: change to 'function' + 'self/that' if you need to access properties of the outer 'this' object
+                // What are the common implementations for the requirements like in the CustomStore.ctor(args) ???
+                //
+                this.load = this._load.bind(this);
+                this.update = this._update.bind(this);
+                this.remove = this._remove.bind(this);
+                this.insert = this._insert.bind(this);
+                this.key = this._keyPropertyName;
+            }
+            _load(loadOptions) {
+                return new Promise((resolve) => {
+                    let filteredTargetArray = null;
+                    if(this._masterDetails) {
+                        //
+                        // Looks like https://js.devexpress.com/Demos/WidgetsGallery/Demo/DataGrid/WebAPIService/jQuery/Light/
+                        //
+                        filteredTargetArray = this._targetArray.filter(item => item[this._masterDetails.parentRefPropertyName] === this._masterDetails.parentRefPropertyValue);
+                    }
+                    else {
+                        filteredTargetArray = this._targetArray.slice();
+                    }
+                    const localArray = filteredTargetArray.map((item) => {
+                        const result = {};
+                        Object.assign(result, item);
+                        return result;
+                    });
+                    resolve({ data: localArray, totalCount: localArray.length });
+                });
+            }
+            _update(key, values) {
+                return new Promise((resolve) => {
+                    const targetObj = this._targetArray.find(item => (item[this._keyPropertyName] === key) ? item : undefined);
+                    Object.assign(targetObj, values); //Object.keys(values) / for(prop in values) ?
+                    resolve();
+                });
+            }
+            _remove(key) {
+                return new Promise((resolve) => {
+                    const targetIndex = this._targetArray.findIndex(item => item[this._keyPropertyName] === key);
+                    if(targetIndex >= -1) {
+                        this._targetArray.splice(targetIndex, 1);
+                    }
+                    resolve();
+                });
+            }
+            _insert(values) {
+                return new Promise((resolve) => {
+                    const newItem = {
+                        [this._keyPropertyName]: tasksCurrentIdentity
+                    };
+                    tasksCurrentIdentity++;
+                    Object.assign(newItem, values); //Object.keys(values) / for(prop in values) ?
+                    if(this._masterDetails) {
+                        newItem[this._masterDetails.parentRefPropertyName] = this._masterDetails.parentRefPropertyValue;
+                    }
+                    this._targetArray.push(newItem);
+                    resolve();
+                });
+            }
+        }
     </script>
 
     <hr/>
@@ -93,13 +257,60 @@ c.Angular approach
                 {
                     dataSource: new DevExpress.data.DataSource( {
                         store: new DevExpress.data.CustomStore({
-                            load: CustomersStoreLoad,
-                            update: CustomersStoreUpdate,
+                            load: customersStoreLoad,
+                            update: customersStoreUpdate,
+                            remove: customersStoreRemove,
+                            insert: customersStoreInsert,
                             key: 'ID'
                         })
                     }),
                     columns: ['CompanyName', 'Address', 'City', 'State'],
-                    editing: { allowUpdating: true },
+                    editing: {
+                        allowUpdating: true,
+                        allowAdding: true,
+                        allowDeleting: true
+                    },
+                    masterDetail: {
+                        enabled: true,
+                        template: (detailElement, detailInfo) => {
+                            let detailsEl = detailElement;
+                            if(!detailElement.appendChild) {
+                                // todo: process jQuery extensions if it is referenced
+                                detailsEl = detailElement[0];
+                            }
+
+                            const customer = detailInfo.data;
+                            const captionEl = document.createElement('div');
+                            captionEl.innerText = 'Total tasks: ' + customer.Tasks.length;
+                            detailsEl.appendChild(captionEl);
+
+                            const tasksEl = document.createElement('div');
+                            const tasksGrid = new DevExpress.ui.dxDataGrid(tasksEl,
+                                {
+                                    columns: ['Subject'],
+                                    dataSource:
+                                        new DevExpress.data.DataSource( {
+                                            store: new DevExpress.data.CustomStore(
+                                                new CustomStoreOnArrayArgs({
+                                                    targetArray: tasksDatabaseArray,
+                                                    keyPropertyName: 'ID', 
+                                                    association: {
+                                                        parentRefPropertyName: 'CustomerID', parentRefPropertyValue: customer.ID
+                                                    }
+                                                })
+                                            ),
+                                        }),
+                                    editing: {
+                                        allowUpdating: true,
+                                        allowAdding: true,
+                                        allowDeleting: true
+                                    },
+                                }
+                            );
+
+                            detailsEl.appendChild(tasksEl);
+                        }
+                    },
                 }
             );
         })()
@@ -121,5 +332,11 @@ c.Angular approach
     <p>Angular6:</p>
     todo
     
+    <hr/>
+    Customers:
+    <pre class="databaseCustomers"></pre>
+    <hr/>
+    Tasks:
+    <pre class="databaseTasks"></pre>
 </body>
 </html>
