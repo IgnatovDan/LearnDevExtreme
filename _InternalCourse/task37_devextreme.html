@@ -36,7 +36,6 @@ a.Knockout approach
 b.jQuery approach
 c.Angular approach
     </pre>
-    <button onclick="updateDatabaseContentElement()">Update database content</button>
     <script>
         'use strict';
 
@@ -123,7 +122,7 @@ c.Angular approach
             document.querySelector('.databaseTasks').innerText = JSON.stringify(tasksDatabaseArray, null, 2);
         }
         
-        updateDatabaseContentElement();
+        window.addEventListener('load', () => updateDatabaseContentElement() );
 
         //
         // Implementation on separate functions from https://js.devexpress.com/Documentation/Guide/Data_Layer/Data_Source_Examples/#Custom_Sources
@@ -333,10 +332,10 @@ c.Angular approach
     todo
     
     <hr/>
-    Customers:
+    <button onclick="updateDatabaseContentElement()">Update database content</button>
+    <p><b>Customers:</b></p>
     <pre class="databaseCustomers"></pre>
-    <hr/>
-    Tasks:
+    <p><b>Tasks:</b></p>
     <pre class="databaseTasks"></pre>
 </body>
 </html>
