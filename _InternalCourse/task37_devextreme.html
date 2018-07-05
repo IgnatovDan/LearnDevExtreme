@@ -210,6 +210,18 @@ c.Angular approach
                         const result = {};
                         Object.assign(result, item);
                         if(this._expand) {
+                            //
+                            // DataGrid doesn't call methods of my store if the 'customer.Tasks' array is passed as data source for a 'Tasks' grid
+                            //
+
+                            // result[this._expand.propertyName] = 
+                            //     tasksDatabaseArray
+                            //         .filter(task => task[this._expand.backRefPropertyName] === item[this._keyPropertyName])
+                            //         .map(expandItem => {
+                            //             const expandItemLocal = {};
+                            //             Object.assign(expandItemLocal, expandItem);
+                            //             return expandItemLocal;
+                            //         });
                             result[this._expand.propertyName] = {
                                 length: tasksDatabaseArray.filter(task => task[this._expand.backRefPropertyName] === item[this._keyPropertyName]).length
                             };
@@ -452,7 +464,87 @@ c.Angular approach
 
     <hr/>
     <p>AngularJS:</p>
-    todo
+    <div ng-app="app1">
+        <div ng-controller="Controller1">
+            <div dx-data-grid="gridOptions" dx-item-alias="customer">
+                <div data-options="dxTemplate: {name: 'detail'}">
+                    <div>Total tasks: {{customer.data.Tasks.length}}</div>
+
+                    <!--
+                        Error: [$parse:syntax] Syntax Error: Token 'DevExpress' is unexpected...
+
+                    <div dx-data-grid="{
+                        dataSource: createDetailsGridDataSource(customer.data),
+                            new DevExpress.data.DataSource( {
+                                store: new DevExpress.data.CustomStore(
+                                    new CustomStoreOnArrayArgs({
+                    -->
+
+                    <div dx-data-grid="{
+                        dataSource: createDetailsGridDataSource(customer.data),
+                        columns: ['Subject', 'Priority'],
+                        editing: {
+                            allowUpdating: true,
+                            allowAdding: true,
+                            allowDeleting: true
+                        },
+                    }"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        (function() {
+            const myApp = angular.module('app1', ['dx']);
+            myApp.controller('Controller1', ['$scope', Controller1]);
+
+            function Controller1($scope) {
+                $scope.customersDataSource = new DevExpress.data.DataSource( {
+                        store: new DevExpress.data.CustomStore(
+                            new CustomStoreOnArrayArgs({
+                                targetArray: customersDatabaseArray,
+                                keyPropertyName: 'ID',
+                                expand: {
+                                    propertyName: 'Tasks',
+                                    backRefPropertyName: 'CustomerID',
+                                }
+                            })
+                        ),
+                    });
+
+                $scope.gridOptions = {
+                    dataSource: $scope.customersDataSource,
+                    columns: ['CompanyName', 'Address', 'City', 'State'],
+                    editing: {
+                        allowUpdating: true,
+                        allowAdding: true,
+                        allowDeleting: true
+                    },
+                    masterDetail: {
+                        enabled: true,
+                        template: "detail"
+                    }
+                };
+
+                $scope.createDetailsGridDataSource = (customer) => {
+                    //
+                    // https://js.devexpress.com/Demos/WidgetsGallery/Demo/DataGrid/WebAPIService/AngularJS/Light/
+                    //
+                    return new DevExpress.data.DataSource( {
+                        store: new DevExpress.data.CustomStore(
+                            new CustomStoreOnArrayArgs({
+                                targetArray: tasksDatabaseArray,
+                                keyPropertyName: 'ID', 
+                                association: {
+                                    parentRefPropertyName: 'CustomerID', parentRefPropertyValue: customer.ID
+                                }
+                            })
+                        ),
+                    })
+                }
+            }
+        })();
+    </script>
 
     <hr/>
     <p>Angular6:</p>
