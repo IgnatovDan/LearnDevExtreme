@@ -150,8 +150,6 @@ c.Angular approach
                         allowAdding: true,
                         allowDeleting: true
                     },
-                    // onItemClick: () => {debugger;},
-                    // onContextMenuPreparing: () => {debugger;},
                     onCellPrepared: (e) => {
                         if(e.rowType === 'data' && e.column.command === 'edit') {
 
@@ -203,9 +201,116 @@ c.Angular approach
     </script>
     
     <hr/>
-    <p>Knockout:</p>
-    todo
-    
+    <p>Knockout + dxDataGrid:</p>
+    <div class="knockoutcontainer">
+        <div data-bind="dxDataGrid: gridOptions"></div>
+
+        <div data-bind="with: popup__model">
+                <div data-bind="dxPopup: $parent.popupOptions">
+                    <div data-options="dxTemplate: { name:'rowDetailsTemplate1' }">
+                        <label>CompanyName:<div data-bind="dxTextBox: {text: CompanyName}"></div></label>
+                        <label>Address:<div data-bind="dxTextBox: {text: Address}"></div></label>
+                        <label>City:<div data-bind="dxTextBox: {text: City}"></div></label>
+                        <label>State:<div data-bind="dxTextBox: {text: State}"></div></label>
+                        <div data-bind="dxButton: {text: 'Save', onClick: save}"></div>
+                        <div data-bind="dxButton: {text: 'Cancel', onClick: cancel}"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    <script>
+        (function() {
+            class MyModel {
+                constructor({ dataSource = [] }) {
+                    this.isPopupVisible = ko.observable(false);
+                    this.popup__model = ko.observable(null);
+                    this.popupOptions = {
+                        contentTemplate: "rowDetailsTemplate1",
+                        showTitle: true,
+                        title: "Row details",
+                        visible: this.isPopupVisible,
+                        closeOnOutsideClick: true,
+                        onInitialized: (e) => {
+                            this.dxPopup = e.component;
+                        },
+                    };
+                    this.gridOptions = {
+                        dataSource,
+                        columns: ['CompanyName', 'Address', 'City', 'State'],
+                        editing: {
+                            allowUpdating: true,
+                            allowAdding: true,
+                            allowDeleting: true
+                        },
+                        onInitialized: (e) => {
+                            this.dxGrid = e.component;
+                        },
+                        onCellPrepared: (e) => {
+                            if(e.rowType === 'data' && e.column.command === 'edit') {
+
+                                let cellEl = e.cellElement;
+                                if(!cellEl.appendChild) {
+                                    //jQuery
+                                    cellEl = cellEl[0];
+                                }
+
+                                cellEl.insertBefore(document.createTextNode('\u00A0'), cellEl.firstChild);
+
+                                const editEl = document.createElement('a');
+                                editEl.classList.add('dx-link');
+                                editEl.innerText = "MyEdit...";
+                                cellEl.insertBefore(editEl, cellEl.firstChild);
+
+                                const key = e.key;
+
+                                editEl.addEventListener(
+                                    'click', 
+                                    (e) => {
+                                        this.dxGrid.byKey(key)
+                                        .then(rowObj => {
+                                            this.popup__objInitial = {};
+                                            Object.assign(this.popup__objInitial, rowObj);
+
+                                            this.popup__model({
+                                                CompanyName: ko.observable(rowObj.CompanyName),
+                                                Address: ko.observable(rowObj.Address),
+                                                City: ko.observable(rowObj.City),
+                                                State: ko.observable(rowObj.State),
+                                                save: () => { this.popup__save(); },
+                                                cancel: () => this.popup__cancel(),
+                                                createObj: function() {
+                                                    return {
+                                                        CompanyName: this.CompanyName(),
+                                                        Address: this.Address(),
+                                                        City: this.City(),
+                                                        State: this.State(),
+                                                    }
+                                                }
+                                            });
+                                            this.popup__key = key;
+                                            this.isPopupVisible(true);
+                                        });
+                                    }
+                                );
+                            }
+                        },
+                    };
+                }
+
+                popup__save() {
+                    this.dxGrid.getDataSource().store()
+                        .update(this.popup__key, GetChanges(this.popup__objInitial, this.popup__model().createObj()))
+                        .done(() => this.dxGrid.refresh());
+                    this.dxPopup.hide();
+                }
+                popup__cancel() {
+                    this.dxPopup.hide();
+                }
+            }
+            ko.applyBindings(new MyModel({dataSource: objectsArray}), document.querySelector('.knockoutcontainer'));
+        })()
+    </script>
+
     <hr/>
     <p>jQuery:</p>
     <div class="jqueryGrid"></div>
