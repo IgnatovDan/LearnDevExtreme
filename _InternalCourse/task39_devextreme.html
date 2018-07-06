@@ -47,8 +47,33 @@ See also:
     todo
 
     <hr/>
-    <p>new dxDataGrid:</p>
-    todo
+    <p>new dxChart:</p>
+    <div class="jsdx"></div>
+    <script>
+        (function() {
+            const dxChart = new DevExpress.viz.dxChart(document.querySelector('.jsdx'),
+                {
+                    dataSource: new DevExpress.data.DataSource({
+                        store: {
+                            type: 'odata',
+                            url: 'https://js.devexpress.com/Demos/WidgetsGallery/odata/WeatherItems',
+                            key: 'Id'
+                        },
+                        paginate: false
+                    }),
+                    commonSeriesSettings: {
+                        argumentField: 'Name',
+                        type: 'bar'
+                    },
+                    series: [
+                        { valueField: 'RecordHigh', name: 'Highest temperature, &deg;C' },
+                        { valueField: 'RecordLow', name: 'Lowest temperature, &deg;C' },
+                        { valueField: 'Average', name: 'Average temperature, &deg;C' }
+                    ]
+                }
+            );
+        })()
+    </script>
     
     <hr/>
     <p>Knockout + dxDataGrid:</p>
