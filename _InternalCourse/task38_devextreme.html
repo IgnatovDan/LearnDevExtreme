@@ -31,13 +31,175 @@ b.jQuery approach
 c.Angular approach
     </pre>
 
+    <script>
+        const objectsArray = [{
+            "ID": 0,
+            "CompanyName": "Super Mart of the West",
+            "Address": "702 SW 8th Street",
+            "City": "Bentonville",
+            "State": "Arkansas",
+        }, {
+            "ID": 1,
+            "CompanyName": "Electronics Depot",
+            "Address": "2455 Paces Ferry Road NW",
+            "City": "Atlanta",
+            "State": "Georgia",
+        }, {
+            "ID": 2,
+            "CompanyName": "K&S Music",
+            "Address": "1000 Nicllet Mall",
+            "City": "Minneapolis",
+            "State": "Minnesota",
+        }];
+    </script>
+
     <hr/>
     <p>javascript/DOM</p>
     todo
 
     <hr/>
     <p>new dxDataGrid:</p>
-    todo
+    <div class="jsdx"></div>
+    <div class="jsdxPopup"></div>
+    <script>
+        (function() {
+            function createEditor({ obj, property, label = property }) {
+                const labelEl = document.createElement('label');
+                labelEl.innerText = label + ': ';
+
+                const editorEl = document.createElement('div');
+                const textBox = new DevExpress.ui.dxTextBox(editorEl, {
+                    value: obj[property],
+                    onValueChanged: (e) => obj[property] = e.value,
+                });
+                labelEl.appendChild(editorEl);
+                return labelEl;
+            }
+            function GetChanges(initial, modified) {
+                const result = {};
+                for(prop in initial) {
+                    if(initial[prop] !== modified[prop]) {
+                        result[prop] = modified[prop];
+                    }
+                }
+                return result;
+            }
+            function showDetailsInPopupForm(createPopupContainerElementFunc, obj, saveFunc) {
+                const popupContainerEl = createPopupContainerElementFunc();
+                const dxPopup = new DevExpress.ui.dxPopup(popupContainerEl, {
+                    title: 'Popup row editor',
+                    contentTemplate: (container) => { 
+                        if(!container.appendChild) {
+                            //jQuery
+                            container = container[0];
+                        }
+                        const editorsContainerEl = document.createElement('div');
+                        editorsContainerEl.appendChild(createEditor({ obj, property: 'CompanyName', label: 'Company Name' }));
+                        editorsContainerEl.appendChild(createEditor({ obj, property: 'Address' }));
+                        editorsContainerEl.appendChild(createEditor({ obj, property: 'City' }));
+                        editorsContainerEl.appendChild(createEditor({ obj, property: 'State' }));
+                        container.appendChild(editorsContainerEl);
+
+                        const buttonsContainerEl = document.createElement('div');
+                        const saveButtonEl = document.createElement('button');
+                        saveButtonEl.innerText = 'Save';
+                        saveButtonEl.addEventListener('click', () => {
+                            saveFunc(obj);
+                            dxPopup.hide();
+                        });
+                        buttonsContainerEl.appendChild(saveButtonEl);
+
+                        const cancelButtonEl = document.createElement('button');
+                        cancelButtonEl.innerText = 'Cancel';
+                        cancelButtonEl.addEventListener('click', () => {
+                            dxPopup.hide();
+                        });
+                        buttonsContainerEl.appendChild(cancelButtonEl);
+
+                        container.appendChild(buttonsContainerEl);                                            
+                    },
+                    onHidden: () => {
+                        dxPopup.dispose();
+                        popupContainerEl.remove();
+                    },
+                    closeOnOutsideClick: true,
+                    visible: true
+                });
+            }
+
+            const dxDataGrid = new DevExpress.ui.dxDataGrid(document.querySelector('.jsdx'),
+                {
+                    dataSource: objectsArray,
+                    columns: [
+                        'CompanyName', 'Address', 'City', 'State',
+                        // {
+                        //     allowFiltering: false,
+                        //     allowSorting: false,
+                        //     cellTemplate: (container, options) => {
+                        //         const editEl = document.createElement('a');
+                        //         editEl.classList.add('dx-link');
+                        //         editEl.innerText = "MyEdit...";
+                        //         editEl.addEventListener('click', (e) => {
+                        //             ...
+                        //     }
+                        // }
+                    ],
+                    editing: {
+                        allowUpdating: true,
+                        allowAdding: true,
+                        allowDeleting: true
+                    },
+                    // onItemClick: () => {debugger;},
+                    // onContextMenuPreparing: () => {debugger;},
+                    onCellPrepared: (e) => {
+                        if(e.rowType === 'data' && e.column.command === 'edit') {
+
+                            let cellEl = e.cellElement;
+                            if(!cellEl.appendChild) {
+                                //jQuery
+                                cellEl = cellEl[0];
+                            }
+
+                            cellEl.insertBefore(document.createTextNode('\u00A0'), cellEl.firstChild);
+
+                            const editEl = document.createElement('a');
+                            editEl.classList.add('dx-link');
+                            editEl.innerText = "MyEdit...";
+                            cellEl.insertBefore(editEl, cellEl.firstChild);
+
+                            const key = e.key;
+
+                            editEl.addEventListener(
+                                'click', 
+                                (e) => {
+                                    dxDataGrid.byKey(key)
+                                    .then(rowObj => {
+                                        const obj = {};
+                                        Object.assign(obj, rowObj);
+                                        const objInitial = {};
+                                        Object.assign(objInitial, obj);
+
+                                        showDetailsInPopupForm(
+                                            () => {
+                                                const popupContainerEl = document.createElement('div');
+                                                document.querySelector('.jsdxPopup').appendChild(popupContainerEl);
+                                                return popupContainerEl;
+                                            },
+                                            obj,
+                                            () => {
+                                                dxDataGrid.getDataSource().store()
+                                                    .update(key, GetChanges(objInitial, obj))
+                                                    .done(() => dxDataGrid.refresh());
+                                            });
+                                    });
+                                }
+                            );
+                        }
+                    },
+                }
+            );
+        })()
+    </script>
     
     <hr/>
     <p>Knockout:</p>
@@ -45,7 +207,118 @@ c.Angular approach
     
     <hr/>
     <p>jQuery:</p>
-    todo
+    <div class="jqueryGrid"></div>
+    <div class="jqueryPopup"></div>
+    <script>
+        (function() {
+            function createEditor({ obj, property, label = property }) {
+                return $(document.createElement('label')).text(label + ': ').append(
+                    $(document.createElement('div')).dxTextBox({
+                        value: obj[property],
+                        onValueChanged: (e) => obj[property] = e.value,
+                    }));
+            }
+            function GetChanges(initial, modified) {
+                const result = {};
+                for(prop in initial) {
+                    if(initial[prop] !== modified[prop]) {
+                        result[prop] = modified[prop];
+                    }
+                }
+                return result;
+            }
+            function showDetailsInPopupForm(createPopupContainerElementFunc, obj, saveFunc) {
+                //const popupContainerEl = createPopupContainerElementFunc();
+                //const jqueryPopup = new $(popupContainerEl).dxPopup({
+                const jqueryPopup = createPopupContainerElementFunc();
+                jqueryPopup.dxPopup({
+                    title: 'Popup row editor',
+                    contentTemplate: (container) => { 
+                        container
+                        .append(
+                            $(document.createElement('div'))
+                            .append(createEditor({ obj, property: 'CompanyName', label: 'Company Name' }))
+                            .append(createEditor({ obj, property: 'Address' }))
+                            .append(createEditor({ obj, property: 'City' }))
+                            .append(createEditor({ obj, property: 'State' }))
+                        )
+                        .append(
+                            $(document.createElement('div'))
+                            .append(
+                                $(document.createElement('button')).dxButton({
+                                    text: 'Save',
+                                    onClick: () => {
+                                        saveFunc(obj);
+                                        jqueryPopup.dxPopup('instance').hide();
+                                    }
+                                })
+                            )
+                            .append(
+                                $(document.createElement('button')).dxButton({
+                                    text: 'Cancel',
+                                    onClick: () => {
+                                        jqueryPopup.dxPopup('instance').hide();
+                                    }
+                                })
+                            )
+                        );
+                    },
+                    onHidden: () => {
+                        jqueryPopup.dxPopup('instance').dispose();
+                        jqueryPopup.remove();
+                    },
+                    closeOnOutsideClick: true,
+                    visible: true
+                });
+            }
+
+            $('.jqueryGrid').dxDataGrid(
+                {
+                    dataSource: objectsArray,
+                    columns: [
+                        'CompanyName', 'Address', 'City', 'State',
+                    ],
+                    editing: {
+                        allowUpdating: true,
+                        allowAdding: true,
+                        allowDeleting: true
+                    },
+                    // onItemClick: () => {debugger;},
+                    // onContextMenuPreparing: () => {debugger;},
+                    onCellPrepared: (e) => {
+                        if(e.rowType === 'data' && e.column.command === 'edit') {
+                            const key = e.key;
+                            let cellEl = e.cellElement;
+
+                            $('<div></div>').html('&nbsp;').contents().prependTo(cellEl);
+                            
+                            $('<a/>').addClass('dx-link')
+                                .text('MyEdit...')
+                                .on('click', () => {
+                                    $('.jqueryGrid').dxDataGrid('instance').byKey(key)
+                                    .then(rowObj => {
+                                        const obj = {};
+                                        Object.assign(obj, rowObj);
+                                        const objInitial = {};
+                                        Object.assign(objInitial, obj);
+
+                                        showDetailsInPopupForm(
+                                            () => $(document.createElement('div')).appendTo('.jsdxPopup'),
+                                            obj,
+                                            () => {
+                                                $('.jqueryGrid').dxDataGrid('instance').getDataSource().store()
+                                                    .update(key, GetChanges(objInitial, obj))
+                                                    .done(() => $('.jqueryGrid').dxDataGrid('instance').refresh());
+                                            });
+                                    });
+                                })
+                                .prependTo(cellEl);
+                        }
+                    },
+                }
+            );
+        })()
+    </script>
 
     <hr/>
     <p>AngularJS:</p>
