@@ -51,6 +51,16 @@ c.Angular approach
             "City": "Minneapolis",
             "State": "Minnesota",
         }];
+
+        function GetChanges(initial, modified) {
+            const result = {};
+            for(prop in initial) {
+                if(initial[prop] !== modified[prop]) {
+                    result[prop] = modified[prop];
+                }
+            }
+            return result;
+        }
     </script>
 
     <hr/>
@@ -74,15 +84,6 @@ c.Angular approach
                 });
                 labelEl.appendChild(editorEl);
                 return labelEl;
-            }
-            function GetChanges(initial, modified) {
-                const result = {};
-                for(prop in initial) {
-                    if(initial[prop] !== modified[prop]) {
-                        result[prop] = modified[prop];
-                    }
-                }
-                return result;
             }
             function showDetailsInPopupForm(createPopupContainerElementFunc, obj, saveFunc) {
                 const popupContainerEl = createPopupContainerElementFunc();
@@ -218,18 +219,7 @@ c.Angular approach
                         onValueChanged: (e) => obj[property] = e.value,
                     }));
             }
-            function GetChanges(initial, modified) {
-                const result = {};
-                for(prop in initial) {
-                    if(initial[prop] !== modified[prop]) {
-                        result[prop] = modified[prop];
-                    }
-                }
-                return result;
-            }
             function showDetailsInPopupForm(createPopupContainerElementFunc, obj, saveFunc) {
-                //const popupContainerEl = createPopupContainerElementFunc();
-                //const jqueryPopup = new $(popupContainerEl).dxPopup({
                 const jqueryPopup = createPopupContainerElementFunc();
                 jqueryPopup.dxPopup({
                     title: 'Popup row editor',
@@ -283,8 +273,6 @@ c.Angular approach
                         allowAdding: true,
                         allowDeleting: true
                     },
-                    // onItemClick: () => {debugger;},
-                    // onContextMenuPreparing: () => {debugger;},
                     onCellPrepared: (e) => {
                         if(e.rowType === 'data' && e.column.command === 'edit') {
                             const key = e.key;
@@ -322,7 +310,102 @@ c.Angular approach
 
     <hr/>
     <p>AngularJS:</p>
-    todo
+    <div ng-app="app1">
+        <div ng-controller="Controller1">
+            <div dx-data-grid="gridOptions"></div>
+            <div ng-init="popup__obj">
+                <div dx-popup="popupOptions">
+                    <div data-options="dxTemplate: { name: 'myEditTemplate' }">
+                        <label>Company Name:<div dx-text-box="" data-ng-model="popup__obj.CompanyName"></div></label>
+                        <label>Address:<div dx-text-box="" data-ng-model="popup__obj.Address"></div></label>
+                        <label>City:<div dx-text-box="" data-ng-model="popup__obj.City"></div></label>
+                        <label>State:<div dx-text-box="" data-ng-model="popup__obj.State"></div></label>
+                        <div dx-button="{ text: 'Save', onClick: popup__saveChanges}"></div>
+                        <div dx-button="{ text: 'Cancel', onClick: popup__cancel}"></div>                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        (function() {
+            const myApp = angular.module('app1', ['dx']);
+            myApp.controller('Controller1', ['$scope', Controller1]);
+
+            function Controller1($scope) {
+                $scope.isPopupVisible = false;
+
+                $scope.popupOptions = {
+                    contentTemplate: 'myEditTemplate',
+                    title: 'My edit popup',
+                    closeOnOutsideClick: true,
+                    bindingOptions: {
+                        visible: "isPopupVisible",
+                    },
+                    onInitialized: (e) => {
+                        $scope.dxPopup = e.component;
+                    },
+                };
+
+                $scope.gridDataSource = new DevExpress.data.DataSource(objectsArray);
+                $scope.gridOptions = {
+                    dataSource: $scope.gridDataSource,
+                    columns: ['CompanyName', 'Address', 'City', 'State',],
+                    editing: {
+                        allowUpdating: true,
+                        allowAdding: true,
+                        allowDeleting: true
+                    },
+                    onInitialized: (e) => {
+                        $scope.dxGrid = e.component;
+                    },
+                    onCellPrepared: (e) => {
+                        if(e.rowType === 'data' && e.column.command === 'edit') {
+                            let cellEl = e.cellElement;
+                            if(!cellEl.appendChild) {
+                                //jQuery
+                                cellEl = cellEl[0];
+                            }
+
+                            cellEl.insertBefore(document.createTextNode('\u00A0'), cellEl.firstChild);
+
+                            const editEl = document.createElement('a');
+                            editEl.classList.add('dx-link');
+                            editEl.innerText = "MyEdit...";
+                            cellEl.insertBefore(editEl, cellEl.firstChild);
+
+                            const key = e.key;
+
+                            editEl.addEventListener(
+                                'click', 
+                                (e) => {
+                                    $scope.dxGrid.byKey(key)
+                                    .then(rowObj => {
+                                        $scope.popup__key = key;
+                                        $scope.popup__obj = {};
+                                        Object.assign($scope.popup__obj, rowObj);
+                                        $scope.popup__objInitial = {};
+                                        Object.assign($scope.popup__objInitial, rowObj);
+                                        $scope.$apply(() => $scope.isPopupVisible = true);
+                                    });
+                                }
+                            );
+                        }
+                    },
+                };
+
+                $scope.popup__saveChanges = () => {
+                    $scope.gridDataSource.store()
+                        .update($scope.popup__key, GetChanges($scope.popup__objInitial, $scope.popup__obj))
+                        .done(() => $scope.dxGrid.refresh());
+                    $scope.dxPopup.hide();
+                }
+                $scope.popup__cancel = () => {
+                    $scope.dxPopup.hide();
+                }
+            }
+        })();
+    </script>
 
     <hr/>
     <p>Angular6:</p>
