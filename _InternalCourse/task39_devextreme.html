@@ -39,6 +39,9 @@ See also:
     </pre>
     <a href="https://js.devexpress.com/Documentation/Guide/Data_Layer/Data_Source_Examples/#OData/Associations">OData Associations</a>
 
+    https://www.devexpress.com/Support/Center/Question/Details/T638625/using-an-odatastore-with-the-groupby-and-aggregate-clauses
+    https://www.devexpress.com/Support/Center/Question/Details/T275159/dxchart-how-to-group-data
+
     <script>
     </script>
 
@@ -49,6 +52,7 @@ See also:
     <hr/>
     <p>new dxChart:</p>
     <div class="jsdx"></div>
+    <div class="jsdxPopup"></div>
     <script>
         (function() {
             const dxChart = new DevExpress.viz.dxChart(document.querySelector('.jsdx'),
@@ -56,28 +60,67 @@ See also:
                     dataSource: new DevExpress.data.DataSource({
                         store: {
                             type: 'odata',
-                            url: 'https://js.devexpress.com/Demos/WidgetsGallery/odata/WeatherItems',
-                            key: 'Id'
+                            url: 'http://services.odata.org/V3/Northwind/Northwind.svc/Categories',
+                            key: 'CategoryID'
                         },
-                        paginate: false
+                        expand: ['Products'],
+                        map: (item) => {
+                            item.Products_Count = item.Products.length;
+                            return item;
+                        }
                     }),
                     commonSeriesSettings: {
-                        argumentField: 'Name',
+                        argumentField: 'CategoryName',
                         type: 'bar'
                     },
                     series: [
-                        { valueField: 'RecordHigh', name: 'Highest temperature, &deg;C' },
-                        { valueField: 'RecordLow', name: 'Lowest temperature, &deg;C' },
-                        { valueField: 'Average', name: 'Average temperature, &deg;C' }
-                    ]
+                        { valueField: 'Products_Count', name: 'Products Count' },
+                    ],
+                    onPointClick: (e) => {
+                        const popupContainerEl = document.createElement('div');
+                        document.querySelector('.jsdxPopup').appendChild(popupContainerEl);
+                        const dxPopup = new DevExpress.ui.dxPopup(popupContainerEl, {
+                            title: '\'' + e.target.data.CategoryName + '\' products: ' + e.target.data.Products.length,
+                            contentTemplate: (container) => { 
+                                containerEl = container;
+                                if(!containerEl.appendChild) {
+                                    //jQuery
+                                    containerEl = container[0];
+                                }
+
+                                const gridEl = document.createElement('div');
+                                new DevExpress.ui.dxDataGrid(gridEl, {
+                                    dataSource: e.target.data.Products,
+                                    columns: ['ProductName', 'UnitPrice', 'Discontinued']
+                                });
+                                containerEl.appendChild(gridEl);
+                                const buttonsContainerEl = document.createElement('div');
+                                const closeButtonEl = document.createElement('button');
+                                new DevExpress.ui.dxButton(closeButtonEl, {
+                                    text: 'Close',
+                                    onClick: () => dxPopup.hide(),
+                                });
+                                buttonsContainerEl.appendChild(closeButtonEl);
+
+                                containerEl.appendChild(buttonsContainerEl);                                            
+                           },
+                            onHidden: () => {
+                                dxPopup.dispose();
+                                popupContainerEl.remove();
+                            },
+                            closeOnOutsideClick: true,
+                            visible: true
+                        });
+                    }
                 }
             );
         })()
     </script>
     
     <hr/>
-    <p>Knockout + dxDataGrid:</p>
+    <p>Knockout + dxChart:</p>
     todo
+    https://github.com/DevExpress-Examples/dxchart-how-to-display-data-from-a-remote-data-service-knockout-e5054
 
     <hr/>
     <p>jQuery:</p>
@@ -86,10 +129,12 @@ See also:
     <hr/>
     <p>AngularJS:</p>
     todo
+    https://github.com/DevExpress-Examples/dxchart-how-to-display-data-from-a-remote-data-service-angularjs-e5055
 
     <hr/>
     <p>Angular6:</p>
     todo
-    
+    https://www.devexpress.com/Support/Center/Question/Details/T498842/dxchart-how-to-display-data-from-a-remote-data-service-angular    
+
 </body>
 </html>
