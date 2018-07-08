@@ -103,7 +103,7 @@ See also:
                                 buttonsContainerEl.appendChild(closeButtonEl);
 
                                 containerEl.appendChild(buttonsContainerEl);                                            
-                           },
+                            },
                             onHidden: () => {
                                 dxPopup.dispose();
                                 popupContainerEl.remove();
@@ -121,6 +121,85 @@ See also:
     <p>Knockout + dxChart:</p>
     todo
     https://github.com/DevExpress-Examples/dxchart-how-to-display-data-from-a-remote-data-service-knockout-e5054
+    <div class="knockoutcontainer">
+        <div data-bind="dxChart: chartOptions"></div>
+
+        <div data-bind="with: popup__model">
+                <div data-bind="dxPopup: $parent.popupOptions">
+                    <div data-options="dxTemplate: { name:'chartItemDetailsTemplate1' }">
+                        <div data-bind="dxDataGrid: gridOptions"></div>
+                        <div data-bind="dxButton: {text: 'Close', onClick: close}"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    <script>
+        (function() {
+            class MyModel {
+                constructor({ dataSource = [] }) {
+                    this.chartOptions = {
+                        dataSource,
+                        columns: ['CompanyName', 'Address', 'City', 'State'],
+                        onInitialized: (e) => {
+                            this.dxChart = e.component;
+                        },
+                        commonSeriesSettings: {
+                            argumentField: 'CategoryName',
+                            type: 'bar'
+                        },
+                        series: [
+                            { valueField: 'Products_Count', name: 'Products Count' },
+                        ],
+                        onPointClick: (e) => {
+                            this.popup__title('\'' + e.target.data.CategoryName + '\' products: ' + e.target.data.Products.length);
+                            this.popup__model({
+                                gridOptions: {
+                                    dataSource: e.target.data.Products,
+                                    columns: ['ProductName', 'UnitPrice', 'Discontinued']
+                                },
+                                close: () => this.popup__close(),
+                            });
+                            this.popup__isVisible(true);
+                        }
+                    };
+
+                    this.popup__isVisible = ko.observable(false);
+                    this.popup__model = ko.observable(null);
+                    this.popup__title = ko.observable(null);
+                    this.popupOptions = {
+                        contentTemplate: "chartItemDetailsTemplate1",
+                        showTitle: true,
+                        title: this.popup__title,
+                        visible: this.popup__isVisible,
+                        closeOnOutsideClick: true,
+                        onInitialized: (e) => {
+                            this.dxPopup = e.component;
+                        },
+                    };
+                }
+                popup__close() {
+                    this.dxPopup.hide();
+                }
+            }
+
+            ko.applyBindings(
+                new MyModel({
+                    dataSource: new DevExpress.data.DataSource({
+                        store: {
+                            type: 'odata',
+                            url: 'http://services.odata.org/V3/Northwind/Northwind.svc/Categories',
+                            key: 'CategoryID'
+                        },
+                        expand: ['Products'],
+                        map: (item) => {
+                            item.Products_Count = item.Products.length;
+                            return item;
+                        }
+                    })
+                }),
+                document.querySelector('.knockoutcontainer'));
+        })()
+    </script>
 
     <hr/>
     <p>jQuery:</p>
