@@ -206,7 +206,6 @@ See also:
     <div class="jqueryPopup"></div>
     <script>
         $(function() {
-            debugger;
             $('jqueryChart').dxChart({
                 dataSource: new DevExpress.data.DataSource({
                     store: {
@@ -259,6 +258,85 @@ See also:
     <p>AngularJS:</p>
     todo
     https://github.com/DevExpress-Examples/dxchart-how-to-display-data-from-a-remote-data-service-angularjs-e5055
+    <div ng-app="app1">
+        <div ng-controller="Controller1">
+            <div dx-chart="chartOptions"></div>
+            <!-- <div ng-init="popup__obj"> -->
+            <div>
+                <div dx-popup="popup__options">
+                    <div data-options="dxTemplate: { name: 'popup__template' }">
+                        <div dx-data-grid="popup__gridOptions"></div>
+                        <div dx-button="{ text: 'Close', onClick: popup__close }"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        (function() {
+            const myApp = angular.module('app1', ['dx']);
+            myApp.controller('Controller1', ['$scope', Controller1]);
+
+            function Controller1($scope) {
+                const chartDataSource = new DevExpress.data.DataSource({
+                    store: {
+                        type: 'odata',
+                        url: 'http://services.odata.org/V3/Northwind/Northwind.svc/Categories',
+                        key: 'CategoryID'
+                    },
+                    expand: ['Products'],
+                    map: (item) => {
+                        item.Products_Count = item.Products.length;
+                        return item;
+                    }
+                });
+
+                $scope.chartOptions = {
+                    dataSource: chartDataSource,
+                    commonSeriesSettings: {
+                        argumentField: 'CategoryName',
+                        type: 'bar'
+                    },
+                    series: [
+                        { valueField: 'Products_Count', name: 'Products Count' },
+                    ],
+                    onPointClick: (e) => {
+                        $scope.popup__title = '\'' + e.target.data.CategoryName + '\' products: ' + e.target.data.Products.length;
+                        $scope.popup__gridDataSource = e.target.data.Products;
+                        $scope.popup__isVisible = true;
+                    }
+                };
+
+                $scope.popup__isVisible = false;
+                $scope.popup__options = {
+                    contentTemplate: 'popup__template',
+                    closeOnOutsideClick: true,
+                    bindingOptions: {
+                        visible: 'popup__isVisible',
+                        title: 'popup__title',
+                    },
+                    onInitialized: (e) => {
+                        $scope.dxPopup = e.component;
+                    },
+                    onHidden: (e) => {
+                        $scope.popup__gridDataSource = null;
+                    },
+                };
+
+                $scope.popup__close = () => {
+                    $scope.dxPopup.hide();
+                }
+
+                $scope.popup__gridDataSource = null;
+                $scope.popup__gridOptions = {
+                    bindingOptions: {
+                        dataSource: 'popup__gridDataSource',
+                    },
+                    columns: ['ProductName', 'UnitPrice', 'Discontinued']
+                };
+            }
+        })();
+    </script>
 
     <hr/>
     <p>Angular6:</p>
