@@ -119,8 +119,6 @@ See also:
     
     <hr/>
     <p>Knockout + dxChart:</p>
-    todo
-    https://github.com/DevExpress-Examples/dxchart-how-to-display-data-from-a-remote-data-service-knockout-e5054
     <div class="knockoutcontainer">
         <div data-bind="dxChart: chartOptions"></div>
 
@@ -203,7 +201,59 @@ See also:
 
     <hr/>
     <p>jQuery:</p>
-    todo
+    todo:
+    <div class="jqueryChart"></div>
+    <div class="jqueryPopup"></div>
+    <script>
+        $(function() {
+            debugger;
+            $('jqueryChart').dxChart({
+                dataSource: new DevExpress.data.DataSource({
+                    store: {
+                        type: 'odata',
+                        url: 'http://services.odata.org/V3/Northwind/Northwind.svc/Categories',
+                        key: 'CategoryID'
+                    },
+                    expand: ['Products'],
+                    map: (item) => {
+                        item.Products_Count = item.Products.length;
+                        return item;
+                    }
+                }),
+                commonSeriesSettings: {
+                    argumentField: 'CategoryName',
+                    type: 'bar'
+                },
+                series: [
+                    { valueField: 'Products_Count', name: 'Products Count' },
+                ],
+                // onPointClick: (e) => {
+                //     const popupContainerEl = document.createElement('div');
+                //     document.querySelector('.jqueryPopup').appendChild(popupContainerEl);
+                //     const dxPopup = $(popupContainerEl).dxPopup({
+                //         title: '\'' + e.target.data.CategoryName + '\' products: ' + e.target.data.Products.length,
+                //         contentTemplate: (container) => { 
+                //             $(document.createElement('div')).dxDataGrid({
+                //                 dataSource: e.target.data.Products,
+                //                 columns: ['ProductName', 'UnitPrice', 'Discontinued']
+                //             }).appendTo(container);
+
+                //             $(document.createElement('button')).dxButton({
+                //                 text: 'Close',
+                //                 onClick: () => dxPopup.hide(),
+                //             }).appendTo(container);
+                //         },
+                //         onHidden: () => {
+                //             dxPopup.dispose();
+                //             popupContainerEl.remove();
+                //         },
+                //         closeOnOutsideClick: true,
+                //         visible: true
+                //     });
+                // }
+            });
+        });
+    </script>
 
     <hr/>
     <p>AngularJS:</p>
