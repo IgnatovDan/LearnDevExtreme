@@ -51,7 +51,8 @@ https://www.devexpress.com/Support/Center/Question/Details/T450927/dxvalidator-h
             <label>Validate text3:<div class="data3__check"></div></label>
             <label>Text3:<div class="data3__text"></div></label>
         </div>
-        <div class="validate__button"></div>
+        <div class="button"></div>
+        <div class="values"></div>
     </div>
     <script>
         (function() {
@@ -141,14 +142,13 @@ https://www.devexpress.com/Support/Center/Question/Details/T450927/dxvalidator-h
             // new DevExpress.ui.dxButton(null, {}) - works without any error.
             // several times it took significant time to find why it doesn't work.
             //
-            // const dxButton = new DevExpress.ui.dxButton(rootEl.querySelector('.validate__button'), {
-            //     text: 'Validate all',
-            //     onClick: () => {
-            //         dxData1Validator.validate();
-            //         dxData2Validator.validate();
-            //         dxData3Validator.validate();
-            //     }
-            // });
+            const dxButton = new DevExpress.ui.dxButton(rootEl.querySelector('.button'), {
+                text: 'Show values',
+                onClick: () => {
+                    document.querySelector('.values').innerText = 
+                        'text1: "' + data1_text + '"\rtext2: "' + data2_text + '"\rtext3: "' + data3_text + '"';
+                }
+            });
         })();
     </script>
     
