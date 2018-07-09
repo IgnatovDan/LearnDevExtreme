@@ -32,13 +32,54 @@ The task should be implemented using the following approaches:
 a.Knockout approach
 b.jQuery approach
 c.Angular approach
+
+https://github.com/DevExpress-Examples/dxvalidator-how-to-display-validation-errors-only-on-a-button-click-t451354/blob/16.1.6%2B/JS/Validator.js
+
+https://www.devexpress.com/Support/Center/Question/Details/T450927/dxvalidator-how-to-display-validation-errors-only-if-a-button-is-clicked
+
+
     <hr/>
     <p>javascript/DOM</p>
     todo 
 
     <hr/>
-    <p>new dxDataGrid:</p>
-    todo
+    <p>javascript + dx:</p>
+    <div class="jsdx">
+        <label>Text1:<div class="data1__text"></div></label>
+        <label>Validate text2:<div class="data2__check"></div></label>
+        <label>Text2:<div class="data2__text"></div></label>
+    </div>
+    <script>
+        (function() {
+            const dxData1Text = new DevExpress.ui.dxTextBox(document.querySelector('.data1__text'), {});
+            const dxData1Validator = new DevExpress.ui.dxValidator(document.querySelector('.data1__text1'), {
+                validationRules: [ { type: 'required' } ]
+            });
+
+            const dxData2Check = new DevExpress.ui.dxCheckBox(document.querySelector('.data2__check'), {
+                value: true,
+                onValueChanged: (e) => {
+                    if(!e.value) {
+                        dxData2Text.option('isValid', true);
+                    }
+                }
+            });
+            const dxData2Text = new DevExpress.ui.dxTextBox(document.querySelector('.data2__text'), {});
+            const dxData2Validator = new DevExpress.ui.dxValidator(document.querySelector('.data2__text'), {
+                validationRules: [ { type: 'required' } ],
+                onInitialized: (e) => {
+                    debugger;
+                    const _bypass = e.component.option('adapter').bypass;
+                    e.component.option('adapter').bypass = function() {
+                        if(!dxCheck1.option('value')) {
+                            return true;
+                        }
+                        return _bypass.apply(this, arguments);
+                    }
+                },
+            });
+        })();
+    </script>
     
     <hr/>
     <p>Knockout:</p>
