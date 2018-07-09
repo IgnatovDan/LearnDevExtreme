@@ -1,5 +1,4 @@
 import { Component, Input, OnInit } from '@angular/core';
-import ArrayStore from 'devextreme/data/array_store';
 import DataSource from 'devextreme/data/data_source';
 import 'devextreme/data/odata/store';
 
@@ -18,15 +17,17 @@ Data can be downloaded from http://services.odata.org/V3/Northwind/Northwind.svc
 When a bar is clicked, display dxPopup with dxDataGrid inside.
 dxDataGrid should display products associated with the current category.
 
-It is possible to get product count associated with each category using the Products navigation property. See http://services.odata.org/V3/Northwind/Northwind.svc/$metadata. 
+It is possible to get product count associated with each category using the Products navigation property.
+See http://services.odata.org/V3/Northwind/Northwind.svc/$metadata. 
 See also:
  https://js.devexpress.com/Documentation/Guide/Data_Layer/Data_Source_Examples/#OData/Associations`;
   otherImplementationUrl: string = 'https://github.com/IgnatovDan/LearnDevExtreme/blob/master/_InternalCourse/task39_devextreme.html';
 
-  chartDataSource: DataSource;
-
-  ngOnInit() {
-    this.chartDataSource = new DataSource({
+  categories: DataSource;
+  constructor() {
+    // TODO:
+    // The FetchEvent for "https://services.odata.org/V3/Northwind/Northwind.svc/Categories?%24top=20&%24format=json&%24callback=dxCallback1531118739020_08898502345981392&_=1531118739020" resulted in a network error response: an object that was not a Response was passed to respondWith().
+    this.categories = new DataSource({
       store: {
         type: 'odata',
         url: 'http://services.odata.org/V3/Northwind/Northwind.svc/Categories',
@@ -34,10 +35,13 @@ See also:
       },
       expand: ['Products'],
       map: (item) => {
+        console.log('categories.map');
         item.Products_Count = item.Products.length;
         return item;
       }
     });
+  }
+  ngOnInit() {
   }
 
 }

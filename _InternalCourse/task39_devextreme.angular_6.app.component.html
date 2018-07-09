@@ -1,13 +1,16 @@
 <p>{{name}}</p>
 <pre>{{description}}</pre>
 <p>See also other implementations at <a href="{{otherImplementationUrl}}">{{otherImplementationUrl}}</a></p>
-<p>TODO:</p>
-<p>https://www.devexpress.com/Support/Center/Question/Details/T498842/dxchart-how-to-display-data-from-a-remote-data-service-angular    
+<p>TODO: not completed</p>
   
 </p>
 <hr/>
-<dx-chart [dataSource]="categories">
-  <dxo-common-series-settings argumentField="CategoryName" type="bar"></dxo-common-series-settings>
-  <dxi-series argumentField="CategoryName" valueField="Products_Count" name="Products Count"></dxi-series>
+<dx-chart [dataSource]='categories'>
+  <dxi-series 
+    argumentField="CategoryName"
+    valueField="Products_Count"
+    name="Products Count"
+    type="bar">
+  </dxi-series>
 </dx-chart>
 
