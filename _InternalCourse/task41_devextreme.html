@@ -57,6 +57,7 @@ https://www.devexpress.com/Support/Center/Question/Details/T450927/dxvalidator-h
         <div class="values"></div>
     </div>
     <script>
+        'use strict';
         $(function() {
             const rootEl = document.querySelector('.jsdx');
 
@@ -151,6 +152,11 @@ https://www.devexpress.com/Support/Center/Question/Details/T450927/dxvalidator-h
                 onClick: e => e.validationGroup.validate(),
             });
             
+            //
+            // My often case: widget doesn't work at all.
+            // I can create it before creating the dxButton and it will work.
+            // How to investigate it?
+            //
             new DevExpress.ui.dxValidationSummary(rootEl.querySelector('.validationSummary'), {
                 validationGroup,
             });
