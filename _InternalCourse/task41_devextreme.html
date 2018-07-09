@@ -37,7 +37,6 @@ https://github.com/DevExpress-Examples/dxvalidator-how-to-display-validation-err
 
 https://www.devexpress.com/Support/Center/Question/Details/T450927/dxvalidator-how-to-display-validation-errors-only-if-a-button-is-clicked
 
-
     <hr/>
     <p>javascript/DOM</p>
     todo 
@@ -57,42 +56,75 @@ https://www.devexpress.com/Support/Center/Question/Details/T450927/dxvalidator-h
     <script>
         (function() {
             const rootEl = document.querySelector('.jsdx');
-            const dxData1Text = new DevExpress.ui.dxTextBox(rootEl.querySelector('.data1__text'), {});
+
+            let data1_text = '11';
+            const dxData1Text = new DevExpress.ui.dxTextBox(rootEl.querySelector('.data1__text'), {
+                value: data1_text,
+                onValueChanged: e => data1_text = e.value,
+            });
             const dxData1Validator = new DevExpress.ui.dxValidator(rootEl.querySelector('.data1__text'), {
                 validationRules: [ { type: 'required' } ]
             });
             dxData1Validator.validate();
 
+            let data2__needValidation = true;
             const dxData2Check = new DevExpress.ui.dxCheckBox(rootEl.querySelector('.data2__check'), {
-                value: true,
-                onValueChanged: (e) => dxData2Validator.validate()
+                value: data2__needValidation,
+                onValueChanged: e => {
+                    data2__needValidation = e.value;
+                    dxData2Validator.validate();
+                }
             });
-            
-            const dxData2Text = new DevExpress.ui.dxTextBox(rootEl.querySelector('.data2__text'), {});
+            let data2_text = '2222';
+            const dxData2Text = new DevExpress.ui.dxTextBox(rootEl.querySelector('.data2__text'), {
+                value: data2_text,
+                onValueChanged: e => data2_text = e.value,
+            });
             const dxData2Validator = new DevExpress.ui.dxValidator(rootEl.querySelector('.data2__text'), {
                 validationRules: [ { type: 'required' } ],
                 onInitialized: (e) => {
-                    const _bypass = e.component.option('adapter').bypass;
+                    const bypass_base = e.component.option('adapter').bypass;
                     e.component.option('adapter').bypass = function() {
-                        return dxData2Check.option('value') ? _bypass.apply(this, arguments) : true;
+                        if(data2__needValidation) {
+                            return bypass_base.apply(this, arguments);
+                        }
+                        else {
+                            return true;
+                        }
                     }
                 },
             });
             dxData2Validator.validate();
 
+            let data3__needValidation = true;
             const dxData3Check = new DevExpress.ui.dxCheckBox(rootEl.querySelector('.data3__check'), {
-                value: true,
-                onValueChanged: (e) => dxData3Validator.validate()
+                value: data3__needValidation,
+                onValueChanged: e => {
+                    data3__needValidation = e.value;
+                    dxData3Validator.validate();
+                },
             });
-            const dxData3Text = new DevExpress.ui.dxTextBox(rootEl.querySelector('.data3__text'), {});
+            let data3_text = '333333';
+            const dxData3Text = new DevExpress.ui.dxTextBox(rootEl.querySelector('.data3__text'), {
+                value: data3_text,
+                onValueChanged: (e) => {
+                    dxData3Validator.validate();
+                    data3_text = e.value;
+                },
+            });
             const dxData3Validator = new DevExpress.ui.dxValidator(rootEl.querySelector('.data3__text'), {
                 validationRules: [ 
                     { 
                         type: 'custom',
                         validationCallback: () => { 
-                            return dxData3Check.option('value') ? Boolean(dxData3Text.option('text')) : true;
+                            if(data3__needValidation) {
+                                return Boolean(dxData3Text.option('text')/*data3_text???*/);
+                             }
+                             else {
+                                 return true;
+                             }
                         },
-                        message: 'Required',
+                        message: 'My Required',
                         //
                         // the 'required' rule is evaluated each time the 'validate' method is called.
                         // but in my custom rule I have to specify this option explicitly
@@ -109,14 +141,14 @@ https://www.devexpress.com/Support/Center/Question/Details/T450927/dxvalidator-h
             // new DevExpress.ui.dxButton(null, {}) - works without any error.
             // several times it took significant time to find why it doesn't work.
             //
-            const dxButton = new DevExpress.ui.dxButton(rootEl.querySelector('.validate__button'), {
-                text: 'Validate all',
-                onClick: () => {
-                    dxData1Validator.validate();
-                    dxData2Validator.validate();
-                    dxData3Validator.validate();
-                }
-            });
+            // const dxButton = new DevExpress.ui.dxButton(rootEl.querySelector('.validate__button'), {
+            //     text: 'Validate all',
+            //     onClick: () => {
+            //         dxData1Validator.validate();
+            //         dxData2Validator.validate();
+            //         dxData3Validator.validate();
+            //     }
+            // });
         })();
     </script>
     
