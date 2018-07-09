@@ -51,19 +51,23 @@ https://www.devexpress.com/Support/Center/Question/Details/T450927/dxvalidator-h
             <label>Validate text3:<div class="data3__check"></div></label>
             <label>Text3:<div class="data3__text"></div></label>
         </div>
+        <div class="button_validate"></div>
+        <div class="validationSummary"></div>
         <div class="button"></div>
         <div class="values"></div>
     </div>
     <script>
-        (function() {
+        $(function() {
             const rootEl = document.querySelector('.jsdx');
 
+            const validationGroup = 'jsdx';
             let data1_text = '11';
             const dxData1Text = new DevExpress.ui.dxTextBox(rootEl.querySelector('.data1__text'), {
                 value: data1_text,
                 onValueChanged: e => data1_text = e.value,
             });
             const dxData1Validator = new DevExpress.ui.dxValidator(rootEl.querySelector('.data1__text'), {
+                validationGroup,
                 validationRules: [ { type: 'required' } ]
             });
             dxData1Validator.validate();
@@ -82,6 +86,7 @@ https://www.devexpress.com/Support/Center/Question/Details/T450927/dxvalidator-h
                 onValueChanged: e => data2_text = e.value,
             });
             const dxData2Validator = new DevExpress.ui.dxValidator(rootEl.querySelector('.data2__text'), {
+                validationGroup,
                 validationRules: [ { type: 'required' } ],
                 onInitialized: (e) => {
                     const bypass_base = e.component.option('adapter').bypass;
@@ -114,6 +119,7 @@ https://www.devexpress.com/Support/Center/Question/Details/T450927/dxvalidator-h
                 },
             });
             const dxData3Validator = new DevExpress.ui.dxValidator(rootEl.querySelector('.data3__text'), {
+                validationGroup,
                 validationRules: [ 
                     { 
                         type: 'custom',
@@ -136,6 +142,19 @@ https://www.devexpress.com/Support/Center/Question/Details/T450927/dxvalidator-h
             });
             dxData3Validator.validate();
 
+            new DevExpress.ui.dxButton(rootEl.querySelector('.button_validate'), {
+                text: 'Show summary',
+                validationGroup,
+                //
+                // How to show validation summary on load ???
+                //
+                onClick: e => e.validationGroup.validate(),
+            });
+            
+            new DevExpress.ui.dxValidationSummary(rootEl.querySelector('.validationSummary'), {
+                validationGroup,
+            });
+
             //
             // const dxButton = new DevExpress.ui.dxButton(rootEl.querySelector('validate__button'), {
             //
@@ -149,7 +168,7 @@ https://www.devexpress.com/Support/Center/Question/Details/T450927/dxvalidator-h
                         'text1: "' + data1_text + '"\rtext2: "' + data2_text + '"\rtext3: "' + data3_text + '"';
                 }
             });
-        })();
+        });
     </script>
     
     <hr/>
