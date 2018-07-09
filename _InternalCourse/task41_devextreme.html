@@ -44,40 +44,61 @@ https://www.devexpress.com/Support/Center/Question/Details/T450927/dxvalidator-h
 
     <hr/>
     <p>javascript + dx:</p>
-    <div class="jsdx">
+    <div class="jsdx" style="display: flex; flex-direction: column;">
         <label>Text1:<div class="data1__text"></div></label>
         <label>Validate text2:<div class="data2__check"></div></label>
         <label>Text2:<div class="data2__text"></div></label>
+        <label>Validate text3:<div class="data3__check"></div></label>
+        <label>Text3:<div class="data3__text"></div></label>
     </div>
     <script>
         (function() {
             const dxData1Text = new DevExpress.ui.dxTextBox(document.querySelector('.data1__text'), {});
-            const dxData1Validator = new DevExpress.ui.dxValidator(document.querySelector('.data1__text1'), {
+            const dxData1Validator = new DevExpress.ui.dxValidator(document.querySelector('.data1__text'), {
                 validationRules: [ { type: 'required' } ]
             });
+            dxData1Validator.validate();
 
             const dxData2Check = new DevExpress.ui.dxCheckBox(document.querySelector('.data2__check'), {
                 value: true,
-                onValueChanged: (e) => {
-                    if(!e.value) {
-                        dxData2Text.option('isValid', true);
-                    }
-                }
+                onValueChanged: (e) => dxData2Validator.validate()
             });
+            
             const dxData2Text = new DevExpress.ui.dxTextBox(document.querySelector('.data2__text'), {});
             const dxData2Validator = new DevExpress.ui.dxValidator(document.querySelector('.data2__text'), {
                 validationRules: [ { type: 'required' } ],
                 onInitialized: (e) => {
-                    debugger;
                     const _bypass = e.component.option('adapter').bypass;
                     e.component.option('adapter').bypass = function() {
-                        if(!dxCheck1.option('value')) {
-                            return true;
-                        }
-                        return _bypass.apply(this, arguments);
+                        return dxData2Check.option('value') ? _bypass.apply(this, arguments) : true;
                     }
                 },
             });
+            dxData2Validator.validate();
+
+            const dxData3Check = new DevExpress.ui.dxCheckBox(document.querySelector('.data3__check'), {
+                value: true,
+                onValueChanged: (e) => dxData3Validator.validate()
+            });
+            const dxData3Text = new DevExpress.ui.dxTextBox(document.querySelector('.data3__text'), {});
+            const dxData3Validator = new DevExpress.ui.dxValidator(document.querySelector('.data3__text'), {
+                validationRules: [ 
+                    { 
+                        type: 'custom',
+                        validationCallback: () => { 
+                            debugger;
+                            return dxData3Check.option('value') ? Boolean(dxData3Text.option('text')) : true;
+                        },
+                        message: 'Required',
+                        //
+                        // the 'required' rule is evaluated each time the 'validate' method is called.
+                        // but in my custom rule I have to specify this option explicitly
+                        //
+                        reevaluate: true,
+                    }
+                ],
+            });
+            dxData3Validator.validate();
         })();
     </script>
     
