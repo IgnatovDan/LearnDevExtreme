@@ -51,7 +51,7 @@ See also:
 
     <hr/>
     <p>new dxChart:</p>
-    <div class="jsdx"></div>
+    <div class="jsdx" style="height: 100px"></div>
     <div class="jsdxPopup"></div>
     <script>
         (function() {
@@ -120,17 +120,17 @@ See also:
     <hr/>
     <p>Knockout + dxChart:</p>
     <div class="knockoutcontainer">
-        <div data-bind="dxChart: chartOptions"></div>
+        <div data-bind="dxChart: chartOptions" style="height: 100px"></div>
 
         <div data-bind="with: popup__model">
-                <div data-bind="dxPopup: $parent.popupOptions">
-                    <div data-options="dxTemplate: { name:'chartItemDetailsTemplate1' }">
-                        <div data-bind="dxDataGrid: gridOptions"></div>
-                        <div data-bind="dxButton: {text: 'Close', onClick: close}"></div>
-                    </div>
+            <div data-bind="dxPopup: $parent.popupOptions">
+                <div data-options="dxTemplate: { name:'chartItemDetailsTemplate1' }">
+                    <div data-bind="dxDataGrid: gridOptions"></div>
+                    <div data-bind="dxButton: {text: 'Close', onClick: close}"></div>
                 </div>
             </div>
         </div>
+    </div>
     <script>
         (function() {
             class MyModel {
@@ -202,11 +202,11 @@ See also:
     <hr/>
     <p>jQuery:</p>
     todo:
-    <div class="jqueryChart"></div>
+    <div class="jqueryChart" style="height: 100px"></div>
     <div class="jqueryPopup"></div>
     <script>
         $(function() {
-            $('jqueryChart').dxChart({
+            $('.jqueryChart').dxChart({
                 dataSource: new DevExpress.data.DataSource({
                     store: {
                         type: 'odata',
@@ -226,30 +226,31 @@ See also:
                 series: [
                     { valueField: 'Products_Count', name: 'Products Count' },
                 ],
-                // onPointClick: (e) => {
-                //     const popupContainerEl = document.createElement('div');
-                //     document.querySelector('.jqueryPopup').appendChild(popupContainerEl);
-                //     const dxPopup = $(popupContainerEl).dxPopup({
-                //         title: '\'' + e.target.data.CategoryName + '\' products: ' + e.target.data.Products.length,
-                //         contentTemplate: (container) => { 
-                //             $(document.createElement('div')).dxDataGrid({
-                //                 dataSource: e.target.data.Products,
-                //                 columns: ['ProductName', 'UnitPrice', 'Discontinued']
-                //             }).appendTo(container);
+                onPointClick: (e) => {
+                    const popupContainerEl = document.createElement('div');
+                    $(popupContainerEl)
+                    .appendTo('.jqueryPopup')
+                    .dxPopup({
+                        title: '\'' + e.target.data.CategoryName + '\' products: ' + e.target.data.Products.length,
+                        contentTemplate: (container) => { 
+                            $(document.createElement('div')).dxDataGrid({
+                                dataSource: e.target.data.Products,
+                                columns: ['ProductName', 'UnitPrice', 'Discontinued']
+                            }).appendTo(container);
 
-                //             $(document.createElement('button')).dxButton({
-                //                 text: 'Close',
-                //                 onClick: () => dxPopup.hide(),
-                //             }).appendTo(container);
-                //         },
-                //         onHidden: () => {
-                //             dxPopup.dispose();
-                //             popupContainerEl.remove();
-                //         },
-                //         closeOnOutsideClick: true,
-                //         visible: true
-                //     });
-                // }
+                            $(document.createElement('button')).dxButton({
+                                text: 'Close',
+                                onClick: () => $(popupContainerEl).dxPopup('instance').hide(),
+                            }).appendTo(container);
+                        },
+                        onHidden: () => {
+                            $(popupContainerEl).dxPopup('instance').dispose();
+                            $(popupContainerEl).remove();
+                        },
+                        closeOnOutsideClick: true,
+                        visible: true
+                    });
+                }
             });
         });
     </script>
@@ -260,7 +261,7 @@ See also:
     https://github.com/DevExpress-Examples/dxchart-how-to-display-data-from-a-remote-data-service-angularjs-e5055
     <div ng-app="app1">
         <div ng-controller="Controller1">
-            <div dx-chart="chartOptions"></div>
+            <div dx-chart="chartOptions" style="height: 100px"></div>
             <!-- <div ng-init="popup__obj"> -->
             <div>
                 <div dx-popup="popup__options">
