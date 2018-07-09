@@ -31,8 +31,8 @@
     https://js.devexpress.com/Documentation/ApiReference/UI_Widgets/dxDataGrid/Configuration/columns/lookup/
     Hint: take a look at the https://js.devexpress.com/Demos/WidgetsGallery/Demo/DataGrid/CascadingLookups/jQuery/Light/ demo illustrating a similar scenario
 
+    [ Country lookup cell | Product lookup cell | Price calculated cell ]
     <script>
-        // [ Country lookup cell | Product lookup cell | Price calculated cell ]
         const orders = [
             { id: 0, countryId: 0, productId: 0 },
             { id: 1, countryId: 0, productId: 1 },
@@ -57,7 +57,6 @@
             { productId: 2, countryId: 0, price: 0.32 },
         ];
     </script>
-
     <hr/>
     <p>javascript/DOM</p>
     todo
@@ -146,6 +145,71 @@
     
     <hr/>
     <p>Knockout:</p>
+    <div class="knockoutcontainer">
+        <div data-bind="dxDataGrid: gridOptions"></div>
+    </div>    
+    <script>
+        (function() {
+            class MyModel {
+                constructor({ orders = [], countries = [] }) {
+                    this.gridOptions = {
+                        dataSource: orders,
+                        columns: [
+                            { 
+                                dataField: 'countryId',
+                                lookup: { dataSource: countries, valueExpr: 'id', displayExpr: 'name' },
+                                setCellValue: function(newData, value, currentRowData) {
+                                    this.defaultSetCellValue(newData, value);
+                                    if(currentRowData.countryId != value
+                                        && !productPrices.find(item => (item.countryId === value && item.productId === currentRowData.productId))) {
+                                        newData.productId = null;
+                                    }
+                                },
+                            },
+                            { 
+                                dataField: 'productId',
+                                lookup: { 
+                                    dataSource: (options) => {
+                                        if(options.data) {
+                                            const filteredProducts = products.filter(product => 
+                                                productPrices.find(productPrice => {
+                                                    return (productPrice.countryId === options.data.countryId && productPrice.productId === product.id);
+                                                }));
+                                            return filteredProducts; //this data source is used to render lookup' dropdown grid in 'edit' mode
+                                        }
+                                        else {
+                                            return products; //this data source is used to render cell text in 'view' mode
+                                        }
+                                    },
+                                    valueExpr: 'id',
+                                    displayExpr: 'name'
+                                },
+                                setCellValue: function(newData, value) {
+                                    this.defaultSetCellValue(newData, value); //to force rendering for the 'Price' cell value
+                                }
+                            },
+                            {
+                                calculateCellValue: (rowData) => {
+                                    console.log('calculateCellValue 1');
+                                    const productPrice = productPrices.find(
+                                        item => (item.countryId === rowData.countryId && item.productId === rowData.productId)
+                                    );
+                                    return productPrice ? productPrice.price : null;
+                                }
+                            },
+                        ],
+                        editing: {
+                            allowUpdating: true,
+                            allowAdding: true,
+                            allowDeleting: true
+                        },
+                    };
+                }
+            }
+            ko.applyBindings(new MyModel({orders, countries}), document.querySelector('.knockoutcontainer'));
+        })()
+    </script>
+
 
     <hr/>
     <p>jQuery:</p>
@@ -160,12 +224,6 @@
                             dataField: 'countryId',
                             lookup: { dataSource: countries, valueExpr: 'id', displayExpr: 'name' },
                             setCellValue: function(newData, value, currentRowData) {
-                                //
-                                // https://js.devexpress.com/Documentation/ApiReference/UI_Widgets/dxDataGrid/Configuration/columns/#setCellValue
-                                //
-                                //  - value is lost if 'setCellValue' options refers to some function.
-                                //    it's necessary to manually call 'this.defaultSetCellValue'
-                                //
                                 this.defaultSetCellValue(newData, value);
                                 if(currentRowData.countryId != value
                                     && !productPrices.find(item => (item.countryId === value && item.productId === currentRowData.productId))) {
@@ -177,11 +235,6 @@
                             dataField: 'productId',
                             lookup: { 
                                 dataSource: (options) => {
-                                    //
-                                    //https://js.devexpress.com/Documentation/ApiReference/UI_Widgets/dxDataGrid/Configuration/columns/lookup/#dataSource
-                                    //
-                                    // - options.data is not described: null or some object?
-                                    //
                                     if(options.data) {
                                         const filteredProducts = products.filter(product => 
                                             productPrices.find(productPrice => {
@@ -202,14 +255,6 @@
                         },
                         {
                             calculateCellValue: (rowData) => {
-                                //
-                                // https://js.devexpress.com/Documentation/ApiReference/UI_Widgets/dxDataGrid/Configuration/columns/#calculateCellValue
-                                //
-                                // - this method is called 3 times for each row on the first render
-                                // - this method is called 5 times when 'Edit' is clicked
-                                // - this method is called 6 times when the 'Country' cell value is changed
-                                // - this method is called 5 times when 'Save' is clicked
-                                // - this method is not called when the 'Product' cell value is changed
                                 console.log('calculateCellValue 1');
                                 const productPrice = productPrices.find(
                                     item => (item.countryId === rowData.countryId && item.productId === rowData.productId)
@@ -230,7 +275,71 @@
 
     <hr/>
     <p>AngularJS:</p>
-    todo
+    <div ng-app="app1">
+        <div ng-controller="Controller1">
+            <div dx-data-grid="gridOptions"></div>
+        </div>
+    </div>
+    <script>
+        (function() {
+            const myApp = angular.module('app1', ['dx']);
+            myApp.controller('Controller1', ['$scope', Controller1]);
+
+            function Controller1($scope) {
+                $scope.gridOptions = {
+                    dataSource: orders,
+                    columns: [
+                        { 
+                            dataField: 'countryId',
+                            lookup: { dataSource: countries, valueExpr: 'id', displayExpr: 'name' },
+                            setCellValue: function(newData, value, currentRowData) {
+                                this.defaultSetCellValue(newData, value);
+                                if(currentRowData.countryId != value
+                                    && !productPrices.find(item => (item.countryId === value && item.productId === currentRowData.productId))) {
+                                    newData.productId = null;
+                                }
+                            },
+                        },
+                        { 
+                            dataField: 'productId',
+                            lookup: { 
+                                dataSource: (options) => {
+                                    if(options.data) {
+                                        const filteredProducts = products.filter(product => 
+                                            productPrices.find(productPrice => {
+                                                return (productPrice.countryId === options.data.countryId && productPrice.productId === product.id);
+                                            }));
+                                        return filteredProducts; //this data source is used to render lookup' dropdown grid in 'edit' mode
+                                    }
+                                    else {
+                                        return products; //this data source is used to render cell text in 'view' mode
+                                    }
+                                },
+                                valueExpr: 'id',
+                                displayExpr: 'name'
+                            },
+                            setCellValue: function(newData, value) {
+                                this.defaultSetCellValue(newData, value); //to force rendering for the 'Price' cell value
+                            }
+                        },
+                        {
+                            calculateCellValue: (rowData) => {
+                                console.log('calculateCellValue 1');
+                                const productPrice = productPrices.find(
+                                    item => (item.countryId === rowData.countryId && item.productId === rowData.productId)
+                                );
+                                return productPrice ? productPrice.price : null;
+                            }
+                        },
+                    ],
+                    editing: {
+                        allowUpdating: true,
+                        allowAdding: true,
+                        allowDeleting: true
+                    },
+                };
+            }
+        })();
     </script>
 
     <hr/>
