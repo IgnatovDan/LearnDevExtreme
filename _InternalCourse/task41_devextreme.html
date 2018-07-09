@@ -50,22 +50,24 @@ https://www.devexpress.com/Support/Center/Question/Details/T450927/dxvalidator-h
         <label>Text2:<div class="data2__text"></div></label>
         <label>Validate text3:<div class="data3__check"></div></label>
         <label>Text3:<div class="data3__text"></div></label>
+        <div class="validate__button"></div>
     </div>
     <script>
         (function() {
-            const dxData1Text = new DevExpress.ui.dxTextBox(document.querySelector('.data1__text'), {});
-            const dxData1Validator = new DevExpress.ui.dxValidator(document.querySelector('.data1__text'), {
+            const rootEl = document.querySelector('.jsdx');
+            const dxData1Text = new DevExpress.ui.dxTextBox(rootEl.querySelector('.data1__text'), {});
+            const dxData1Validator = new DevExpress.ui.dxValidator(rootEl.querySelector('.data1__text'), {
                 validationRules: [ { type: 'required' } ]
             });
             dxData1Validator.validate();
 
-            const dxData2Check = new DevExpress.ui.dxCheckBox(document.querySelector('.data2__check'), {
+            const dxData2Check = new DevExpress.ui.dxCheckBox(rootEl.querySelector('.data2__check'), {
                 value: true,
                 onValueChanged: (e) => dxData2Validator.validate()
             });
             
-            const dxData2Text = new DevExpress.ui.dxTextBox(document.querySelector('.data2__text'), {});
-            const dxData2Validator = new DevExpress.ui.dxValidator(document.querySelector('.data2__text'), {
+            const dxData2Text = new DevExpress.ui.dxTextBox(rootEl.querySelector('.data2__text'), {});
+            const dxData2Validator = new DevExpress.ui.dxValidator(rootEl.querySelector('.data2__text'), {
                 validationRules: [ { type: 'required' } ],
                 onInitialized: (e) => {
                     const _bypass = e.component.option('adapter').bypass;
@@ -76,17 +78,16 @@ https://www.devexpress.com/Support/Center/Question/Details/T450927/dxvalidator-h
             });
             dxData2Validator.validate();
 
-            const dxData3Check = new DevExpress.ui.dxCheckBox(document.querySelector('.data3__check'), {
+            const dxData3Check = new DevExpress.ui.dxCheckBox(rootEl.querySelector('.data3__check'), {
                 value: true,
                 onValueChanged: (e) => dxData3Validator.validate()
             });
-            const dxData3Text = new DevExpress.ui.dxTextBox(document.querySelector('.data3__text'), {});
-            const dxData3Validator = new DevExpress.ui.dxValidator(document.querySelector('.data3__text'), {
+            const dxData3Text = new DevExpress.ui.dxTextBox(rootEl.querySelector('.data3__text'), {});
+            const dxData3Validator = new DevExpress.ui.dxValidator(rootEl.querySelector('.data3__text'), {
                 validationRules: [ 
                     { 
                         type: 'custom',
                         validationCallback: () => { 
-                            debugger;
                             return dxData3Check.option('value') ? Boolean(dxData3Text.option('text')) : true;
                         },
                         message: 'Required',
@@ -99,6 +100,15 @@ https://www.devexpress.com/Support/Center/Question/Details/T450927/dxvalidator-h
                 ],
             });
             dxData3Validator.validate();
+
+            const dxButton = new DevExpress.ui.dxButton(rootEl.querySelector('validate__button'), {
+                text: 'Validate all',
+                onClick: () => {
+                    dxData1Validator.validate();
+                    dxData2Validator.validate();
+                    dxData3Validator.validate();
+                }
+            });
         })();
     </script>
     
