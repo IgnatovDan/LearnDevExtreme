@@ -307,19 +307,29 @@ https://www.devexpress.com/Support/Center/Question/Details/T450927/dxvalidator-h
                         }">
                     </div>
                 </label>
-                <label>Validate text2:<div dx-check-box="" ng-model="data2__needValidation"></div></label>
+                <label>Validate text2:
+                    <div dx-check-box="{
+                            onValueChanged: validateData2Text
+                        }"
+                        ng-model="data2__needValidation"></div>
+                </label>
                 <label>Text2:
                     <div dx-text-box="" ng-model="data2__text"
-                        dx-validator="data2__text"
-                    >
-
+                        dx-validator="data2__text__validatorOptions">
                     </div>
                 </label>
-                <label>Validate text3:<div dx-check-box="" ng-model="data3__needValidation"></div></label>
-                <label>Text3:<div dx-text-box="" ng-model="data3__text"></div></label>
+                <label>Validate text3:
+                    <div dx-check-box="" ng-model="data3__needValidation">
+                    </div>
+                </label>
+                <label>Text3:
+                    <div dx-text-box="" ng-model="data3__text" class="angularJS__data3__text"
+                        dx-validator="data3__text__validatorOptions">
+                    </div>
+                </label>
             </div>
-            <div dx-button="{ text: 'Show summary', onClick: e.validationGroup.validate(), validationGroup: $validationGroup}"></div>
-            <div class="jquery__validationSummary"></div>
+            <div dx-button="{ text: 'Show summary', onClick: showSummaryClickHandler, validationGroup: validationGroup}"></div>
+            <div dx-validation-summary="{validationGroup: validationGroup,}"></div>
             <div dx-button="{ text: 'Show values', onClick: updateValuesText}"></div>
             <pre>{{valuesText}}</pre>
         </div>
@@ -339,75 +349,73 @@ https://www.devexpress.com/Support/Center/Question/Details/T450927/dxvalidator-h
 
             function Controller1($scope) {
                 $scope.validationGroup = 'angularjs';
+
                 $scope.data1__text = '11';
+
                 $scope.data2__needValidation = true;
-                $scope.data2__text = '2222';
+                $scope.$watch('data2__needValidation', () => $scope.data2__validator.validate(), true);
+
+                $scope.data2__text = '';
+                $scope.data2__text__validatorOptions = {
+                    validationGroup: $scope.validationGroup,
+                    validationRules: [ { type: 'required' } ],
+                    onInitialized: (e) => {
+                        $scope.data2__validator = e.component;
+                        const bypass_base = e.component.option('adapter').bypass;
+                        e.component.option('adapter').bypass = function() {
+                            if($scope.data2__needValidation) {
+                                return bypass_base.apply(this, arguments);
+                            }
+                            else {
+                                return true;
+                            }
+                        }
+                    },
+                };
+
                 $scope.data3__needValidation = true;
+                $scope.$watch('data3__needValidation', () => $scope.data3__validator.validate(), true);
+
                 $scope.data3__text = '333333';
+                $scope.data3__text__validatorOptions = {
+                    validationGroup: $scope.validationGroup,
+                    validationRules: [ 
+                        { 
+                            type: 'custom',
+                            validationCallback: () => { 
+                                if($scope.data3__needValidation) {
+                                    //
+                                    // This validation rule for the target 'input' and its current 'text' should be checked.
+                                    // The underlying bound property value should not be used, it can be unsynchronized with the 'input.text' value.
+                                    //
+                                    return Boolean($('.angularJS__data3__text').dxTextBox('instance').option('text')/*data3__text???*/);
+                                }
+                                else {
+                                    return true;
+                                }
+                            },
+                            message: 'My Required',
+                            //
+                            // the 'required' rule is evaluated each time the 'validate' method is called.
+                            // but in my custom rule I have to specify this option explicitly
+                            //
+                            reevaluate: true,
+                        }
+                    ],
+                    onInitialized: (e) => $scope.data3__validator = e.component,
+                };
+
                 $scope.updateValuesText = () => {
                     $scope.valuesText = 
                         'text1: "' + $scope.data1__text + '"\ntext2: "' + $scope.data2__text + '"\ntext3: "' + $scope.data3__text + '"';
                 };
 
-                // $('.jquery__data1__text').dxValidator({
-                //     validationGroup,
-                //     validationRules: [ { type: 'required' } ]
-                // });
-                // $('.jquery__data1__text').dxValidator('instance').validate();
-                // $('.jquery__data2__check').dxCheckBox({
-                //     onValueChanged: e => {
-                //         $('.jquery__data2__text').dxValidator('instance').validate();
-                //     }
-                // });
-                // $('.jquery__data2__text').dxValidator({
-                //     validationGroup,
-                //     validationRules: [ { type: 'required' } ],
-                //     onInitialized: (e) => {
-                //         const bypass_base = e.component.option('adapter').bypass;
-                //         e.component.option('adapter').bypass = function() {
-                //             if(data2__needValidation) {
-                //                 return bypass_base.apply(this, arguments);
-                //             }
-                //             else {
-                //                 return true;
-                //             }
-                //         }
-                //     },
-                // });
-                // $('.jquery__data2__text').dxValidator('instance').validate();
-
-                // $('.jquery__data3__check').dxCheckBox({
-                //     onValueChanged: e => {
-                //         $('.jquery__data3__text').dxValidator('instance').validate();
-                //     },
-                // });
-                // $('.jquery__data3__text').dxValidator({
-                //     validationGroup,
-                //     validationRules: [ 
-                //         { 
-                //             type: 'custom',
-                //             validationCallback: () => { 
-                //                 if(data3__needValidation) {
-                //                     return Boolean($('.jquery__data3__text').dxTextBox('instance').option('text')/*data3__text???*/);
-                //                 }
-                //                 else {
-                //                     return true;
-                //                 }
-                //             },
-                //             message: 'My Required',
-                //             //
-                //             // the 'required' rule is evaluated each time the 'validate' method is called.
-                //             // but in my custom rule I have to specify this option explicitly
-                //             //
-                //             reevaluate: true,
-                //         }
-                //     ],
-                // });
-                // $('.jquery__data3__text').dxValidator('instance').validate();
-
-                // $('.jquery__validationSummary').dxValidationSummary({
-                //     validationGroup,
-                // });
+                $scope.showSummaryClickHandler = (e) => {
+                    //
+                    // How to show validation summary on load ???
+                    //
+                    e.validationGroup.validate();
+                };
             }
         })();
     </script>
