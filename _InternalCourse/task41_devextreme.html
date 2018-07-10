@@ -76,7 +76,7 @@ c.Angular approach
                     dxData2Validator.validate();
                 }
             });
-            let data2__text = '2222';
+            let data2__text = '';
             const dxData2Text = new DevExpress.ui.dxTextBox(rootEl.querySelector('.data2__text'), {
                 value: data2__text,
                 onValueChanged: e => data2__text = e.value,
@@ -211,12 +211,14 @@ c.Angular approach
                     this.data1__text = ko.observable('11');
 
                     this.data2__needValidation = ko.observable(true);
+                    this.data2__needValidation.subscribe(() => this.data2__validator.validate());
                     this.data2__text = ko.observable();
                     this.data2__text_validationOptions = {
                         validationRules: [{
                             type: "required",
                         }],
                         onInitialized: (e) => {
+                            this.data2__validator = e.component;
                             const bypass_base = e.component.option('adapter').bypass;
                             e.component.option('adapter').bypass = function() {
                                 if(model__this.data2__needValidation()) {
@@ -230,6 +232,7 @@ c.Angular approach
                     };
 
                     this.data3__needValidation = ko.observable(true);
+                    this.data3__needValidation.subscribe(() => this.data3__validator.validate());
                     this.data3__text = ko.observable('333');
                     this.data3__text_validationOptions = {
                         validationRules: [ 
@@ -251,6 +254,7 @@ c.Angular approach
                                 reevaluate: true,
                             }
                         ],
+                        onInitialized: (e) => this.data3__validator = e.component,
                     };
 
                     this.valuesText = ko.observable();
@@ -267,9 +271,16 @@ c.Angular approach
                     //
                     e.validationGroup.validate();
                 }
+                validate() {
+                    this.data2__validator.validate();
+                    this.data3__validator.validate();
+                }
             }
 
-            ko.applyBindings(new Model(), document.querySelector('.knockoutContainer'));
+            const model = new Model();
+            ko.applyBindings(model, document.querySelector('.knockoutContainer'));
+
+            model.validate();
         })();
     </script>
 
@@ -310,7 +321,7 @@ c.Angular approach
                     $('.jquery__data2__text').dxValidator('instance').validate();
                 }
             });
-            let data2__text = '2222';
+            let data2__text = '';
             $('.jquery__data2__text').dxTextBox({
                 value: data2__text,
                 onValueChanged: e => data2__text = e.value,
