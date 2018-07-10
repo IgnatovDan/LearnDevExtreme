@@ -114,7 +114,6 @@ https://www.devexpress.com/Support/Center/Question/Details/T450927/dxvalidator-h
             const dxData3Text = new DevExpress.ui.dxTextBox(rootEl.querySelector('.data3__text'), {
                 value: data3_text,
                 onValueChanged: (e) => {
-                    dxData3Validator.validate();
                     data3_text = e.value;
                 },
             });
@@ -248,7 +247,6 @@ https://www.devexpress.com/Support/Center/Question/Details/T450927/dxvalidator-h
             $('.jquery__data3__text').dxTextBox({
                 value: data3_text,
                 onValueChanged: (e) => {
-                    $('.jquery__data3__text').dxValidator('instance').validate();
                     data3_text = e.value;
                 },
             });
