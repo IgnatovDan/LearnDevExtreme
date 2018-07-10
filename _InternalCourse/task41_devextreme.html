@@ -40,7 +40,6 @@ https://www.devexpress.com/Support/Center/Question/Details/T450927/dxvalidator-h
     <hr/>
     <p>javascript/DOM</p>
     todo 
-
     <hr/>
     <p>javascript + dx:</p>
     <div class="jsdx">
@@ -58,7 +57,7 @@ https://www.devexpress.com/Support/Center/Question/Details/T450927/dxvalidator-h
     </div>
     <script>
         'use strict';
-        $(function() {
+        (function() {
             const rootEl = document.querySelector('.jsdx');
 
             const validationGroup = 'jsdx';
@@ -152,11 +151,6 @@ https://www.devexpress.com/Support/Center/Question/Details/T450927/dxvalidator-h
                 onClick: e => e.validationGroup.validate(),
             });
             
-            //
-            // My often case: widget doesn't work at all.
-            // I can create it before creating the dxButton and it will work.
-            // How to investigate it?
-            //
             new DevExpress.ui.dxValidationSummary(rootEl.querySelector('.validationSummary'), {
                 validationGroup,
             });
@@ -176,7 +170,7 @@ https://www.devexpress.com/Support/Center/Question/Details/T450927/dxvalidator-h
                         'text1: "' + data1_text + '"\rtext2: "' + data2_text + '"\rtext3: "' + data3_text + '"';
                 }
             });
-        });
+        })();
     </script>
     
     <hr/>
