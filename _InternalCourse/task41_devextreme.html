@@ -19,6 +19,11 @@
     <link rel="stylesheet" type="text/css" href="https://cdn3.devexpress.com/jslib/18.1.3/css/dx.light.css" />
     <!-- A DevExtreme library -->
     <script type="text/javascript" src="https://cdn3.devexpress.com/jslib/18.1.3/js/dx.all.debug.js"></script>
+    <style>
+        .js input[type="text"] {
+            border: 2px dashed red;
+        }
+    </style>
 </head>
 <body>
     <pre>
@@ -35,7 +40,26 @@ c.Angular approach
 
     <hr/>
     <p>javascript/DOM</p>
-    todo 
+    <div class="js">
+        <div style="display: flex; flex-direction: column;">
+            <label>Text1:<input type="text" class="js__data1__text" required></input></label>
+            <label>Validate text2:<input type="checkbox" class="js__data2__check"></input></label>
+            <label>Text2:<input type="text" class="js__data2__text"></input></label>
+            <label>Validate text3:<input type="checkbox" class="js__data3__check"></input></label>
+            <label>Text3:<input type="text" class="js__data3__text"></input></label>
+        </div>
+        <button class="js__validateButton">Show validation summary</button>
+        <div class="js__validationSummary"></div>
+        <button class="js__showValuesButton">Show values</button>
+        <div class="js__values"></div>
+    </div>
+    <script>
+        (function () {
+            debugger;
+            //document.querySelector('.js__data1__text').checkValidity();
+        })();
+    </script>
+
     <hr/>
     <p>javascript + dx:</p>
     <div class="jsdx">
