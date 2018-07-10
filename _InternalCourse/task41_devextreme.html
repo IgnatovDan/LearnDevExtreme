@@ -170,7 +170,68 @@ c.Angular approach
     
     <hr/>
     <p>Knockout:</p>
-    todo
+    <div class=".knockoutContainer" >
+        <div  style="display: flex; flex-direction: column;">
+            <label>Text1:
+                <div class="ko__data1__text" data-bind="dxTextBox: { value: data1__text},
+                    dxValidator: {
+                        validationRules: [ { type: 'required' } ]
+                    }">
+                </div>
+            </label>
+            
+            <label>Validate text2:<div data-bind="dxCheckBox: { value: data2__needValidation}"></div></label>
+            <label>Text2:
+                <div data-bind="dxTextBox: { text: data2__text}, dxValidator: data2__text_validationOptions"></div>
+            </label>
+            
+            <label>Validate text3:<div data-bind="dxCheckBox: { value: data2__needValidation}"></div></label>
+            <label>Text3:<div data-bind="dxTextBox: { text: data3__text}"></div></label>
+        </div>
+        <div data-bind="dxButton: {text: 'Show validation summary', onClick: showValidationSummary__onClick}"></div>
+        <div data-bind="dxValidationSummary: { }"></div>
+        <div data-bind="dxButton: {text: 'Show Values', onClick: updateValuesText }"></div>
+        <span data-bind="text: valuesText"></span>
+    </div>
+    <script>
+        /*
+        https://js.devexpress.com/Documentation/16_1/Guide/UI_Widgets/Basics/Widget_Basics_-_Knockout
+        - from this topic it is not clear how to handle widget events when I am using components
+        */
+        'use strict';
+        (function() {
+            const validationGroup = 'knockout';
+            const model = {
+                validationGroup,
+
+                data1__text: ko.observable('11'),
+
+                data2__needValidation: ko.observable(true),
+                data2__text: ko.observable(),
+                data2__text_validationOptions: {
+                    validationRules: [{
+                        type: "required",
+                    }]
+                },
+
+                data3__needValidation: ko.observable(true),
+                data3__text: ko.observable('333'),
+                valuesText: ko.observable(),
+
+                updateValuesText() {
+                    this.valuesText('text1: "' + this.data1__text() + '"\ntext2: "' + this.data2__text() + '"\ntext3: "' + this.data3__text() + '"');
+                },
+                showValidationSummary__onClick(e) {
+                    //
+                    // How to show validation summary on load ???
+                    //
+                    e.validationGroup.validate();
+                },
+            };
+
+            ko.applyBindings(model, document.querySelector('.knockoutContainer'));
+        })();
+    </script>
 
     <hr/>
     <p>jQuery:</p>
