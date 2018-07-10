@@ -166,7 +166,7 @@ https://www.devexpress.com/Support/Center/Question/Details/T450927/dxvalidator-h
                 text: 'Show values',
                 onClick: () => {
                     document.querySelector('.values').innerText = 
-                        'text1: "' + data1_text + '"\rtext2: "' + data2_text + '"\rtext3: "' + data3_text + '"';
+                        'text1: "' + data1_text + '"\ntext2: "' + data2_text + '"\ntext3: "' + data3_text + '"';
                 }
             });
         })();
@@ -287,8 +287,7 @@ https://www.devexpress.com/Support/Center/Question/Details/T450927/dxvalidator-h
             $('.jquery__button').dxButton({
                 text: 'Show values',
                 onClick: () => {
-                    $('.values').text = 
-                        'text1: "' + data1_text + '"\rtext2: "' + data2_text + '"\rtext3: "' + data3_text + '"';
+                    $('.jquery__values').text('text1: "' + data1_text + '"\ntext2: "' + data2_text + '"\ntext3: "' + data3_text + '"');
                 }
             });
         });
