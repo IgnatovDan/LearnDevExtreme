@@ -296,7 +296,108 @@ https://www.devexpress.com/Support/Center/Question/Details/T450927/dxvalidator-h
 
     <hr/>
     <p>AngularJS:</p>
-    todo
+    <div ng-app="app1">
+        <div ng-controller="Controller1">
+            <div style="display: flex; flex-direction: column;">
+                <label>Text1:<div dx-text-box="" ng-model="data1_text"></div></label>
+                <label>Validate text2:<div dx-check-box="" ng-model="data2__needValidation"></div></label>
+                <label>Text2:<div dx-text-box="" ng-model="data2_text"></div></label>
+                <label>Validate text3:<div dx-check-box="" ng-model="data3__needValidation"></div></label>
+                <label>Text3:<div dx-text-box="" ng-model="data3_text"></div></label>
+            </div>
+            <div dx-button="{ text: 'Show summary', onClick: e.validationGroup.validate(), validationGroup: $validationGroup}"></div>
+            <div class="jquery__validationSummary"></div>
+            <div dx-button="{ text: 'Show values', onClick: updateValuesText}"></div>
+            <pre>{{valuesText}}</pre>
+        </div>
+    </div>
+    <script>
+        (function() {
+            //
+            // It's not clear how to access the event arguments object when handler is attached in markup:
+            // https://js.devexpress.com/Documentation/Guide/Getting_Started/Widget_Basics_-_AngularJS/Handle_Events/
+            //
+            // Topic 'Handle events' shows wvent handler initialization in markup but it is not demonstrated in the demo:
+            // https://js.devexpress.com/Demos/WidgetsGallery/Demo/Menu/Overview/AngularJS/Light/
+            //
+            
+            const myApp = angular.module('app1', ['dx']);
+            myApp.controller('Controller1', ['$scope', Controller1]);
+
+            function Controller1($scope) {
+                $scope.validationGroup = 'angularjs';
+                $scope.data1_text = '11';
+                $scope.data2__needValidation = true;
+                $scope.data2_text = '2222';
+                $scope.data3__needValidation = true;
+                $scope.data3_text = '333333';
+                $scope.updateValuesText = () => {
+                    $scope.valuesText = 
+                        'text1: "' + $scope.data1_text + '"\ntext2: "' + $scope.data2_text + '"\ntext3: "' + $scope.data3_text + '"';
+                };
+
+                // $('.jquery__data1__text').dxValidator({
+                //     validationGroup,
+                //     validationRules: [ { type: 'required' } ]
+                // });
+                // $('.jquery__data1__text').dxValidator('instance').validate();
+                // $('.jquery__data2__check').dxCheckBox({
+                //     onValueChanged: e => {
+                //         $('.jquery__data2__text').dxValidator('instance').validate();
+                //     }
+                // });
+                // $('.jquery__data2__text').dxValidator({
+                //     validationGroup,
+                //     validationRules: [ { type: 'required' } ],
+                //     onInitialized: (e) => {
+                //         const bypass_base = e.component.option('adapter').bypass;
+                //         e.component.option('adapter').bypass = function() {
+                //             if(data2__needValidation) {
+                //                 return bypass_base.apply(this, arguments);
+                //             }
+                //             else {
+                //                 return true;
+                //             }
+                //         }
+                //     },
+                // });
+                // $('.jquery__data2__text').dxValidator('instance').validate();
+
+                // $('.jquery__data3__check').dxCheckBox({
+                //     onValueChanged: e => {
+                //         $('.jquery__data3__text').dxValidator('instance').validate();
+                //     },
+                // });
+                // $('.jquery__data3__text').dxValidator({
+                //     validationGroup,
+                //     validationRules: [ 
+                //         { 
+                //             type: 'custom',
+                //             validationCallback: () => { 
+                //                 if(data3__needValidation) {
+                //                     return Boolean($('.jquery__data3__text').dxTextBox('instance').option('text')/*data3_text???*/);
+                //                 }
+                //                 else {
+                //                     return true;
+                //                 }
+                //             },
+                //             message: 'My Required',
+                //             //
+                //             // the 'required' rule is evaluated each time the 'validate' method is called.
+                //             // but in my custom rule I have to specify this option explicitly
+                //             //
+                //             reevaluate: true,
+                //         }
+                //     ],
+                // });
+                // $('.jquery__data3__text').dxValidator('instance').validate();
+
+                // $('.jquery__validationSummary').dxValidationSummary({
+                //     validationGroup,
+                // });
+            }
+        })();
+    </script>
 
     <hr/>
     <p>Angular6:</p>
