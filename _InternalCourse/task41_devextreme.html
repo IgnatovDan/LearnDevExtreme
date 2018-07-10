@@ -173,7 +173,7 @@ c.Angular approach
     <div class=".knockoutContainer" >
         <div  style="display: flex; flex-direction: column;">
             <label>Text1:
-                <div class="ko__data1__text" data-bind="dxTextBox: { value: data1__text},
+                <div class="ko__data1__text" data-bind="dxTextBox: { value: data1__text },
                     dxValidator: {
                         validationRules: [ { type: 'required' } ]
                     }">
@@ -182,15 +182,17 @@ c.Angular approach
             
             <label>Validate text2:<div data-bind="dxCheckBox: { value: data2__needValidation}"></div></label>
             <label>Text2:
-                <div data-bind="dxTextBox: { text: data2__text}, dxValidator: data2__text_validationOptions"></div>
+                <div data-bind="dxTextBox: { value: data2__text }, dxValidator: data2__text_validationOptions"></div>
             </label>
             
-            <label>Validate text3:<div data-bind="dxCheckBox: { value: data3__needValidation}"></div></label>
-            <label>Text3:<div data-bind="dxTextBox: { text: data3__text}"></div></label>
+            <label>Validate text3:<div data-bind="dxCheckBox: { value: data3__needValidation }"></div></label>
+            <label>Text3:
+                <div data-bind="dxTextBox: { value: data3__text, onInitialized: data3__dxTextBox_onInitialized }, dxValidator: data3__text_validationOptions"></div>
+            </label>
         </div>
-        <div data-bind="dxButton: {text: 'Show validation summary', onClick: showValidationSummary__onClick}"></div>
+        <div data-bind="dxButton: { text: 'Show validation summary', onClick: showValidationSummary_onClick }"></div>
         <div data-bind="dxValidationSummary: { }"></div>
-        <div data-bind="dxButton: {text: 'Show Values', onClick: updateValuesText }"></div>
+        <div data-bind="dxButton: { text: 'Show Values', onClick: updateValuesText }"></div>
         <span data-bind="text: valuesText"></span>
     </div>
     <script>
@@ -229,12 +231,37 @@ c.Angular approach
 
                     this.data3__needValidation = ko.observable(true);
                     this.data3__text = ko.observable('333');
+                    this.data3__text_validationOptions = {
+                        validationRules: [ 
+                            { 
+                                type: 'custom',
+                                validationCallback: () => { 
+                                    if(this.data3__needValidation()) {
+                                        return Boolean(this.data3__dxTextBox.option('text')/*data3__text???*/);
+                                    }
+                                    else {
+                                        return true;
+                                    }
+                                },
+                                message: 'My Required',
+                                //
+                                // the 'required' rule is evaluated each time the 'validate' method is called.
+                                // but in my custom rule I have to specify this option explicitly
+                                //
+                                reevaluate: true,
+                            }
+                        ],
+                    };
+
                     this.valuesText = ko.observable();
+                }
+                data3__dxTextBox_onInitialized(e) {
+                    this.data3__dxTextBox = e.component;
                 }
                 updateValuesText() {
                     this.valuesText('text1: "' + this.data1__text() + '"\ntext2: "' + this.data2__text() + '"\ntext3: "' + this.data3__text() + '"');
                 }
-                showValidationSummary__onClick(e) {
+                showValidationSummary_onClick(e) {
                     //
                     // How to show validation summary on load ???
                     //
