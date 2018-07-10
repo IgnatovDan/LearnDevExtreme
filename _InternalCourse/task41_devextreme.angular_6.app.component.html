@@ -1,0 +1,43 @@
+<p>{{name}}</p>
+<pre>{{description}}</pre>
+<p>See also other implementations at <a href="{{otherImplementationUrl}}">{{otherImplementationUrl}}</a></p>
+<hr/>
+<dx-validation-group>
+  <div style="display: flex; flex-direction: column;">
+    <label>Text1:
+      <dx-text-box [(value)]="data1__text">
+        <dx-validator>
+          <dxi-validation-rule type="required"></dxi-validation-rule>
+        </dx-validator>
+      </dx-text-box>
+    </label>
+
+    <label>Validate text2:
+      <dx-check-box [(value)]="data2__needValidation"></dx-check-box>
+    </label>
+    <label>Text2:
+      <dx-text-box [(value)]="data2__text">
+        <dx-validator (onInitialized)="data2__validator__onInitialized($event)"> 
+          <dxi-validation-rule type="required"></dxi-validation-rule>
+        </dx-validator>
+      </dx-text-box>
+    </label>
+
+    <label>Validate text3:
+      <dx-check-box [(value)]="data3__needValidation"></dx-check-box>
+    </label>
+    <label>Text3:
+      <dx-text-box [(value)]="data3__text">
+        <dx-validator>
+          <dxi-validation-rule type="required"></dxi-validation-rule>
+        </dx-validator>
+      </dx-text-box>
+    </label>
+
+  </div>
+
+  <dx-button text="Show summary" (onClick)="showSummary_onClick($event)" validationGroup="{{validationGroup}}"></dx-button>
+  <dx-validation-summary></dx-validation-summary>
+</dx-validation-group>
+<dx-button text="Show values" (onClick)="updateValuesText()"></dx-button>
+<pre>{{valuesText}}</pre>
