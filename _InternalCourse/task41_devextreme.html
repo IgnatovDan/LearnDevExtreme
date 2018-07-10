@@ -61,10 +61,10 @@ https://www.devexpress.com/Support/Center/Question/Details/T450927/dxvalidator-h
             const rootEl = document.querySelector('.jsdx');
 
             const validationGroup = 'jsdx';
-            let data1_text = '11';
+            let data1__text = '11';
             const dxData1Text = new DevExpress.ui.dxTextBox(rootEl.querySelector('.data1__text'), {
-                value: data1_text,
-                onValueChanged: e => data1_text = e.value,
+                value: data1__text,
+                onValueChanged: e => data1__text = e.value,
             });
             const dxData1Validator = new DevExpress.ui.dxValidator(rootEl.querySelector('.data1__text'), {
                 validationGroup,
@@ -80,10 +80,10 @@ https://www.devexpress.com/Support/Center/Question/Details/T450927/dxvalidator-h
                     dxData2Validator.validate();
                 }
             });
-            let data2_text = '2222';
+            let data2__text = '2222';
             const dxData2Text = new DevExpress.ui.dxTextBox(rootEl.querySelector('.data2__text'), {
-                value: data2_text,
-                onValueChanged: e => data2_text = e.value,
+                value: data2__text,
+                onValueChanged: e => data2__text = e.value,
             });
             const dxData2Validator = new DevExpress.ui.dxValidator(rootEl.querySelector('.data2__text'), {
                 validationGroup,
@@ -110,11 +110,11 @@ https://www.devexpress.com/Support/Center/Question/Details/T450927/dxvalidator-h
                     dxData3Validator.validate();
                 },
             });
-            let data3_text = '333333';
+            let data3__text = '333333';
             const dxData3Text = new DevExpress.ui.dxTextBox(rootEl.querySelector('.data3__text'), {
-                value: data3_text,
+                value: data3__text,
                 onValueChanged: (e) => {
-                    data3_text = e.value;
+                    data3__text = e.value;
                 },
             });
             const dxData3Validator = new DevExpress.ui.dxValidator(rootEl.querySelector('.data3__text'), {
@@ -124,7 +124,7 @@ https://www.devexpress.com/Support/Center/Question/Details/T450927/dxvalidator-h
                         type: 'custom',
                         validationCallback: () => { 
                             if(data3__needValidation) {
-                                return Boolean(dxData3Text.option('text')/*data3_text???*/);
+                                return Boolean(dxData3Text.option('text')/*data3__text???*/);
                              }
                              else {
                                  return true;
@@ -166,7 +166,7 @@ https://www.devexpress.com/Support/Center/Question/Details/T450927/dxvalidator-h
                 text: 'Show values',
                 onClick: () => {
                     document.querySelector('.values').innerText = 
-                        'text1: "' + data1_text + '"\ntext2: "' + data2_text + '"\ntext3: "' + data3_text + '"';
+                        'text1: "' + data1__text + '"\ntext2: "' + data2__text + '"\ntext3: "' + data3__text + '"';
                 }
             });
         })();
@@ -194,10 +194,10 @@ https://www.devexpress.com/Support/Center/Question/Details/T450927/dxvalidator-h
     <script>
         $(function() {
             const validationGroup = 'jquery';
-            let data1_text = '11';
+            let data1__text = '11';
             $('.jquery__data1__text').dxTextBox({
-                value: data1_text,
-                onValueChanged: e => data1_text = e.value,
+                value: data1__text,
+                onValueChanged: e => data1__text = e.value,
             });
             $('.jquery__data1__text').dxValidator({
                 validationGroup,
@@ -213,10 +213,10 @@ https://www.devexpress.com/Support/Center/Question/Details/T450927/dxvalidator-h
                     $('.jquery__data2__text').dxValidator('instance').validate();
                 }
             });
-            let data2_text = '2222';
+            let data2__text = '2222';
             $('.jquery__data2__text').dxTextBox({
-                value: data2_text,
-                onValueChanged: e => data2_text = e.value,
+                value: data2__text,
+                onValueChanged: e => data2__text = e.value,
             });
             $('.jquery__data2__text').dxValidator({
                 validationGroup,
@@ -243,11 +243,11 @@ https://www.devexpress.com/Support/Center/Question/Details/T450927/dxvalidator-h
                     $('.jquery__data3__text').dxValidator('instance').validate();
                 },
             });
-            let data3_text = '333333';
+            let data3__text = '333333';
             $('.jquery__data3__text').dxTextBox({
-                value: data3_text,
+                value: data3__text,
                 onValueChanged: (e) => {
-                    data3_text = e.value;
+                    data3__text = e.value;
                 },
             });
             $('.jquery__data3__text').dxValidator({
@@ -257,7 +257,7 @@ https://www.devexpress.com/Support/Center/Question/Details/T450927/dxvalidator-h
                         type: 'custom',
                         validationCallback: () => { 
                             if(data3__needValidation) {
-                                return Boolean($('.jquery__data3__text').dxTextBox('instance').option('text')/*data3_text???*/);
+                                return Boolean($('.jquery__data3__text').dxTextBox('instance').option('text')/*data3__text???*/);
                              }
                              else {
                                  return true;
@@ -287,7 +287,7 @@ https://www.devexpress.com/Support/Center/Question/Details/T450927/dxvalidator-h
             $('.jquery__button').dxButton({
                 text: 'Show values',
                 onClick: () => {
-                    $('.jquery__values').text('text1: "' + data1_text + '"\ntext2: "' + data2_text + '"\ntext3: "' + data3_text + '"');
+                    $('.jquery__values').text('text1: "' + data1__text + '"\ntext2: "' + data2__text + '"\ntext3: "' + data3__text + '"');
                 }
             });
         });
@@ -299,11 +299,24 @@ https://www.devexpress.com/Support/Center/Question/Details/T450927/dxvalidator-h
     <div ng-app="app1">
         <div ng-controller="Controller1">
             <div style="display: flex; flex-direction: column;">
-                <label>Text1:<div dx-text-box="" ng-model="data1_text"></div></label>
+                <label>Text1:
+                    <div dx-text-box="" ng-model="data1__text"
+                        dx-validator="{
+                            validationGroup: validationGroup,
+                            validationRules: [ { type: 'required' } ]
+                        }">
+                    </div>
+                </label>
                 <label>Validate text2:<div dx-check-box="" ng-model="data2__needValidation"></div></label>
-                <label>Text2:<div dx-text-box="" ng-model="data2_text"></div></label>
+                <label>Text2:
+                    <div dx-text-box="" ng-model="data2__text"
+                        dx-validator="data2__text"
+                    >
+
+                    </div>
+                </label>
                 <label>Validate text3:<div dx-check-box="" ng-model="data3__needValidation"></div></label>
-                <label>Text3:<div dx-text-box="" ng-model="data3_text"></div></label>
+                <label>Text3:<div dx-text-box="" ng-model="data3__text"></div></label>
             </div>
             <div dx-button="{ text: 'Show summary', onClick: e.validationGroup.validate(), validationGroup: $validationGroup}"></div>
             <div class="jquery__validationSummary"></div>
@@ -326,14 +339,14 @@ https://www.devexpress.com/Support/Center/Question/Details/T450927/dxvalidator-h
 
             function Controller1($scope) {
                 $scope.validationGroup = 'angularjs';
-                $scope.data1_text = '11';
+                $scope.data1__text = '11';
                 $scope.data2__needValidation = true;
-                $scope.data2_text = '2222';
+                $scope.data2__text = '2222';
                 $scope.data3__needValidation = true;
-                $scope.data3_text = '333333';
+                $scope.data3__text = '333333';
                 $scope.updateValuesText = () => {
                     $scope.valuesText = 
-                        'text1: "' + $scope.data1_text + '"\ntext2: "' + $scope.data2_text + '"\ntext3: "' + $scope.data3_text + '"';
+                        'text1: "' + $scope.data1__text + '"\ntext2: "' + $scope.data2__text + '"\ntext3: "' + $scope.data3__text + '"';
                 };
 
                 // $('.jquery__data1__text').dxValidator({
@@ -375,7 +388,7 @@ https://www.devexpress.com/Support/Center/Question/Details/T450927/dxvalidator-h
                 //             type: 'custom',
                 //             validationCallback: () => { 
                 //                 if(data3__needValidation) {
-                //                     return Boolean($('.jquery__data3__text').dxTextBox('instance').option('text')/*data3_text???*/);
+                //                     return Boolean($('.jquery__data3__text').dxTextBox('instance').option('text')/*data3__text???*/);
                 //                 }
                 //                 else {
                 //                     return true;
