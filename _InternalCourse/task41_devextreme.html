@@ -179,7 +179,123 @@ https://www.devexpress.com/Support/Center/Question/Details/T450927/dxvalidator-h
 
     <hr/>
     <p>jQuery:</p>
-    todo
+    <div class="jquery">
+        <div  style="display: flex; flex-direction: column;">
+            <label>Text1:<div class="jquery__data1__text"></div></label>
+            <label>Validate text2:<div class="jquery__data2__check"></div></label>
+            <label>Text2:<div class="jquery__data2__text"></div></label>
+            <label>Validate text3:<div class="jquery__data3__check"></div></label>
+            <label>Text3:<div class="jquery__data3__text"></div></label>
+        </div>
+        <div class="jquery__button__validate"></div>
+        <div class="jquery__validationSummary"></div>
+        <div class="jquery__button"></div>
+        <div class="jquery__values"></div>
+    </div>
+    <script>
+        $(function() {
+            const validationGroup = 'jquery';
+            let data1_text = '11';
+            $('.jquery__data1__text').dxTextBox({
+                value: data1_text,
+                onValueChanged: e => data1_text = e.value,
+            });
+            $('.jquery__data1__text').dxValidator({
+                validationGroup,
+                validationRules: [ { type: 'required' } ]
+            });
+            $('.jquery__data1__text').dxValidator('instance').validate();
+
+            let data2__needValidation = true;
+            $('.jquery__data2__check').dxCheckBox({
+                value: data2__needValidation,
+                onValueChanged: e => {
+                    data2__needValidation = e.value;
+                    $('.jquery__data2__text').dxValidator('instance').validate();
+                }
+            });
+            let data2_text = '2222';
+            $('.jquery__data2__text').dxTextBox({
+                value: data2_text,
+                onValueChanged: e => data2_text = e.value,
+            });
+            $('.jquery__data2__text').dxValidator({
+                validationGroup,
+                validationRules: [ { type: 'required' } ],
+                onInitialized: (e) => {
+                    const bypass_base = e.component.option('adapter').bypass;
+                    e.component.option('adapter').bypass = function() {
+                        if(data2__needValidation) {
+                            return bypass_base.apply(this, arguments);
+                        }
+                        else {
+                            return true;
+                        }
+                    }
+                },
+            });
+            $('.jquery__data2__text').dxValidator('instance').validate();
+
+            let data3__needValidation = true;
+            $('.jquery__data3__check').dxCheckBox({
+                value: data3__needValidation,
+                onValueChanged: e => {
+                    data3__needValidation = e.value;
+                    $('.jquery__data3__text').dxValidator('instance').validate();
+                },
+            });
+            let data3_text = '333333';
+            $('.jquery__data3__text').dxTextBox({
+                value: data3_text,
+                onValueChanged: (e) => {
+                    $('.jquery__data3__text').dxValidator('instance').validate();
+                    data3_text = e.value;
+                },
+            });
+            $('.jquery__data3__text').dxValidator({
+                validationGroup,
+                validationRules: [ 
+                    { 
+                        type: 'custom',
+                        validationCallback: () => { 
+                            if(data3__needValidation) {
+                                return Boolean($('.jquery__data3__text').dxTextBox('instance').option('text')/*data3_text???*/);
+                             }
+                             else {
+                                 return true;
+                             }
+                        },
+                        message: 'My Required',
+                        //
+                        // the 'required' rule is evaluated each time the 'validate' method is called.
+                        // but in my custom rule I have to specify this option explicitly
+                        //
+                        reevaluate: true,
+                    }
+                ],
+            });
+            $('.jquery__data3__text').dxValidator('instance').validate();
+
+            $('.jquery__button__validate').dxButton({
+                text: 'Show summary',
+                validationGroup,
+                onClick: e => e.validationGroup.validate(),
+            });
+            
+            $('.jquery__validationSummary').dxValidationSummary({
+                validationGroup,
+            });
+
+            $('.jquery__button').dxButton({
+                text: 'Show values',
+                onClick: () => {
+                    $('.values').text = 
+                        'text1: "' + data1_text + '"\rtext2: "' + data2_text + '"\rtext3: "' + data3_text + '"';
+                }
+            });
+        });
+    </script>
+
 
     <hr/>
     <p>AngularJS:</p>
