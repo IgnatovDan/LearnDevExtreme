@@ -19,11 +19,6 @@
     <link rel="stylesheet" type="text/css" href="https://cdn3.devexpress.com/jslib/18.1.3/css/dx.light.css" />
     <!-- A DevExtreme library -->
     <script type="text/javascript" src="https://cdn3.devexpress.com/jslib/18.1.3/js/dx.all.debug.js"></script>
-    <style>
-        .js input[type="text"] {
-            border: 2px dashed red;
-        }
-    </style>
 </head>
 <body>
     <pre>
@@ -40,7 +35,8 @@ c.Angular approach
 
     <hr/>
     <p>javascript/DOM</p>
-    <div class="js">
+    todo
+    <!-- <div class="js">
         <div style="display: flex; flex-direction: column;">
             <label>Text1:<input type="text" class="js__data1__text" required></input></label>
             <label>Validate text2:<input type="checkbox" class="js__data2__check"></input></label>
@@ -54,11 +50,21 @@ c.Angular approach
         <div class="js__values"></div>
     </div>
     <script>
-        (function () {
-            debugger;
-            //document.querySelector('.js__data1__text').checkValidity();
-        })();
-    </script>
+        
+        - https://developer.mozilla.org/en-US/docs/Learn/HTML/Forms/Form_validation
+        - https://www.html5rocks.com/en/tutorials/forms/constraintvalidation/
+        - https://developer.telerik.com/featured/building-html5-form-validation-bubble-replacements/
+        - https://travishorn.com/form-validation-with-vue-js-4d2e7ba8d2fc
+        - <input required>
+        - css :valid, :invalid, :focused
+        - el.checkValidity();
+        - el.validationMessage, el.willValidate, el.validity, el.validity.valid
+        - el.setCustomValidity('')
+        - el.addEventListener('input', () => { check value by custom validation rules and update el.classList });
+        - el.addEventListener('invalid', () => { e.preventDefault(); e.target.showErrorMessage(); }, true); ?
+        - el.addEventListener('valid', () => { e.target.hideErrorMessage(); }, true); ?
+
+    </script> -->
 
     <hr/>
     <p>javascript + dx:</p>
