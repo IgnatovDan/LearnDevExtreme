@@ -29,25 +29,30 @@ Create a page with dxDateBox and dxDataGrid (using only one of the approaches An
 Then, implement a logic that will switch the current culture at runtime (e.g. between "ru" and "es")
 a) Using Intl
 b) Using Globalize
+
+'es' - there are no spanish texts for dxDataGrid (sorting/actions/filtering), 'de' is better
     <script>
         const objectsArray = [{
-            "ID": 0,
-            "CompanyName": "Super Mart of the West",
-            "Address": "702 SW 8th Street",
-            "City": "Bentonville",
-            "State": "Arkansas",
+            ID: 0,
+            CompanyName: 'Super Mart of the West',
+            Address: '702 SW 8th Street',
+            City: 'Bentonville',
+            State: 'Arkansas',
+            NextDate: new Date(2017, 0, 31),
         }, {
-            "ID": 1,
-            "CompanyName": "Electronics Depot",
-            "Address": "2455 Paces Ferry Road NW",
-            "City": "Atlanta",
-            "State": "Georgia",
+            ID: 1,
+            CompanyName: 'Electronics Depot',
+            Address: '2455 Paces Ferry Road NW',
+            City: 'Atlanta',
+            State: 'Georgia',
+            NextDate: new Date(2018, 1, 28),
         }, {
-            "ID": 2,
-            "CompanyName": "K&S Music",
-            "Address": "1000 Nicllet Mall",
-            "City": "Minneapolis",
-            "State": "Minnesota",
+            ID: 2,
+            CompanyName: 'K&S Music',
+            Address: '1000 Nicllet Mall',
+            City: 'Minneapolis',
+            State: 'Minnesota',
+            NextDate: new Date(2018, 11, 31),
         }];
     </script>
 
@@ -59,14 +64,55 @@ b) Using Globalize
     <p>jQuery:</p>
     <div class="jquery">
         <div class="jquery__grid"></div>
+        <div class="jquery__changeLanguageButton"></div>
     </div>
     <script>
         (function() {
+            const localizedTexts = {
+                'ru': {
+                    'CompanyName': 'Компания',
+                    'Address': 'Адрес',
+                    'City': 'Город',
+                    'State': 'Область',
+                    'NextDate': 'Следующая дата',
+                    'ChangeLanguage': 'Сменить язык',
+                },
+                'de': {
+                    'CompanyName': 'CompanyName_de',
+                    'Address': 'Address_de',
+                    'City': 'City_de',
+                    'State': 'State_de',
+                    'NextDate': 'NextDate_de',
+                    'ChangeLanguage': 'ChangeLanguage_de',
+                },
+            };
+
+            const currentLanguageSessionStorageKey = 'language';
+            function readCurrentLanguage() {
+                let result = window.sessionStorage.getItem(currentLanguageSessionStorageKey);
+                return result ? result : 'ru';
+            }
+            function storeCurrentLanguage(language) {
+                window.sessionStorage.setItem(currentLanguageSessionStorageKey, language);
+            }
+
+            DevExpress.localization.loadMessages(localizedTexts);
+            // const languages = [
+            //     { name: 'Русский', value: 'ru' },
+            //     { name: 'Spanish', value: 'de' },
+            // ];
+            DevExpress.localization.locale(readCurrentLanguage());
+            const formatMessage = DevExpress.localization.formatMessage;
+
             $('.jquery__grid').dxDataGrid(
                 {
                     dataSource: objectsArray,
                     columns: [
-                        'CompanyName', 'Address', 'City', 'State',
+                        { dataField: 'CompanyName', caption: formatMessage('CompanyName') },
+                        { dataField: 'Address', caption: formatMessage('Address') },
+                        { dataField: 'City', caption: formatMessage('City') },
+                        { dataField: 'State', caption: formatMessage('State') },
+                        { dataField: 'NextDate', caption: formatMessage('NextDate') },                        
                     ],
                     editing: {
                         allowUpdating: true,
@@ -75,6 +121,15 @@ b) Using Globalize
                     },
                 }
             );
+
+            $('.jquery__changeLanguageButton').dxButton({
+                text: formatMessage('ChangeLanguage'),
+                onClick: () => {
+                    let newLanguage = readCurrentLanguage() === 'ru' ? 'de' : 'ru';
+                    storeCurrentLanguage(newLanguage);
+                    document.location.reload();
+                }
+            });
             
         })();
     </script>
