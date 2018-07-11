@@ -58,7 +58,8 @@ TODO: how to manage UTC date/time values? manually convert to local?
             NextDate: new Date(2018, 11, 31, 24, 18, 1),
         }];
 
-        const value__Date = new Date(2015, 2, 31, 23, 59, 13, 600);
+        const value__Date = new Date(2015, 2, 31);
+        const value__Currency = 12345.65;
 
         const currentLanguageSessionStorageKey = 'language';
         function readCurrentLanguage() {
@@ -68,24 +69,28 @@ TODO: how to manage UTC date/time values? manually convert to local?
         function storeCurrentLanguage(language) {
             window.sessionStorage.setItem(currentLanguageSessionStorageKey, language);
         }
+        function getNextLanguage() {
+            return readCurrentLanguage() === 'ru' ? 'de' : 'ru';
+        }
 
         $('.jquery__changeLanguageButton').dxButton({
-            text: 'ChangeLanguage',
             onClick: () => {
-                let newLanguage = readCurrentLanguage() === 'ru' ? 'de' : 'ru';
-                storeCurrentLanguage(newLanguage);
+                storeCurrentLanguage(getNextLanguage());
                 document.location.reload();
+            },
+            onInitialized: (e) => {
+                e.component.option('text', 'Change language to ' + getNextLanguage());
             }
         });
     </script>
 
     <hr/>
-    <p>javascript/DOM</p>
+    <p>javascript/DOM Intl:</p>
     <div class="js">
         <label><span class="js__createdOn__label">CreatedOn</span><input class="js__createdOn__input" type="date"></input></label>
         <!-- <label><span class="js__createdOn__label">CreatedOn</span><input class="js__createdOn__input" type="datetime-local"></input></label> -->
         <div class="js__createdOn__input__value"></div>
-        <label><span class="js__cost__label">Cost</span><input class="js__cost__input" type="currency"></input></label>
+        <label><span class="js__cost__label">Cost</span><input class="js__cost__input" type="number"></input></label>
         <span class="js__cost__value"></div>
         <div class="js__grid"></div>
         <div class="js__changeLanguageButton"></div>
@@ -93,12 +98,38 @@ TODO: how to manage UTC date/time values? manually convert to local?
     <script>
         const createdOnEl = document.querySelector('.js__createdOn__input');
         createdOnEl.valueAsDate = value__Date;
+        createdOnEl.addEventListener('input', () => { updateCreatedOnValueEl(); });
 
         const costEl = document.querySelector('.js__cost__input');
-        costEl.value = 12345.65;
+        costEl.value = value__Currency;
+        costEl.addEventListener('input', () => { updateCostValueEl(); });
         
-        const createdOnValueEl = document.querySelector('.js__createdOn__input__value');
-        createdOnValueEl.innerText = new Intl.DateTimeFormat('ru', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hours12: false }).format(createdOnEl.valueAsDate);
+        function updateCreatedOnValueEl() {
+            const createdOnValueEl = document.querySelector('.js__createdOn__input__value');
+            if(createdOnEl.valueAsDate) {
+                createdOnValueEl.innerText = new Intl.DateTimeFormat(readCurrentLanguage(), 
+                    { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC', hour: 'numeric', minute: 'numeric', second: 'numeric', hours12: false })
+                    .format(createdOnEl.valueAsDate);
+            }
+            else {
+                createdOnValueEl.innerText = 'null';
+            }
+        }
+        updateCreatedOnValueEl();
+
+        function updateCostValueEl() {
+            const costValueEl = document.querySelector('.js__cost__value');
+            if(!Number.isNaN(costEl.valueAsNumber)) {
+                costValueEl.innerText = new Intl.NumberFormat(readCurrentLanguage(), 
+                    { currency: 'RUB', style: 'currency', minimumFractionDigits: 2, maximumFractionDigits: 2 })
+                    .format(costEl.valueAsNumber);
+            }
+            else {
+                costValueEl.innerText = 'NaN';
+            }
+        }
+        updateCostValueEl();
+        
     </script>
 
     <hr/>
@@ -142,7 +173,12 @@ TODO: how to manage UTC date/time values? manually convert to local?
                 value: value__Date,
                 displayFormat: 'longDate',
                 onValueChanged: (e) => {
-                    $('.jquery__createdOn__dxDateBox__value').text(DevExpress.localization.formatDate(e.value, 'longDateLongTime'));
+                    if(e.value) {
+                        $('.jquery__createdOn__dxDateBox__value').text(DevExpress.localization.formatDate(e.value, 'longDateLongTime'));
+                    }
+                    else {
+                        $('.jquery__createdOn__dxDateBox__value').text('null');
+                    }
                 },
                 onInitialized: (e) => {
                     $('.jquery__createdOn__dxDateBox__value').text(DevExpress.localization.formatDate(e.component.option('value'), 'longDateLongTime'));
@@ -151,7 +187,7 @@ TODO: how to manage UTC date/time values? manually convert to local?
 
             const costFormat = { type: 'currency', currency: 'RUB', precision: 2 };
             $('.jquery__cost__dxNumberBox').dxNumberBox({
-                value: 12345.65,
+                value: value__Currency,
                 format: costFormat,
                 onValueChanged: (e) => {
                     $('.jquery__cost__dxNumberBox__value').text(DevExpress.localization.formatNumber(e.value, costFormat));
