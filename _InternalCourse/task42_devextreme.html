@@ -31,40 +31,84 @@ a) Using Intl
 b) Using Globalize
 
 'es' - there are no spanish texts for dxDataGrid (sorting/actions/filtering), 'de' is better
-    <script>
+TODO: how to manage UTC date/time values? manually convert to local?
+
+<div class="jquery__changeLanguageButton"></div>
+<script>
         const objectsArray = [{
             ID: 0,
             CompanyName: 'Super Mart of the West',
             Address: '702 SW 8th Street',
             City: 'Bentonville',
             State: 'Arkansas',
-            NextDate: new Date(2017, 0, 31),
+            NextDate: new Date(2017, 0, 31, 10, 22, 16, 400),
         }, {
             ID: 1,
             CompanyName: 'Electronics Depot',
             Address: '2455 Paces Ferry Road NW',
             City: 'Atlanta',
             State: 'Georgia',
-            NextDate: new Date(2018, 1, 28),
+            NextDate: new Date(2018, 2, 28, 22, 22, 16),
         }, {
             ID: 2,
             CompanyName: 'K&S Music',
             Address: '1000 Nicllet Mall',
             City: 'Minneapolis',
             State: 'Minnesota',
-            NextDate: new Date(2018, 11, 31),
+            NextDate: new Date(2018, 11, 31, 24, 18, 1),
         }];
+
+        const value__Date = new Date(2015, 2, 31, 23, 59, 13, 600);
+
+        const currentLanguageSessionStorageKey = 'language';
+        function readCurrentLanguage() {
+            let result = window.sessionStorage.getItem(currentLanguageSessionStorageKey);
+            return result ? result : 'ru';
+        }
+        function storeCurrentLanguage(language) {
+            window.sessionStorage.setItem(currentLanguageSessionStorageKey, language);
+        }
+
+        $('.jquery__changeLanguageButton').dxButton({
+            text: 'ChangeLanguage',
+            onClick: () => {
+                let newLanguage = readCurrentLanguage() === 'ru' ? 'de' : 'ru';
+                storeCurrentLanguage(newLanguage);
+                document.location.reload();
+            }
+        });
     </script>
 
     <hr/>
     <p>javascript/DOM</p>
-    todo
+    <div class="js">
+        <label><span class="js__createdOn__label">CreatedOn</span><input class="js__createdOn__input" type="date"></input></label>
+        <!-- <label><span class="js__createdOn__label">CreatedOn</span><input class="js__createdOn__input" type="datetime-local"></input></label> -->
+        <div class="js__createdOn__input__value"></div>
+        <label><span class="js__cost__label">Cost</span><input class="js__cost__input" type="currency"></input></label>
+        <span class="js__cost__value"></div>
+        <div class="js__grid"></div>
+        <div class="js__changeLanguageButton"></div>
+    </div>
+    <script>
+        const createdOnEl = document.querySelector('.js__createdOn__input');
+        createdOnEl.valueAsDate = value__Date;
+
+        const costEl = document.querySelector('.js__cost__input');
+        costEl.value = 12345.65;
+        
+        const createdOnValueEl = document.querySelector('.js__createdOn__input__value');
+        createdOnValueEl.innerText = new Intl.DateTimeFormat('ru', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hours12: false }).format(createdOnEl.valueAsDate);
+    </script>
 
     <hr/>
     <p>jQuery:</p>
     <div class="jquery">
+        <label><span class="jquery__createdOn__label">CreatedOn</span><div class="jquery__createdOn__dxDateBox"></div></label>
+        <div class="jquery__createdOn__dxDateBox__value"></div>
+        <label><span class="jquery__cost__label">Cost</span><div class="jquery__cost__dxNumberBox"></div></label>
+        <span class="jquery__cost__dxNumberBox__value"></div>
         <div class="jquery__grid"></div>
-        <div class="jquery__changeLanguageButton"></div>
     </div>
     <script>
         (function() {
@@ -75,7 +119,8 @@ b) Using Globalize
                     'City': 'Город',
                     'State': 'Область',
                     'NextDate': 'Следующая дата',
-                    'ChangeLanguage': 'Сменить язык',
+                    'CreatedOnLabel': 'Дата создания',
+                    'CostLabel': 'Цена',
                 },
                 'de': {
                     'CompanyName': 'CompanyName_de',
@@ -83,26 +128,38 @@ b) Using Globalize
                     'City': 'City_de',
                     'State': 'State_de',
                     'NextDate': 'NextDate_de',
-                    'ChangeLanguage': 'ChangeLanguage_de',
+                    'CreatedOnLabel': 'CreatedOn_de',
+                    'CostLabel': 'Cost_de',
                 },
             };
 
-            const currentLanguageSessionStorageKey = 'language';
-            function readCurrentLanguage() {
-                let result = window.sessionStorage.getItem(currentLanguageSessionStorageKey);
-                return result ? result : 'ru';
-            }
-            function storeCurrentLanguage(language) {
-                window.sessionStorage.setItem(currentLanguageSessionStorageKey, language);
-            }
-
             DevExpress.localization.loadMessages(localizedTexts);
-            // const languages = [
-            //     { name: 'Русский', value: 'ru' },
-            //     { name: 'Spanish', value: 'de' },
-            // ];
             DevExpress.localization.locale(readCurrentLanguage());
             const formatMessage = DevExpress.localization.formatMessage;
+
+            $('.jquery__createdOn__label').text(formatMessage('CreatedOnLabel'));
+            $('.jquery__createdOn__dxDateBox').dxDateBox({
+                value: value__Date,
+                displayFormat: 'longDate',
+                onValueChanged: (e) => {
+                    $('.jquery__createdOn__dxDateBox__value').text(DevExpress.localization.formatDate(e.value, 'longDateLongTime'));
+                },
+                onInitialized: (e) => {
+                    $('.jquery__createdOn__dxDateBox__value').text(DevExpress.localization.formatDate(e.component.option('value'), 'longDateLongTime'));
+                },
+            });
+
+            const costFormat = { type: 'currency', currency: 'RUB', precision: 2 };
+            $('.jquery__cost__dxNumberBox').dxNumberBox({
+                value: 12345.65,
+                format: costFormat,
+                onValueChanged: (e) => {
+                    $('.jquery__cost__dxNumberBox__value').text(DevExpress.localization.formatNumber(e.value, costFormat));
+                },
+                onInitialized: (e) => {
+                    $('.jquery__cost__dxNumberBox__value').text(DevExpress.localization.formatNumber(e.component.option('value'), costFormat));
+                },
+            });
 
             $('.jquery__grid').dxDataGrid(
                 {
@@ -112,7 +169,7 @@ b) Using Globalize
                         { dataField: 'Address', caption: formatMessage('Address') },
                         { dataField: 'City', caption: formatMessage('City') },
                         { dataField: 'State', caption: formatMessage('State') },
-                        { dataField: 'NextDate', caption: formatMessage('NextDate') },                        
+                        { dataField: 'NextDate', caption: formatMessage('NextDate'), format: 'longDateLongTime', },                        
                     ],
                     editing: {
                         allowUpdating: true,
@@ -121,16 +178,6 @@ b) Using Globalize
                     },
                 }
             );
-
-            $('.jquery__changeLanguageButton').dxButton({
-                text: formatMessage('ChangeLanguage'),
-                onClick: () => {
-                    let newLanguage = readCurrentLanguage() === 'ru' ? 'de' : 'ru';
-                    storeCurrentLanguage(newLanguage);
-                    document.location.reload();
-                }
-            });
-            
         })();
     </script>
 </body>
