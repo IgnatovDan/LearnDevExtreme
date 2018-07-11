@@ -34,6 +34,7 @@ b) Using Globalize - see task42_devextreme_Globalize.html
 TODO: how to manage UTC date/time values? manually convert to local?
 
 <div class="changeLanguageButton"></div>
+<div class="currentLanguageLabel"></div>
 <script>
         const objectsArray = [{
             ID: 0,
@@ -82,8 +83,8 @@ TODO: how to manage UTC date/time values? manually convert to local?
                 e.component.option('text', 'Change language to ' + getNextLanguage());
             }
         });
+        $('.currentLanguageLabel').text('Current language: ' + readCurrentLanguage());
     </script>
-
     <hr/>
     <p>javascript/DOM Intl:</p>
     <div class="js">
@@ -96,10 +97,23 @@ TODO: how to manage UTC date/time values? manually convert to local?
         <div class="js__changeLanguageButton"></div>
     </div>
     <script>
+        const localizedTexts = {
+            'ru': {
+                'CreatedOnLabel': 'Дата создания',
+                'CostLabel': 'Цена',
+            },
+            'de': {
+                'CreatedOnLabel': 'CreatedOn_de',
+                'CostLabel': 'Cost_de',
+            },
+        };
+
+        document.querySelector('.js__createdOn__label').innerText = localizedTexts[readCurrentLanguage()]['CreatedOnLabel'];
         const createdOnEl = document.querySelector('.js__createdOn__input');
         createdOnEl.valueAsDate = value__Date;
         createdOnEl.addEventListener('input', () => { updateCreatedOnValueEl(); });
 
+        document.querySelector('.js__cost__label').innerText = localizedTexts[readCurrentLanguage()]['CostLabel'];
         const costEl = document.querySelector('.js__cost__input');
         costEl.value = value__Currency;
         costEl.addEventListener('input', () => { updateCostValueEl(); });
