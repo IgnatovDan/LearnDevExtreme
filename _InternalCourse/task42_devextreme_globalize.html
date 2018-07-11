@@ -13,6 +13,15 @@
     <!-- DevExtreme themes -->
     <link rel="stylesheet" type="text/css" href="https://cdn3.devexpress.com/jslib/18.1.3/css/dx.common.css" />
     <link rel="stylesheet" type="text/css" href="https://cdn3.devexpress.com/jslib/18.1.3/css/dx.light.css" />
+    <!-- Globalize -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cldrjs/0.5.0/cldr.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cldrjs/0.5.0/cldr/event.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cldrjs/0.5.0/cldr/supplemental.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/globalize/1.3.0/globalize.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/globalize/1.3.0/globalize/message.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/globalize/1.3.0/globalize/number.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/globalize/1.3.0/globalize/currency.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/globalize/1.3.0/globalize/date.min.js"></script>
     <!-- A DevExtreme library -->
     <script type="text/javascript" src="https://cdn3.devexpress.com/jslib/18.1.3/js/dx.all.debug.js"></script>
     <!-- DevExtreme-Intl module -->
@@ -27,8 +36,8 @@
 
 Create a page with dxDateBox and dxDataGrid (using only one of the approaches AngularJS/jQuery/Knockout) and apply Spanish culture to this page.
 Then, implement a logic that will switch the current culture at runtime (e.g. between "ru" and "es")
-a) Using Intl - see this file
-b) Using Globalize - see task42_devextreme_Globalize.html
+a) Using Intl - see task42_devextreme_Intl.html
+b) Using Globalize - see this file
 
 'es' - there are no spanish texts for dxDataGrid (sorting/actions/filtering), 'de' is better
 TODO: how to manage UTC date/time values? manually convert to local?
@@ -77,6 +86,7 @@ TODO: how to manage UTC date/time values? manually convert to local?
             onClick: () => {
                 storeCurrentLanguage(getNextLanguage());
                 document.location.reload();
+                // window.location.href = window.location.href; ???
             },
             onInitialized: (e) => {
                 e.component.option('text', 'Change language to ' + getNextLanguage());
@@ -85,52 +95,8 @@ TODO: how to manage UTC date/time values? manually convert to local?
     </script>
 
     <hr/>
-    <p>javascript/DOM Intl:</p>
-    <div class="js">
-        <label><span class="js__createdOn__label">CreatedOn</span><input class="js__createdOn__input" type="date"></input></label>
-        <!-- <label><span class="js__createdOn__label">CreatedOn</span><input class="js__createdOn__input" type="datetime-local"></input></label> -->
-        <div class="js__createdOn__input__value"></div>
-        <label><span class="js__cost__label">Cost</span><input class="js__cost__input" type="number"></input></label>
-        <span class="js__cost__value"></div>
-        <div class="js__grid"></div>
-        <div class="js__changeLanguageButton"></div>
-    </div>
-    <script>
-        const createdOnEl = document.querySelector('.js__createdOn__input');
-        createdOnEl.valueAsDate = value__Date;
-        createdOnEl.addEventListener('input', () => { updateCreatedOnValueEl(); });
-
-        const costEl = document.querySelector('.js__cost__input');
-        costEl.value = value__Currency;
-        costEl.addEventListener('input', () => { updateCostValueEl(); });
-        
-        function updateCreatedOnValueEl() {
-            const createdOnValueEl = document.querySelector('.js__createdOn__input__value');
-            if(createdOnEl.valueAsDate) {
-                createdOnValueEl.innerText = new Intl.DateTimeFormat(readCurrentLanguage(), 
-                    { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC', hour: 'numeric', minute: 'numeric', second: 'numeric', hours12: false })
-                    .format(createdOnEl.valueAsDate);
-            }
-            else {
-                createdOnValueEl.innerText = 'null';
-            }
-        }
-        updateCreatedOnValueEl();
-
-        function updateCostValueEl() {
-            const costValueEl = document.querySelector('.js__cost__value');
-            if(!Number.isNaN(costEl.valueAsNumber)) {
-                costValueEl.innerText = new Intl.NumberFormat(readCurrentLanguage(), 
-                    { currency: 'RUB', style: 'currency', minimumFractionDigits: 2, maximumFractionDigits: 2 })
-                    .format(costEl.valueAsNumber);
-            }
-            else {
-                costValueEl.innerText = 'NaN';
-            }
-        }
-        updateCostValueEl();
-        
-    </script>
+    <p>javascript/DOM Globalize:</p>
+    todo
 
     <hr/>
     <p>jQuery:</p>
@@ -164,10 +130,43 @@ TODO: how to manage UTC date/time values? manually convert to local?
                 },
             };
 
-            DevExpress.localization.loadMessages(localizedTexts);
-            DevExpress.localization.locale(readCurrentLanguage());
-            const formatMessage = DevExpress.localization.formatMessage;
+            Globalize.loadMessages(localizedTexts);
+            Globalize.locale(readCurrentLanguage());
 
+            const gridOptions = {
+                dataSource: objectsArray,
+                columns: [
+                    { dataField: 'CompanyName', caption: Globalize.formatMessage('CompanyName') },
+                    { dataField: 'Address', caption: Globalize.formatMessage('Address') },
+                    { dataField: 'City', caption: Globalize.formatMessage('City') },
+                    { dataField: 'State', caption: Globalize.formatMessage('State') },
+                    { dataField: 'NextDate', caption: Globalize.formatMessage('NextDate'), format: 'longDateLongTime', },                        
+                ],
+                editing: {
+                    allowUpdating: true,
+                    allowAdding: true,
+                    allowDeleting: true
+                },
+                filterRow: {
+                    visible: true,
+                    applyFilter: "auto"
+                },
+            };
+
+            function LoadGlobalizeFromUrlAsync(url) {
+                fetch(url).then(r => r.json()).then(json => Promise.resolve(Globalize.load(json)));
+            }
+            Promise.all([
+                LoadGlobalizeFromUrlAsync("https://unpkg.com/devextreme-cldr-data/de.json"),
+                LoadGlobalizeFromUrlAsync("https://unpkg.com/devextreme-cldr-data/ru.json"),
+                LoadGlobalizeFromUrlAsync("https://unpkg.com/devextreme-cldr-data/supplemental.json"),
+            ])
+            .then(() => {
+                $('.jquery__grid').dxDataGrid(gridOptions);
+            });
+
+            /*
+            const formatMessage = DevExpress.localization.formatMessage;
             $('.jquery__createdOn__label').text(formatMessage('CreatedOnLabel'));
             $('.jquery__createdOn__dxDateBox').dxDateBox({
                 value: value__Date,
@@ -214,6 +213,7 @@ TODO: how to manage UTC date/time values? manually convert to local?
                     },
                 }
             );
+            */
         })();
     </script>
 </body>
