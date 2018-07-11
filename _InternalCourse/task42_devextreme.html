@@ -33,7 +33,7 @@ b) Using Globalize
 'es' - there are no spanish texts for dxDataGrid (sorting/actions/filtering), 'de' is better
 TODO: how to manage UTC date/time values? manually convert to local?
 
-<div class="jquery__changeLanguageButton"></div>
+<div class="changeLanguageButton"></div>
 <script>
         const objectsArray = [{
             ID: 0,
@@ -73,7 +73,7 @@ TODO: how to manage UTC date/time values? manually convert to local?
             return readCurrentLanguage() === 'ru' ? 'de' : 'ru';
         }
 
-        $('.jquery__changeLanguageButton').dxButton({
+        $('.changeLanguageButton').dxButton({
             onClick: () => {
                 storeCurrentLanguage(getNextLanguage());
                 document.location.reload();
