@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+
+    <!-- https://js.devexpress.com/Documentation/Guide/Getting_Started/Installation/CDN_Services/ -->
+
+    <!-- DevExtreme dependencies -->
+    <script type="text/javascript" src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-3.1.0.js"></script>
+    <!-- The AngularJS library -->
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.11/angular.js"></script>
+    <!-- The Knockout library -->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.4.0/knockout-debug.js"></script>
+    <!-- DevExtreme themes -->
+    <link rel="stylesheet" type="text/css" href="https://cdn3.devexpress.com/jslib/18.1.3/css/dx.common.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdn3.devexpress.com/jslib/18.1.3/css/dx.light.css" />
+    <!-- A DevExtreme library -->
+    <script type="text/javascript" src="https://cdn3.devexpress.com/jslib/18.1.3/js/dx.all.debug.js"></script>
+</head>
+<body>
+    <pre>
+    DevExtreme - Lookup - add new button near the [Cancel] button
+
+    <script>
+        const products = [ 
+            { id: 0, name: 'gas' },
+            { id: 1, name: 'petrol' },
+            { id: 2, name: 'bush legs' },
+        ];
+    </script>
+    <hr/>
+    <p>javascript/DOM</p>
+    todo
+
+    <hr/>
+    <p>new dxLookup:</p>
+    <div class="jsdx"></div>
+    <script>
+        (function() {
+            //
+            // Possible approaches:
+            //
+            // https://isc.devexpress.com/Thread/WorkplaceDetails/T274990 - dxLookup - Provide a 'new' button or allow control customization 
+            // https://isc.devexpress.com/Thread/WorkplaceDetails/Q371039 - dxLookup - How to customize text of the Cancel button
+            // https://isc.devexpress.com/Thread/WorkplaceDetails/T263480 - dxLookup - How to right align the clear button in a dxLookup popup window?
+            // this._renderTemplateByType("bottomTemplate"
+            // var toolbarItems = this.option("toolbarItems");
+            // _getPopupToolbarItems: function() { var toolbarItems = this.option("toolbarItems");
+            // _popupConfig: function() {
+            // this._setPopupOption("toolbarItems", this._getPopupToolbarItems());
+            // https://isc.devexpress.com/Thread/WorkplaceDetails/T627977 - It is possible to stack button of toolbaritems of dxPopup insteadof display it side by side?
+            // onPopupInitialized - value of the 'toolbarItems' option entry will be completely overridden
+
+
+            //
+            // Not supported:
+            //
+            // https://isc.devexpress.com/Thread/WorkplaceDetails/T552835 - dxLookup - Allow adding custom buttons
+            // https://isc.devexpress.com/Thread/WorkplaceDetails/T161734 - dxLookup - How to create custom button to replace Clear button?
+
+
+            //
+            // Emulate dxlookup with dxpopup/dxlist/dxcheckbox
+            //
+            // https://github.com/DevExpress-Examples/how-to-emulate-the-dxlookup-behavior-using-the-dxpopup-dxlist-and-dxcheckbox-widgets-e4750
+
+            const dxLookup = new DevExpress.ui.dxLookup(document.querySelector('.jsdx'), {
+                dataSource: products,
+                value: 1,
+                valueExpr: 'id',
+                displayExpr: 'name',
+                showClearButton: true,
+                showCancelButton: true,
+                titleTemplate: () => {
+                    debugger;
+                },
+                onInitialized: (e) => {
+                    debugger;
+                },
+                onPopupInitialized: (e) => {
+                    debugger;
+                    const myAction = {
+                        shortcut: "hello",
+                        location: "center",
+                        onClick: () => alert('Hello'),
+                        options: {
+                            text: 'click me',
+                        },
+                        toolbar: "bottom",
+                    };
+                    const currentItems = [myAction];//, ...e.popup.option('toolbarItems')];
+                    e.popup.option('toolbarItems', currentItems);
+                }
+            });
+            const _getPopupToolbarItems_base = dxLookup._getPopupToolbarItems;
+            dxLookup._getPopupToolbarItems = function() {
+                //debugger;
+                const result  = _getPopupToolbarItems_base.apply(this, arguments);
+                return result;
+            };
+        })()
+    </script>
+</body>
+</html>
