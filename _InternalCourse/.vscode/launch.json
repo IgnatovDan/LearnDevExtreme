@@ -9,7 +9,7 @@
             "type": "chrome",
             "request": "launch",
             "name": "Launch",
-            "url": "${workspaceFolder}/task40_devextreme_NewButtonInLookup.html"
+            "url": "${workspaceFolder}/dxLookup_CustomButtonsInDropDown.html"
         }
     ]
 }

@@ -26,17 +26,19 @@
             
     Possible approaches:
     
+        [+] handle the 'dxLookup.onPopupInitialized' event and update dxPopup.toolbaritems: 'e.popup.option('toolbarItems', [my items]);'
+        [+] wrap the dxLookup._getPopupToolbarItems and return a custom toolbar items array
+        - handle the 'dxLookup.onPopupInitialized' event and assign custom function to the 'dxLookup.titleTemplate' to build custom markup
+        - Emulate dxlookup with dxpopup/dxlist/dxcheckbox: https://github.com/DevExpress-Examples/how-to-emulate-the-dxlookup-behavior-using-the-dxpopup-dxlist-and-dxcheckbox-widgets-e4750
+
+    Other approaches:
+
         - https://isc.devexpress.com/Thread/WorkplaceDetails/T274990 - dxLookup - Provide a 'new' button or allow control customization 
         - https://isc.devexpress.com/Thread/WorkplaceDetails/Q371039 - dxLookup - How to customize text of the Cancel button
         - https://isc.devexpress.com/Thread/WorkplaceDetails/T263480 - dxLookup - How to right align the clear button in a dxLookup popup window?
         - this._renderTemplateByType("bottomTemplate"
-        - var toolbarItems = this.option("toolbarItems");
-        - _getPopupToolbarItems: function() { var toolbarItems = this.option("toolbarItems");
         - _popupConfig: function() {
-        - this._setPopupOption("toolbarItems", this._getPopupToolbarItems());
         - https://isc.devexpress.com/Thread/WorkplaceDetails/T627977 - It is possible to stack button of toolbaritems of dxPopup insteadof display it side by side?
-        - onPopupInitialized - value of the 'toolbarItems' option entry will be completely overridden
-        - Emulate dxlookup with dxpopup/dxlist/dxcheckbox: https://github.com/DevExpress-Examples/how-to-emulate-the-dxlookup-behavior-using-the-dxpopup-dxlist-and-dxcheckbox-widgets-e4750
 
     'Not supported' answers:
     
