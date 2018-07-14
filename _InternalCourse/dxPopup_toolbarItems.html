@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+
+    <!-- https://js.devexpress.com/Documentation/Guide/Getting_Started/Installation/CDN_Services/ -->
+
+    <!-- DevExtreme dependencies -->
+    <script type="text/javascript" src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-3.1.0.js"></script>
+    <!-- The AngularJS library -->
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.11/angular.js"></script>
+    <!-- The Knockout library -->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.4.0/knockout-debug.js"></script>
+    <!-- DevExtreme themes -->
+    <link rel="stylesheet" type="text/css" href="https://cdn3.devexpress.com/jslib/18.1.3/css/dx.common.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdn3.devexpress.com/jslib/18.1.3/css/dx.light.css" />
+    <!-- A DevExtreme library -->
+    <script type="text/javascript" src="https://cdn3.devexpress.com/jslib/18.1.3/js/dx.all.debug.js"></script>
+</head>
+<body>
+    <pre>
+    DevExtreme -  Display dxPopup with buttons
+    </pre>
+    <hr/>
+    <div class="popup1_button"></div>
+    <div class="popup1_popup"></div>
+    <script>
+        (function() {
+            new DevExpress.ui.dxButton(document.querySelector('.popup1_button'), {
+                text: 'show popup',
+                onClick: (e) => {
+                    const popupContainerEl = document.createElement('div');
+                    document.querySelector('.popup1_popup').appendChild(popupContainerEl);
+                    const dxPopup = new DevExpress.ui.dxPopup(popupContainerEl, {
+                        title: 'My Popup',
+                        contentTemplate: () => { 
+                            const labelEl = document.createElement('label');
+                            labelEl.innerText = 'hello';
+                            return labelEl;
+                        },
+                        onHidden: () => {
+                            dxPopup.dispose();
+                            popupContainerEl.remove();
+                        },
+                        toolbarItems: [
+                            {
+                                widget: "dxButton",
+                                options: { 
+                                    text: "My Button 1", 
+                                    onClick: function() {
+                                        alert('hello 1');
+                                    },
+                                },
+                                toolbar: "top",
+                                location: "after",
+                            },
+                            {
+                                widget: "dxButton",
+                                options: { 
+                                    text: "My Button 2", 
+                                    onClick: function() {
+                                        alert('hello 2');
+                                    },
+                                },
+                                toolbar: "bottom",
+                                location: "after",
+                            },
+                            {
+                                widget: "dxButton",
+                                options: { 
+                                    text: "My Button 3", 
+                                    onClick: function() {
+                                        alert('hello 3');
+                                    },
+                                },
+                                toolbar: "bottom",
+                                location: "before",
+                            },
+                            {
+                                widget: "dxButton",
+                                options: { 
+                                    text: "My Button 4", 
+                                    onClick: function() {
+                                        alert('hello 4');
+                                    },
+                                },
+                                // toolbar: default
+                                // location: default
+                            },
+                            {
+                                widget: "dxButton",
+                                options: { 
+                                    text: "My Button 5", 
+                                    onClick: function() {
+                                        alert('hello 5');
+                                    },
+                                },
+                                toolbar: "bottom",
+                                // location: default
+                            },
+                            {
+                                widget: "dxButton",
+                                options: { 
+                                    text: "My Button 6", 
+                                    onClick: function() {
+                                        alert('hello 6');
+                                    },
+                                },
+                                toolbar: "top",
+                                location: "before",
+                            }
+                        ],
+                        closeOnOutsideClick: true,
+                        visible: true
+                    });
+                }
+            });
+        })()
+    </script>
+
+</body>
+</html>
