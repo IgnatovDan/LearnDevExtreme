@@ -30,7 +30,7 @@
     <script>
         (function() {
             new DevExpress.ui.dxButton(document.querySelector('.popup1_button'), {
-                text: 'show popup',
+                text: 'show popup 1',
                 onClick: (e) => {
                     const popupContainerEl = document.createElement('div');
                     document.querySelector('.popup1_popup').appendChild(popupContainerEl);
@@ -121,5 +121,62 @@
         })()
     </script>
 
+    <hr/>
+    <div class="popup2_button"></div>
+    <div class="popup2_popup"></div>
+    <script>
+        (function() {
+            new DevExpress.ui.dxButton(document.querySelector('.popup2_button'), {
+                text: 'show popup 2',
+                onClick: (e) => {
+                    const popupContainerEl = document.createElement('div');
+                    document.querySelector('.popup2_popup').appendChild(popupContainerEl);
+                    const dxPopup = new DevExpress.ui.dxPopup(popupContainerEl, {
+                        title: 'My Popup',
+                        contentTemplate: () => { 
+                            const labelEl = document.createElement('label');
+                            labelEl.innerText = 'hello';
+                            return labelEl;
+                        },
+                        onHidden: () => {
+                            dxPopup.dispose();
+                            popupContainerEl.remove();
+                        },
+                        onInitialized: (e) => {
+                            e.component.option('toolbarItems', [
+                                {
+                                    widget: "dxButton",
+                                    options: { 
+                                        text: "My Button 1", 
+                                        onClick: function() {
+                                            alert('hello 1');
+                                        },
+                                    },
+                                    toolbar: "top",
+                                    location: "after",
+                                },
+                                ...e.component.option('toolbarItems')
+                            ]);
+                        },
+                        toolbarItems: [
+                            {
+                                widget: "dxButton",
+                                options: { 
+                                    text: "My Button 2", 
+                                    onClick: function() {
+                                        alert('hello 2');
+                                    },
+                                },
+                                toolbar: "bottom",
+                                location: "after",
+                            },
+                        ],
+                        closeOnOutsideClick: true,
+                        visible: true
+                    });
+                }
+            });
+        })()
+    </script>
 </body>
 </html>
