@@ -105,7 +105,7 @@
     </script>
 
     <hr/>
-    <p>dxLookup_onPopupInitialized:</p>
+    <p>dxLookup__getPopupToolbarItems:</p>
     <div class="dxLookup__getPopupToolbarItems"></div>
     <script>
         (function() {
@@ -116,28 +116,46 @@
                 displayExpr: 'name',
                 showClearButton: true,
                 showCancelButton: true,
-                onPopupInitialized: (e) => {
-                    // e.popup.option('toolbarItems', [
-                    //     {
-                    //         widget: "dxButton",
-                    //         options: { 
-                    //             text: "My Button 1", 
-                    //             onClick: function() {
-                    //                 alert('hello 1');
-                    //             },
-                    //         },
-                    //         toolbar: "top",
-                    //         location: "after",
-                    //     },
-                    //     ...e.popup.option('toolbarItems')
-                    // ]);
-                }
             });
             const _getPopupToolbarItems_base = dxLookup._getPopupToolbarItems;
             dxLookup._getPopupToolbarItems = function() {
-                debugger;
                 const result  = _getPopupToolbarItems_base.apply(this, arguments);
-                return result;
+                const myToolbarItems = [
+                    {
+                        widget: "dxButton",
+                        options: { 
+                            text: "My Button 1", 
+                            onClick: function() {
+                                alert('hello 1');
+                            },
+                        },
+                        toolbar: "top",
+                        location: "after",
+                    },
+                    {
+                        widget: "dxButton",
+                        options: { 
+                            text: "My Button 2", 
+                            onClick: function() {
+                                alert('hello 2');
+                            },
+                        },
+                        toolbar: "bottom",
+                        location: "after",
+                    },
+                    {
+                        widget: "dxButton",
+                        options: { 
+                            text: "My Button 3", 
+                            onClick: function() {
+                                alert('hello 3');
+                            },
+                        },
+                        toolbar: "bottom",
+                        location: "center",
+                    }
+                ];
+                return [...myToolbarItems, ...result];
             };
         })()
     </script>
