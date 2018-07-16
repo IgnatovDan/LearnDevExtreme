@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <!-- <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"> -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>DevExtreme - Lookup - OData</title>
+
+    <!-- https://js.devexpress.com/Documentation/Guide/Getting_Started/Installation/CDN_Services/ -->
+
+    <!-- DevExtreme themes -->
+    <link rel="stylesheet" type="text/css" href="https://cdn3.devexpress.com/jslib/18.1.3/css/dx.common.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdn3.devexpress.com/jslib/18.1.3/css/dx.light.css" />
+    <!-- A DevExtreme library -->
+    <script type="text/javascript" src="https://cdn3.devexpress.com/jslib/18.1.3/js/dx.all.debug.js"></script>
+</head>
+<body>
+    <pre>
+    DevExtreme - Lookup - OData
+TODO: error occur if html is opened directly without a local site
+E4000 - [DevExpress.data]: Error: Unspecified network error (if the remote host is located on another domain, make sure it properly supports cross-origin resource sharing (CORS), or use the JSONP approach instead). See:
+dx.all.debug.js:18099
+http://js.devexpress.com/error/18_1/E4000    
+    <hr/>
+    <p>dxLookup:</p>
+    <div class="dxLookup"></div>
+    <script>
+        (function() {
+            const persons = {
+                store: {
+                    type: "odata",
+                    url: 'https://xenarius-demo-service.azurewebsites.net/odata/12345/Persons'
+                },
+                select: [
+                    "Oid",
+                    "FullName",
+                ],
+            };
+
+            const dxLookup = new DevExpress.ui.dxLookup(document.querySelector('.dxLookup'), {
+                dataSource: persons,
+                valueExpr: 'Oid',
+                displayExpr: 'FullName',
+                showClearButton: true,
+                showCancelButton: true,
+                showClearButton: true,
+            });
+        })();
+    </script>
+</body>
+</html>

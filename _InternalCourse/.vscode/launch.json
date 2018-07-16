@@ -9,7 +9,7 @@
             "type": "chrome",
             "request": "launch",
             "name": "Launch",
-            "url": "${workspaceFolder}/dxLookup_CustomButtonsInDropDown.html"
+            "url": "${workspaceFolder}/dxLookup_ODataStore.html"
         }
     ]
 }
