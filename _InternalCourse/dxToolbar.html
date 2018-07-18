@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+
+    <!-- https://js.devexpress.com/Documentation/Guide/Getting_Started/Installation/CDN_Services/ -->
+
+    <!-- DevExtreme dependencies -->
+    <script type="text/javascript" src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-3.1.0.js"></script>
+    <!-- DevExtreme themes -->
+    
+    <link rel="stylesheet" type="text/css" href="https://cdn3.devexpress.com/jslib/18.1.3/css/dx.common.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdn3.devexpress.com/jslib/18.1.3/css/dx.light.css" />
+    <!-- A DevExtreme library -->
+    <script type="text/javascript" src="https://cdn3.devexpress.com/jslib/18.1.3/js/dx.all.debug.js"></script>
+</head>
+<body>
+    <pre>
+    DevExtreme -  Display dxToolbar with various items
+    </pre>
+    <hr/>
+    <div class="menu1"></div>
+    <div class="toolbar1"></div>
+    <script>
+        (function() {
+            const toolbar1_menuItems1 = [
+                {
+                    caption: 'New',
+                    items: [
+                        {
+                            id: 'item1',
+                            caption: 'Item 1',
+                        },
+                        {
+                            id: 'item2',
+                            caption: 'Item 2',
+                        },
+                    ],
+                }
+            ];
+            new DevExpress.ui.dxToolbar(document.querySelector('.toolbar1'), {
+                items: [
+                    {
+                        text: 'text entry',
+                    },
+                    {
+                        widget: 'dxButton',
+                        options: {
+                            text: 'Click me',
+                            onClick: (e) => alert('Hi! ' + e.component.option('text')),
+                        },
+                    },
+                    {
+                        widget: 'dxMenu',
+                        options: {
+                            dataSource: toolbar1_menuItems1,
+                            displayExpr: 'caption',
+                            hideSubmenuOnMouseLeave: true,
+                            showFirstSubmenuMode: 'onHover',
+                            onItemClick: e => {
+                                if(e.itemData.id) {
+                                    setTimeout(() => alert(`Hi! + ${e.itemData.id} was clicked.`), 100); // setTimeout is used to hide menu control before dialog showing
+                                }
+                            }
+                        },
+                    },
+                ],
+            });
+        })()
+    </script>
+</body>
+</html>
