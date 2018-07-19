@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <!-- <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"> -->
@@ -15,6 +16,7 @@
     <!-- A DevExtreme library -->
     <script type="text/javascript" src="https://cdn3.devexpress.com/jslib/18.1.3/js/dx.all.debug.js"></script>
 </head>
+
 <body>
     <pre>
     DevExtreme - Lookup - add new button near the [Cancel] button
@@ -42,7 +44,7 @@
         - https://isc.devexpress.com/Thread/WorkplaceDetails/T161734 - dxLookup - How to create custom button to replace Clear button?
 
     <script>
-        const products = [ 
+        const products = [
             { id: 0, name: 'gas' },
             { id: 1, name: 'petrol' },
             { id: 2, name: 'bush legs' },
@@ -52,7 +54,7 @@
     <p>dxLookup_onPopupInitialized:</p>
     <div class="dxLookup_onPopupInitialized"></div>
     <script>
-        (function() {
+        (function () {
             const dxLookup = new DevExpress.ui.dxLookup(document.querySelector('.dxLookup_onPopupInitialized'), {
                 dataSource: products,
                 value: 1,
@@ -61,13 +63,15 @@
                 showClearButton: true,
                 showCancelButton: true,
                 showClearButton: true,
+                titleTemplate: () => { debugger; },
                 onPopupInitialized: (e) => {
+                    debugger;
                     e.popup.option('toolbarItems', [
                         {
                             widget: "dxButton",
-                            options: { 
-                                text: "My Button 1", 
-                                onClick: function() {
+                            options: {
+                                text: "My Button 1",
+                                onClick: function () {
                                     alert('hello 1');
                                 },
                             },
@@ -76,9 +80,9 @@
                         },
                         {
                             widget: "dxButton",
-                            options: { 
-                                text: "My Button 2", 
-                                onClick: function() {
+                            options: {
+                                text: "My Button 2",
+                                onClick: function () {
                                     alert('hello 2');
                                 },
                             },
@@ -87,9 +91,9 @@
                         },
                         {
                             widget: "dxButton",
-                            options: { 
-                                text: "My Button 3", 
-                                onClick: function() {
+                            options: {
+                                text: "My Button 3",
+                                onClick: function () {
                                     alert('hello 3');
                                 },
                             },
@@ -107,97 +111,147 @@
     <p>dxLookup__getPopupToolbarItems:</p>
     <div class="dxLookup__getPopupToolbarItems"></div>
     <script>
-        (function() {
-            const dxLookup = new DevExpress.ui.dxLookup(document.querySelector('.dxLookup__getPopupToolbarItems'), {
-                dataSource: products,
-                value: 1,
-                valueExpr: 'id',
-                displayExpr: 'name',
-                showClearButton: true,
-                showCancelButton: true,
-            });
-            const _getPopupToolbarItems_base = dxLookup._getPopupToolbarItems;
-            dxLookup._getPopupToolbarItems = function() {
-                const result  = _getPopupToolbarItems_base.apply(this, arguments);
-                const myToolbarItems = [
-                    {
-                        widget: "dxButton",
-                        options: { 
-                            text: "My Button 1", 
-                            onClick: function() {
-                                alert('hello 1');
+            (function () {
+                const dxLookup = new DevExpress.ui.dxLookup(document.querySelector('.dxLookup__getPopupToolbarItems'), {
+                    dataSource: products,
+                    value: 1,
+                    valueExpr: 'id',
+                    displayExpr: 'name',
+                    showClearButton: true,
+                    showCancelButton: true,
+                    showPopupTitle: true,
+                    title: 'My title',
+                });
+                const _getPopupToolbarItems_base = dxLookup._getPopupToolbarItems;
+                dxLookup._getPopupToolbarItems = function () {
+                    const result = _getPopupToolbarItems_base.apply(this, arguments);
+                    const myToolbarItems = [
+                        {
+                            widget: "dxButton",
+                            options: {
+                                text: "My Button 1",
+                                onClick: function () {
+                                    alert('hello 1');
+                                },
                             },
+                            toolbar: "top",
+                            location: "after",
                         },
-                        toolbar: "top",
-                        location: "after",
-                    },
-                    {
-                        widget: "dxButton",
-                        options: { 
-                            text: "My Button 2", 
-                            onClick: function() {
-                                alert('hello 2');
+                        {
+                            widget: "dxButton",
+                            options: {
+                                text: "My Button 2",
+                                onClick: function () {
+                                    alert('hello 2');
+                                },
                             },
+                            toolbar: "bottom",
+                            location: "after",
                         },
-                        toolbar: "bottom",
-                        location: "after",
-                    },
-                    {
-                        widget: "dxButton",
-                        options: { 
-                            text: "My Button 3", 
-                            onClick: function() {
-                                alert('hello 3');
+                        {
+                            widget: "dxButton",
+                            options: {
+                                text: "My Button 3",
+                                onClick: function () {
+                                    alert('hello 3');
+                                },
                             },
-                        },
-                        toolbar: "bottom",
-                        location: "center",
-                    }
-                ];
-                return [...myToolbarItems, ...result];
-            };
-        })()
+                            toolbar: "bottom",
+                            location: "center",
+                        }
+                    ];
+                    return [...myToolbarItems, ...result];
+                };
+            })()
     </script>
 
     <hr/>
-    <p>dxDropDownBox__customTemplate:</p>
-    <div class="dxDropDownBox__customTemplate"></div>
+    <p>dxLookup__titleTemplate:</p>
+    <div class="dxLookup__titleTemplate"></div>
     <script>
-        (function() {
-            const dxDropDownBox = new DevExpress.ui.dxDropDownBox(document.querySelector('.dxDropDownBox__customTemplate'), {
-                dataSource: products,
-                value: 1,
-                valueExpr: 'id',
-                displayExpr: 'name',
-                showClearButton: true,
-                contentTemplate: (e) => {
-                    const val = e.component.option('value');
-                    const gridEl = document.createElement('div');
-                    const dxDataGrid = new DevExpress.ui.dxDataGrid(gridEl, {
-                        dataSource: new DevExpress.data.ArrayStore({ key: 'id', data: products }),
-                        columns: ['name'],
-                        hoverStateEnabled: true,
-                        selection: { mode: 'single' },
-                        selectedRowKeys: [val],
-                        onSelectionChanged: (selectedItems) => {
-                            const keys = selectedItems.selectedRowKeys;
-                            dxDropDownBox.option('value', keys.length ? keys[0] : null);
-                        },
-                        //TODO
-                        height: 345,
-                        // - popup height should be set manually, it's too small by default
-                        // - popup is wide on mobile, dxLookup.popup fits into width
-                        // - Enter/Select doesn't close popup, handle it manually
-                    });
-                    
-                    dxDropDownBox.on("valueChanged", function(args){
-                        dxDataGrid.selectRows(args.value, false);
-                    });                    
+            (function () {
+                const dxLookup = new DevExpress.ui.dxLookup(document.querySelector('.dxLookup__titleTemplate'), {
+                    dataSource: products,
+                    value: 1,
+                    valueExpr: 'id',
+                    displayExpr: 'name',
+                    showClearButton: true,
+                    showCancelButton: true,
+                    showPopupTitle: true,
+                    title: 'my title',
+                    titleTemplate: (titleElement) => {
+                        const myToolbarItems = [
+                            //TODO: Close/Cancel/[X] will be shown in the 'top' toolbar for mobile/ios platforms + if(showClear/CancelButton) + localization
+                            {
+                                text: dxLookup.option('title'), //TODO: if(dxLookup.option('showPopupTitle'))
+                                location: "before",
+                            },
+                            {
+                                widget: 'dxButton',
+                                location: 'after',
+                                options: {
+                                    text: 'click me',
+                                    onClick: () => alert('Hi!'),
+                                }
+                            },
+                        ];
+                        titleElement.innerHTML = '';
+                        const toolbarEl = document.createElement('div');
+                        new DevExpress.ui.dxToolbar(
+                            toolbarEl,
+                            { items: myToolbarItems }
+                        );
 
-                    return gridEl;
-                },
-            });
-        })();
+                        // dx.light.css
+                        //.dx-popover-wrapper .dx-popup-title.dx-toolbar { 
+                        //    padding-left: 15px;
+                        //toolbarEl.classList.add('dx-popup-title');
+
+                        return toolbarEl; //TODO: titleElement.appendChild(toolbarEl); ???
+                    },
+                });
+            })()
+    </script>
+    
+    <hr/>
+    <p>dxDropDownBox__contentTemplate:</p>
+    <div class="dxDropDownBox__contentTemplate"></div>
+    <script>
+            (function () {
+                const dxDropDownBox = new DevExpress.ui.dxDropDownBox(document.querySelector('.dxDropDownBox__contentTemplate'), {
+                    dataSource: products,
+                    value: 1,
+                    valueExpr: 'id',
+                    displayExpr: 'name',
+                    showClearButton: true,
+                    contentTemplate: (e) => {
+                        const val = e.component.option('value');
+                        const gridEl = document.createElement('div');
+                        const dxDataGrid = new DevExpress.ui.dxDataGrid(gridEl, {
+                            dataSource: new DevExpress.data.ArrayStore({ key: 'id', data: products }),
+                            columns: ['name'],
+                            hoverStateEnabled: true,
+                            selection: { mode: 'single' },
+                            selectedRowKeys: [val],
+                            onSelectionChanged: (selectedItems) => {
+                                const keys = selectedItems.selectedRowKeys;
+                                dxDropDownBox.option('value', keys.length ? keys[0] : null);
+                            },
+                            //TODO
+                            height: 345,
+                            // - popup height should be set manually, it's too small by default
+                            // - popup is wide on mobile, dxLookup.popup fits into width
+                            // - Enter/Select doesn't close popup, handle it manually
+                        });
+
+                        dxDropDownBox.on("valueChanged", function (args) {
+                            dxDataGrid.selectRows(args.value, false);
+                        });
+
+                        return gridEl;
+                    },
+                });
+            })();
     </script>
 </body>
 </html>
