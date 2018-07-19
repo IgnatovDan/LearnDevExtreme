@@ -63,9 +63,7 @@
                 showClearButton: true,
                 showCancelButton: true,
                 showClearButton: true,
-                titleTemplate: () => { debugger; },
                 onPopupInitialized: (e) => {
-                    debugger;
                     e.popup.option('toolbarItems', [
                         {
                             widget: "dxButton",
@@ -180,32 +178,83 @@
                     showPopupTitle: true,
                     title: 'my title',
                     titleTemplate: (titleElement) => {
-                        const myToolbarItems = [
-                            //TODO: Close/Cancel/[X] will be shown in the 'top' toolbar for mobile/ios platforms + if(showClear/CancelButton) + localization
-                            {
-                                text: dxLookup.option('title'), //TODO: if(dxLookup.option('showPopupTitle'))
-                                location: "before",
-                            },
-                            {
+                        //TODO: Close/Cancel/[X] will be shown in the 'top' toolbar for mobile/ios platforms + if(showClear/CancelButton) + localization
+                        //
+                        // for more details see these lines in DevExtreme sources:
+                        //
+                        //  getButtonPlace
+                        //  _getToolbarItems
+                        //  "ios" === currentPlatform
+                        //  if ("done" === data.shortcut && isLTROrder || "cancel" === data.shortcut && !isLTROrder) {
+
+                        //
+                        // TODO: localization
+                        //
+
+                        //
+                        // TODO: 'padding-left' is 20px instead of 15px in the default titleTemplace:
+                        //
+                        // dx.light.css
+                        //.dx-popover-wrapper .dx-popup-title.dx-toolbar { 
+                        //    padding-left: 15px;
+                        //toolbarEl.classList.add('dx-popup-title');
+                        //
+
+                        const myToolbarItems = [];
+
+                        if(DevExpress.devices.current().generic || DevExpress.devices.current().win) {
+                            if(dxLookup.option('showPopupTitle')) {
+                                myToolbarItems.push({
+                                    text: dxLookup.option('title'),
+                                    location: "before",
+                                });
+                            }
+                            myToolbarItems.push({
                                 widget: 'dxButton',
                                 location: 'after',
                                 options: {
                                     text: 'click me',
                                     onClick: () => alert('Hi!'),
                                 }
-                            },
-                        ];
+                            });
+                        }
+                        else if(DevExpress.devices.current().ios || DevExpress.devices.current().android) {
+                            if(dxLookup.option('showPopupTitle')) {
+                                myToolbarItems.push({
+                                    text: dxLookup.option('title'),
+                                    location: "center",
+                                });
+                            }
+                            if(dxLookup.option('showCancelButton')) {
+                                myToolbarItems.push({
+                                    widget: 'dxButton',
+                                    location: 'before',
+                                    options: {
+                                        text: 'Cancel', //TODO: localize
+                                        onClick: () => alert('TODO: Cancel()'), //dxPopup.Hide()
+                                    }
+                                    //TODO: shortcut: 'cancel',
+                                });
+                            }
+                            if(dxLookup.option('showClearButton')) {
+                                myToolbarItems.push({
+                                    widget: 'dxButton',
+                                    location: 'after',
+                                    options: {
+                                        text: 'Clear', //TODO: localize
+                                        onClick: () => alert('TODO: Clear()'), //dxLookup.option('value', null)
+                                    }
+                                    //TODO: shortcut ???
+                                });
+                            }
+                        }
+
                         titleElement.innerHTML = '';
                         const toolbarEl = document.createElement('div');
                         new DevExpress.ui.dxToolbar(
                             toolbarEl,
                             { items: myToolbarItems }
                         );
-
-                        // dx.light.css
-                        //.dx-popover-wrapper .dx-popup-title.dx-toolbar { 
-                        //    padding-left: 15px;
-                        //toolbarEl.classList.add('dx-popup-title');
 
                         return toolbarEl; //TODO: titleElement.appendChild(toolbarEl); ???
                     },
