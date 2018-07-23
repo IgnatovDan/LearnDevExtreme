@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <!-- <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"> -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>DevExtreme - SelectBox - itemTemplate</title>
+
+    <!-- https://js.devexpress.com/Documentation/Guide/Getting_Started/Installation/CDN_Services/ -->
+
+    <!-- <script type="text/javascript" src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-3.1.0.min.js"></script> -->
+    <!-- DevExtreme themes -->
+    <link rel="stylesheet" type="text/css" href="https://cdn3.devexpress.com/jslib/18.1.3/css/dx.common.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdn3.devexpress.com/jslib/18.1.3/css/dx.light.css" />
+    <!-- A DevExtreme library -->
+    <script type="text/javascript" src="https://cdn3.devexpress.com/jslib/18.1.3/js/dx.all.debug.js"></script>
+</head>
+<body>
+    <pre>
+    DevExtreme - dxSelectBox.itemTemplate
+    <hr/>
+    <p>dxSelect:</p>
+    <div class="dxSelectBox"></div>
+
+    <script>
+        (function() {
+            const persons = [
+                { value: 1, caption: "item 1"},
+                { value: 2, caption: "item 2"},
+            ];
+
+            new DevExpress.ui.dxSelectBox(document.querySelector('.dxSelectBox'), {
+                dataSource: persons,
+                valueExpr: 'value',
+                displayExpr: 'caption',
+                showClearButton: true,
+                itemTemplate: (itemData, itemIndex, itemContainerEl) => {
+                    //
+                    // Represents a list item similar to these descriptions:
+                    //  - https://material.io/design/components/lists.html
+                    //  - https://material.io/develop/web/components/lists/
+                    //  - https://material-components.github.io/material-components-web-catalog/#/component/list
+                    //
+                    //
+                    // Templates: avatar-list, two-line, three-line
+                    // 
+                    // Internal elements:
+                    //  - text
+                    //  - secondary-text
+                    //  - graphics or 'leading icon' ('avatar' or 'thumbnail' style, primary action)
+                    //  - meta or 'trailing icon' (it can be an image/text/two lines, actionable or not)
+                    //
+                    // Additional:
+                    //  - 'devider' between rows
+                    //  - transforms for mobile/desktop
+                    //
+
+                    itemContainerEl.innerHTML = null;
+
+                    const imgEl = document.createElement('img');
+                    imgEl.src = 'https://image.flaticon.com/icons/svg/565/565357.svg';
+                    imgEl.height = 16;
+                    imgEl.width = 16;
+                    itemContainerEl.appendChild(imgEl);
+
+                    const textEl = document.createElement('span');
+                    textEl.innerText = 'item ' + itemIndex;
+                    itemContainerEl.appendChild(textEl);
+                }
+            });
+        })();
+    </script>
+</body>
+</html>
