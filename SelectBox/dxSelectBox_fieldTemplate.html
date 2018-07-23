@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <!-- <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"> -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>DevExtreme - SelectBox - fieldTemplate</title>
+
+    <!-- https://js.devexpress.com/Documentation/Guide/Getting_Started/Installation/CDN_Services/ -->
+
+    <script type="text/javascript" src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-3.1.0.min.js"></script>
+    <!-- DevExtreme themes -->
+    <link rel="stylesheet" type="text/css" href="https://cdn3.devexpress.com/jslib/18.1.3/css/dx.common.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdn3.devexpress.com/jslib/18.1.3/css/dx.light.css" />
+    <!-- A DevExtreme library -->
+    <script type="text/javascript" src="https://cdn3.devexpress.com/jslib/18.1.3/js/dx.all.debug.js"></script>
+</head>
+<body>
+    <pre>
+    DevExtreme - dxSelect.fieldTemplate
+    <hr/>
+    <p>dxSelect:</p>
+    <div class="dxSelectBox"></div>
+
+    <script>
+        (function() {
+            const persons = [
+                { value: 1, caption: "item 1"},
+                { value: 2, caption: "item 2"},
+            ];
+
+            const dxLookup = new DevExpress.ui.dxSelectBox(document.querySelector('.dxSelectBox'), {
+                dataSource: persons,
+                valueExpr: 'value',
+                displayExpr: 'caption',
+                showClearButton: true,
+                fieldTemplate: () => {
+                    //
+                    // https://github.com/DevExpress/devextreme-react/issues/163
+                    // The "E1010 - The template does not contain the TextBox widget" error occurs if value is assigned to the TextBox.fieldComponent or TextBox.fieldRender property
+                    //
+                    const textBoxEl = document.createElement('div');
+                    new DevExpress.ui.dxTextBox(textBoxEl, {});
+                    return textBoxEl;
+                }
+            });
+        })();
+    </script>
+</body>
+</html>
