@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <!-- <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"> -->
@@ -15,58 +16,112 @@
     <link rel="stylesheet" type="text/css" href="https://cdn3.devexpress.com/jslib/18.1.3/css/dx.light.css" />
     <!-- A DevExtreme library -->
     <script type="text/javascript" src="https://cdn3.devexpress.com/jslib/18.1.3/js/dx.all.debug.js"></script>
+
+    <link rel="stylesheet" type="text/css" media="screen" href="https://unpkg.com/material-components-web@latest/dist/material-components-web.css"
+    />
+    <!-- <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <script src="https://unpkg.com/material-components-web@latest/dist/material-components-web.js"></script> -->
+
 </head>
+
 <body>
     <pre>
     DevExtreme - dxSelectBox.itemTemplate
     <hr/>
-    <p>dxSelect:</p>
-    <div class="dxSelectBox"></div>
+    <p>dxSelectBox.itemTemplate like material design list:</p>
+    <div class="itemTemplate__material"></div>
+
+    <!--
+    Represents a list item similar to these descriptions:
+      - https://material.io/design/components/lists.html
+      - https://material.io/develop/web/components/lists/
+      - https://material-components.github.io/material-components-web-catalog/#/component/list
+    
+    
+    Templates: avatar-list, two-line, three-line
+     
+    Internal elements:
+      - text
+      - secondary-text
+      - graphics or 'leading icon' ('avatar' or 'thumbnail' style, primary action)
+      - meta or 'trailing icon' (it can be an image/text/two lines, actionable or not)
+    
+    Additional:
+      - 'devider' between rows
+      - transforms for mobile/desktop
+     -->
+
+    <style>
+        .myListItem {
+            font-family: Roboto, sans-serif;
+            display: flex;
+            position: relative;
+            align-items: center;
+            justify-content: flex-start;
+            height: 48px;
+            padding-left: 16px;
+            padding-right: 16px;
+        }
+
+        .myListItem__image {
+            margin-right: 32px;
+            width: 24px;
+            height: 24px;
+        }
+
+        .myListItem__text1 {
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            overflow: hidden;
+            color: rgba(0, 0, 0, 0.87);
+        }
+        
+        .myListItem__text2 {
+            font-size: 0.875rem;
+            color: rgba(0, 0, 0, 0.54);
+            text-overflow: ellipsis;
+            line-height: 1.25rem;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+    </style>
 
     <script>
-        (function() {
+        (function () {
             const persons = [
-                { value: 1, caption: "item 1"},
-                { value: 2, caption: "item 2"},
+                { value: 1, caption: "item 1", description: 'description 1 description 2 description 3 description 4' },
+                { value: 2, caption: "item 2", description: 'description 1 description 2 description 3 description 4' },
+                { value: 3, caption: "item 3" },
+                { value: 4, caption: "item 4", description: 'description 1 description 2 description 3 description 4' },
             ];
 
-            new DevExpress.ui.dxSelectBox(document.querySelector('.dxSelectBox'), {
+            new DevExpress.ui.dxSelectBox(document.querySelector('.itemTemplate__material'), {
                 dataSource: persons,
                 valueExpr: 'value',
                 displayExpr: 'caption',
                 showClearButton: true,
                 itemTemplate: (itemData, itemIndex, itemContainerEl) => {
-                    //
-                    // Represents a list item similar to these descriptions:
-                    //  - https://material.io/design/components/lists.html
-                    //  - https://material.io/develop/web/components/lists/
-                    //  - https://material-components.github.io/material-components-web-catalog/#/component/list
-                    //
-                    //
-                    // Templates: avatar-list, two-line, three-line
-                    // 
-                    // Internal elements:
-                    //  - text
-                    //  - secondary-text
-                    //  - graphics or 'leading icon' ('avatar' or 'thumbnail' style, primary action)
-                    //  - meta or 'trailing icon' (it can be an image/text/two lines, actionable or not)
-                    //
-                    // Additional:
-                    //  - 'devider' between rows
-                    //  - transforms for mobile/desktop
-                    //
-
                     itemContainerEl.innerHTML = null;
 
-                    const imgEl = document.createElement('img');
-                    imgEl.src = 'https://image.flaticon.com/icons/svg/565/565357.svg';
-                    imgEl.height = 16;
-                    imgEl.width = 16;
-                    itemContainerEl.appendChild(imgEl);
+                    const itemEl = document.createElement('div');
+                    itemEl.classList.add('myListItem');
 
-                    const textEl = document.createElement('span');
-                    textEl.innerText = 'item ' + itemIndex;
-                    itemContainerEl.appendChild(textEl);
+                    const imgEl = document.createElement('img');
+                    itemEl.appendChild(imgEl);
+                    imgEl.classList.add('myListItem__image');
+                    imgEl.src = 'https://image.flaticon.com/icons/svg/565/565357.svg';
+
+                    const text1El = document.createElement('div');
+                    itemEl.appendChild(text1El);
+                    text1El.classList.add('xafListItem__text1');
+                    text1El.innerText = itemData.caption;
+
+                    const text2El = document.createElement('div');
+                    text1El.appendChild(text2El);
+                    text2El.classList.add('myListItem__text2');
+                    text2El.innerText = itemData.description;
+
+                    itemContainerEl.appendChild(itemEl);
                 }
             });
         })();
