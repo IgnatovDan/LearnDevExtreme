@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>DataGrid Exporting</title>
+    
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.5/jszip.min.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="https://cdn3.devexpress.com/jslib/18.1.4/css/dx.common.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdn3.devexpress.com/jslib/18.1.4/css/dx.light.css" />
+    <script type="text/javascript" src="https://cdn3.devexpress.com/jslib/18.1.4/js/dx.all.debug.js"></script>
+</head>
+<body>
+    <hr>
+    https://services.odata.org/TripPinRESTierService/(S(hn4nabjcmnm2bsysw5m4rxte))/People
+    <hr>
+    <div class="myGrid"></div>
+    <script>
+        (function() {
+            const context = new DevExpress.data.ODataContext({
+                url: 'https://services.odata.org/V4/(S(cpzlknojey5jphi4wfrkin1y))/TripPinServiceRW/People',
+                errorHandler: error =>  {
+                    debugger;
+                    alert(error.message);
+                },
+                entities: {
+                    People: {
+                        key: 'UserName',
+                        fieldTypes: {
+                            UserName: 'string'
+                        },
+                    },
+                },
+                version: 4,
+            });
+            const ds = new DevExpress.data.DataSource({
+                store: {
+                    type: 'odata',
+                    // url: 'https://js.devexpress.com/Demos/DevAV/odata/Products',
+                    // key: 'Product_ID',
+                    // keyType: 'Int32',
+
+                    url: 'https://services.odata.org/V4/(S(cpzlknojey5jphi4wfrkin1y))/TripPinServiceRW/People',
+                    version: 4,
+                    key: 'UserName',
+                    keyType: 'String',
+                }
+            });
+
+            const dxGrid = new DevExpress.ui.dxDataGrid(document.querySelector('.myGrid'), {
+                dataSource: context.People,
+                dataSource: ds,
+                //columns: ['Product_ID', 'Product_Name', 'Product_Description', 'Product_Production_Start', 'Product_Available', 'Product_Image', 'Product_Cost', 'Product_Barcode'],
+                columns: ['UserName', 'FirstName', 'LastName', 'Emails'],
+                export: {
+                    enabled: true,
+                }
+            });
+        })();
+    </script>
+</body>
+</html>
